@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Animated,
   Vibration,
+  SafeAreaView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 60,
+    paddingTop: 8,
     paddingHorizontal: SPACING.lg,
   },
   header: {
