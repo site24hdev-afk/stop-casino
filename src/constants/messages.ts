@@ -22,34 +22,34 @@ export const ENCOURAGEMENTS = [
   "Félicitations. Tu choisis la vraie vie.",
 ];
 
-/** Étapes du flux SOS */
+/** Étapes du flux SOS — titres/descriptions via i18n (clés sos.*) */
 export const SOS_STEPS = [
   {
     id: 1,
-    title: "Respire",
-    description: "Inspire 4 secondes, retiens 4 secondes, expire 4 secondes. Répète 3 fois.",
-    icon: "leaf-outline",
+    titleKey: 'sos.breatheTitle',
+    descKey: 'sos.breatheDesc',
+    icon: 'leaf-outline',
     durationSeconds: 60,
   },
   {
     id: 2,
-    title: "Bouge",
-    description: "Sors marcher 5 minutes. Change d'environnement, l'envie passera.",
-    icon: "footsteps-outline",
+    titleKey: 'sos.walkTitle',
+    descKey: 'sos.walkDesc',
+    icon: 'footsteps-outline',
     durationSeconds: 120,
   },
   {
     id: 3,
-    title: "Écris",
-    description: "Note pourquoi tu veux arrêter. Relis ta raison principale.",
-    icon: "create-outline",
+    titleKey: 'sos.writeTitle',
+    descKey: 'sos.writeDesc',
+    icon: 'create-outline',
     durationSeconds: 120,
   },
   {
     id: 4,
-    title: "Appelle",
-    description: "Contacte ton proche de confiance ou Joueurs Info Service.",
-    icon: "call-outline",
+    titleKey: 'sos.callTitle',
+    descKey: 'sos.callDesc',
+    icon: 'call-outline',
     durationSeconds: 0,
   },
 ];

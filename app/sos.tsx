@@ -183,8 +183,8 @@ export default function SOSScreen() {
           <Ionicons name={step.icon as any} size={56} color={COLORS.text} />
         </Animated.View>
 
-        <Text style={styles.stepTitle}>{step.title}</Text>
-        <Text style={styles.stepDescription}>{step.description}</Text>
+        <Text style={styles.stepTitle}>{t(step.titleKey)}</Text>
+        <Text style={styles.stepDescription}>{t(step.descKey)}</Text>
 
         {/* Timer */}
         {step.durationSeconds > 0 && (
