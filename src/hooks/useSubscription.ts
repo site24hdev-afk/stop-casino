@@ -27,16 +27,16 @@ const DEFAULT_SUB: SubscriptionData = {
 export const PLANS = {
   essentiel: {
     name: 'Essentiel',
-    monthly: { amount: 2.99, label: '2,99 €/mois' },
-    yearly: { amount: 19.99, label: '19,99 €/an', perMonth: '1,67 €/mois', savings: '44%' },
+    monthly: { amount: 4.99, label: '4,99 €/mois' },
+    yearly: { amount: 39.99, label: '39,99 €/an', perMonth: '3,33 €/mois', savings: '44%' },
     color: '#3B82F6',
     icon: 'star-outline' as const,
     tagline: 'Le premier pas',
   },
   pro: {
     name: 'Pro',
-    monthly: { amount: 5.99, label: '5,99 €/mois' },
-    yearly: { amount: 34.99, label: '34,99 €/an', perMonth: '2,92 €/mois', savings: '51%' },
+    monthly: { amount: 9.99, label: '9,99 €/mois' },
+    yearly: { amount: 79.99, label: '79,99 €/an', perMonth: '6,67 €/mois', savings: '44%' },
     color: '#10B981',
     icon: 'diamond-outline' as const,
     tagline: 'Le plus populaire',
@@ -44,7 +44,7 @@ export const PLANS = {
   },
   elite: {
     name: 'Elite',
-    lifetime: { amount: 69.99, label: '69,99 € une fois' },
+    lifetime: { amount: 149.99, label: '149,99 € une fois' },
     color: '#F59E0B',
     icon: 'trophy-outline' as const,
     tagline: 'Pour toujours',
