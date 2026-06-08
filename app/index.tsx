@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { ENCOURAGEMENTS } from '../src/constants/messages';
 import { useUserData } from '../src/hooks/useUserData';
+import { useSubscription } from '../src/hooks/useSubscription';
 import Onboarding from '../src/components/Onboarding';
 
 const { width } = Dimensions.get('window');
@@ -21,6 +22,7 @@ const { width } = Dimensions.get('window');
 export default function HomeScreen() {
   const router = useRouter();
   const { userData, loading, saveData, daysSinceQuit, moneySaved } = useUserData();
+  const { isPremium } = useSubscription();
   const [encouragement, setEncouragement] = useState('');
 
   useEffect(() => {
@@ -56,12 +58,23 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>Salut, guerrier 💪</Text>
             <Text style={styles.appName}>Stop Casino</Text>
           </View>
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={() => router.push('/stats')}
-          >
-            <Ionicons name="bar-chart-outline" size={20} color={COLORS.textSecondary} />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            {!isPremium && (
+              <TouchableOpacity
+                style={styles.proButton}
+                onPress={() => router.push('/abonnement')}
+              >
+                <Ionicons name="diamond" size={14} color="#F59E0B" />
+                <Text style={styles.proButtonText}>PRO</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => router.push('/stats')}
+            >
+              <Ionicons name="bar-chart-outline" size={20} color={COLORS.textSecondary} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Compteur principal — héro */}
@@ -180,6 +193,37 @@ export default function HomeScreen() {
             <Text style={styles.navTitle}>Statistiques</Text>
             <Text style={styles.navDesc}>Ton évolution</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.navCard}
+            onPress={() => isPremium ? router.push('/jeux') : router.push('/abonnement')}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.navIconBg, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
+              <Ionicons name="game-controller-outline" size={26} color={COLORS.danger} />
+            </View>
+            <View style={styles.navTitleRow}>
+              <Text style={styles.navTitle}>Jeux</Text>
+              {!isPremium && (
+                <View style={styles.lockBadge}>
+                  <Ionicons name="lock-closed" size={10} color="#F59E0B" />
+                </View>
+              )}
+            </View>
+            <Text style={styles.navDesc}>Blackjack & Roulette</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.navCard, styles.navCardPro]}
+            onPress={() => router.push('/abonnement')}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
+              <Ionicons name="diamond" size={26} color="#F59E0B" />
+            </View>
+            <Text style={styles.navTitle}>{isPremium ? 'Mon abo' : 'Pro'}</Text>
+            <Text style={styles.navDesc}>{isPremium ? 'Gérer mon offre' : 'Tout débloquer'}</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={{ height: 40 }} />
@@ -237,6 +281,28 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: COLORS.text,
     letterSpacing: -0.5,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  proButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(245, 158, 11, 0.12)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 14,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.25)',
+  },
+  proButtonText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#F59E0B',
+    letterSpacing: 0.5,
   },
   settingsButton: {
     width: 42,
@@ -452,10 +518,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
+  navTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   navTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: COLORS.text,
+  },
+  lockBadge: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navCardPro: {
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.2)',
   },
   navDesc: {
     fontSize: 12,
