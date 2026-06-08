@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
@@ -37,7 +38,7 @@ export default function JeuxScreen() {
 
   if (showReminder) {
     return (
-      <View style={styles.reminderContainer}>
+      <SafeAreaView style={styles.reminderContainer}>
         <View style={styles.reminderCard}>
           <Ionicons name="time-outline" size={48} color={COLORS.warning} />
           <Text style={styles.reminderTitle}>Petit rappel</Text>
@@ -59,13 +60,13 @@ export default function JeuxScreen() {
             <Text style={styles.continueText}>Continuer encore un peu</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (!selectedGame) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color={COLORS.text} />
@@ -122,12 +123,12 @@ export default function JeuxScreen() {
             </Text>
           </View>
         )}
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setSelectedGame(null)}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
@@ -154,7 +155,7 @@ export default function JeuxScreen() {
           </Text>
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -162,7 +163,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 8,
     paddingHorizontal: SPACING.lg,
   },
   header: {

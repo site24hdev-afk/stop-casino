@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
@@ -72,8 +73,9 @@ export default function StatsScreen() {
   const yearProjection = userData.averageDailySpend * 365;
 
   return (
+    <SafeAreaView style={styles.container}>
     <ScrollView
-      style={styles.container}
+      style={{ flex: 1 }}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
@@ -238,6 +240,7 @@ export default function StatsScreen() {
 
       <View style={{ height: SPACING.xxl }} />
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -247,7 +250,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   content: {
-    paddingTop: 8,
     paddingHorizontal: SPACING.lg,
   },
   header: {

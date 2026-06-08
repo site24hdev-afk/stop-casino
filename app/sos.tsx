@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   Animated,
   Vibration,
-  SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
@@ -102,7 +102,7 @@ export default function SOSScreen() {
 
   if (showGameOption && !completed) {
     return (
-      <View style={styles.completedContainer}>
+      <SafeAreaView style={styles.completedContainer}>
         <View style={[styles.completedCircle, { backgroundColor: COLORS.warningBg }]}>
           <Ionicons name="game-controller-outline" size={60} color={COLORS.warning} />
         </View>
@@ -123,13 +123,13 @@ export default function SOSScreen() {
         >
           <Text style={styles.backButtonText}>Jeu simulé (dernier recours)</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }
 
   if (completed) {
     return (
-      <View style={styles.completedContainer}>
+      <SafeAreaView style={styles.completedContainer}>
         <View style={styles.completedCircle}>
           <Ionicons name="checkmark-circle" size={80} color={COLORS.primary} />
         </View>
@@ -147,12 +147,12 @@ export default function SOSScreen() {
         >
           <Text style={styles.backButtonText}>Retour à l'accueil</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
@@ -233,7 +233,7 @@ export default function SOSScreen() {
           <Text style={styles.overcomeText}>L'envie est passée</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -241,7 +241,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 8,
     paddingHorizontal: SPACING.lg,
   },
   header: {

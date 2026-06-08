@@ -7,6 +7,7 @@ import {
   Linking,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
@@ -28,7 +29,7 @@ export default function AideScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
@@ -134,7 +135,7 @@ export default function AideScreen() {
           Demander de l'aide est un signe de force, pas de faiblesse.
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -142,7 +143,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 8,
     paddingHorizontal: SPACING.lg,
   },
   header: {
