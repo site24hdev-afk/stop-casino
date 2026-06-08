@@ -99,28 +99,28 @@ export default function AideScreen() {
 
         <TouchableOpacity
           style={styles.resourceCard}
-          onPress={() => Linking.openURL('https://www.joueurs-info-service.fr')}
+          onPress={() => Linking.openURL(t('aide.resource1Url'))}
         >
           <Ionicons name="globe-outline" size={20} color={COLORS.info} />
-          <Text style={styles.resourceText}>joueurs-info-service.fr</Text>
+          <Text style={styles.resourceText}>{t('aide.resource1Name')}</Text>
           <Ionicons name="open-outline" size={16} color={COLORS.textMuted} />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.resourceCard}
-          onPress={() => Linking.openURL('https://www.adictel.com')}
+          onPress={() => Linking.openURL(t('aide.resource2Url'))}
         >
           <Ionicons name="globe-outline" size={20} color={COLORS.info} />
-          <Text style={styles.resourceText}>adictel.com — auto-exclusion</Text>
+          <Text style={styles.resourceText}>{t('aide.resource2Name')}</Text>
           <Ionicons name="open-outline" size={16} color={COLORS.textMuted} />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.resourceCard}
-          onPress={() => handleCall('3114', 'Numéro national de prévention du suicide')}
+          onPress={() => handleCall(t('aide.resource3Number'), t('aide.resource3FullName'))}
         >
           <Ionicons name="heart-outline" size={20} color={COLORS.danger} />
-          <Text style={styles.resourceText}>3114 — Prévention du suicide</Text>
+          <Text style={styles.resourceText}>{t('aide.resource3Name')}</Text>
           <Ionicons name="call-outline" size={16} color={COLORS.textMuted} />
         </TouchableOpacity>
       </View>

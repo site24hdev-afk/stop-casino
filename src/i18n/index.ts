@@ -10,6 +10,8 @@ import es from './es';
 import ar from './ar';
 import pt from './pt';
 import it from './it';
+import ja from './ja';
+import ko from './ko';
 
 const i18n = new I18n({
   fr,
@@ -20,6 +22,8 @@ const i18n = new I18n({
   ar,
   pt,
   it,
+  ja,
+  ko,
 });
 
 // Langue par défaut = français
@@ -60,6 +64,8 @@ export const AVAILABLE_LANGUAGES = [
   { code: 'ar', label: 'العربية', flag: '🇸🇦' },
   { code: 'pt', label: 'Português', flag: '🇧🇷' },
   { code: 'it', label: 'Italiano', flag: '🇮🇹' },
+  { code: 'ja', label: '日本語', flag: '🇯🇵' },
+  { code: 'ko', label: '한국어', flag: '🇰🇷' },
 ];
 
 export default i18n;
