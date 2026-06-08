@@ -14,6 +14,7 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../constants/theme';
 import { IMAGES } from '../constants/images';
+import { t } from '../i18n';
 import { UserData } from '../types';
 
 const { width, height } = Dimensions.get('window');
@@ -58,18 +59,14 @@ export default function Onboarding({ onComplete }: Props) {
       </View>
 
       <View style={styles.textArea}>
-        <Text style={styles.title}>Bienvenue</Text>
-        <Text style={styles.description}>
-          Cette app est ton allié pour arrêter le casino.{'\n\n'}
-          Pas de jugement. Pas de compte à rendre.{'\n'}
-          Juste toi et ta décision de reprendre le contrôle.
-        </Text>
+        <Text style={styles.title}>{t('onboarding.welcome')}</Text>
+        <Text style={styles.description}>{t('onboarding.welcomeText')}</Text>
         <Text style={styles.privacy}>
           <Ionicons name="lock-closed" size={14} color={COLORS.textMuted} />
-          {' '}Toutes tes données restent sur ton téléphone.
+          {' '}{t('onboarding.privacy')}
         </Text>
         <TouchableOpacity style={styles.nextButton} onPress={() => setStep(1)}>
-          <Text style={styles.nextText}>Commencer</Text>
+          <Text style={styles.nextText}>{t('onboarding.start')}</Text>
           <Ionicons name="arrow-forward" size={20} color="#FFF" />
         </TouchableOpacity>
       </View>
@@ -104,11 +101,8 @@ export default function Onboarding({ onComplete }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.textArea} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Combien dépensais-tu ?</Text>
-        <Text style={styles.description}>
-          En moyenne, combien dépensais-tu par jour au casino ?{'\n'}
-          Ça servira à calculer l'argent que tu économises.
-        </Text>
+        <Text style={styles.title}>{t('onboarding.spendTitle')}</Text>
+        <Text style={styles.description}>{t('onboarding.spendText')}</Text>
         <View style={styles.inputRow}>
           <TextInput
             style={styles.input}
@@ -119,10 +113,10 @@ export default function Onboarding({ onComplete }: Props) {
             placeholderTextColor={COLORS.textMuted}
             maxLength={5}
           />
-          <Text style={styles.inputUnit}>€ / jour</Text>
+          <Text style={styles.inputUnit}>{t('onboarding.perDay')}</Text>
         </View>
         <TouchableOpacity style={styles.nextButton} onPress={() => setStep(2)}>
-          <Text style={styles.nextText}>Suivant</Text>
+          <Text style={styles.nextText}>{t('next')}</Text>
           <Ionicons name="arrow-forward" size={20} color="#FFF" />
         </TouchableOpacity>
       </ScrollView>
@@ -156,32 +150,29 @@ export default function Onboarding({ onComplete }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.textArea} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Ton proche de confiance</Text>
-        <Text style={styles.description}>
-          Quelqu'un à appeler quand l'envie est forte.{'\n'}
-          Tu peux sauter cette étape et l'ajouter plus tard.
-        </Text>
+        <Text style={styles.title}>{t('onboarding.contactTitle')}</Text>
+        <Text style={styles.description}>{t('onboarding.contactText')}</Text>
         <TextInput
           style={styles.inputFull}
           value={contactName}
           onChangeText={setContactName}
-          placeholder="Prénom"
+          placeholder={t('onboarding.firstName')}
           placeholderTextColor={COLORS.textMuted}
         />
         <TextInput
           style={styles.inputFull}
           value={contactPhone}
           onChangeText={setContactPhone}
-          placeholder="Numéro de téléphone"
+          placeholder={t('onboarding.phone')}
           placeholderTextColor={COLORS.textMuted}
           keyboardType="phone-pad"
         />
         <TouchableOpacity style={styles.nextButton} onPress={handleFinish}>
-          <Text style={styles.nextText}>C'est parti</Text>
+          <Text style={styles.nextText}>{t('onboarding.letsGo')}</Text>
           <Ionicons name="checkmark" size={20} color="#FFF" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.skipButton} onPress={handleFinish}>
-          <Text style={styles.skipText}>Passer cette étape</Text>
+          <Text style={styles.skipText}>{t('onboarding.skipStep')}</Text>
         </TouchableOpacity>
       </ScrollView>
 

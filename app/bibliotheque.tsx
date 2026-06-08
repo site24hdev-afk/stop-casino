@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { ARTICLES, CATEGORIES, Article } from '../src/constants/library';
+import { t } from '../src/i18n';
 
 export default function BibliothequeScreen() {
   const router = useRouter();
@@ -40,13 +41,11 @@ export default function BibliothequeScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Bibliothèque</Text>
+        <Text style={styles.headerTitle}>{t('library.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
-      <Text style={styles.subtitle}>
-        Comprendre l'addiction pour mieux la combattre
-      </Text>
+      <Text style={styles.subtitle}>{t('library.subtitle')}</Text>
 
       {/* Filtres */}
       <ScrollView
@@ -185,7 +184,7 @@ export default function BibliothequeScreen() {
                   <View style={styles.modalFooter}>
                     <Ionicons name="heart" size={16} color={COLORS.primary} />
                     <Text style={styles.modalFooterText}>
-                      Chaque lecture te rapproche de la liberté.
+                      {t('library.readFooter')}
                     </Text>
                   </View>
 

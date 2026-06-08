@@ -18,6 +18,7 @@ import {
   TIER_FEATURES,
   TierType,
 } from '../src/hooks/useSubscription';
+import { t } from '../src/i18n';
 
 type SelectedPlan = {
   tier: 'essentiel' | 'pro' | 'elite';
@@ -46,13 +47,13 @@ export default function AbonnementScreen() {
       const success = await subscribe(selected.tier, selected.cycle);
       if (success) {
         Alert.alert(
-          selected.tier === 'elite' ? 'Bienvenue dans Elite !' : `Bienvenue dans ${PLANS[selected.tier].name} !`,
-          'Ton abonnement est actif. Merci pour ta confiance.',
-          [{ text: 'Super !', onPress: () => router.back() }]
+          selected.tier === 'elite' ? t('sub.welcomeElite') : t('sub.welcomeTitle', { tier: PLANS[selected.tier].name }),
+          t('sub.welcomeText'),
+          [{ text: t('sub.great'), onPress: () => router.back() }]
         );
       }
     } catch (e) {
-      Alert.alert('Erreur', "Une erreur est survenue. Réessaie.");
+      Alert.alert(t('error'), t('sub.errorText'));
     }
     setProcessing(false);
   };
@@ -62,9 +63,9 @@ export default function AbonnementScreen() {
     await restorePurchase();
     setProcessing(false);
     if (isPaid) {
-      Alert.alert('Restauré', 'Ton abonnement a été restauré.');
+      Alert.alert(t('sub.restored'), t('sub.restoredText'));
     } else {
-      Alert.alert('Aucun abonnement', "Aucun abonnement actif trouvé.");
+      Alert.alert(t('sub.noSub'), t('sub.noSubText'));
     }
   };
 
@@ -78,34 +79,34 @@ export default function AbonnementScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color={COLORS.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Mon abonnement</Text>
+          <Text style={styles.headerTitle}>{t('sub.mySubscription')}</Text>
           <View style={{ width: 24 }} />
         </View>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACING.lg }}>
           <View style={[styles.activeCard, { borderColor: `${tierInfo.color}40` }]}>
             <View style={[styles.activeBadge, { backgroundColor: tierInfo.color }]}>
               <Ionicons name="checkmark-circle" size={16} color="#FFF" />
-              <Text style={styles.activeBadgeText}>{tierInfo.name.toUpperCase()} ACTIF</Text>
+              <Text style={styles.activeBadgeText}>{tierInfo.name.toUpperCase()} {t('sub.active')}</Text>
             </View>
             <View style={[styles.activeIconCircle, { backgroundColor: `${tierInfo.color}20` }]}>
               <Ionicons name={tierInfo.icon} size={36} color={tierInfo.color} />
             </View>
             <Text style={styles.activeTitle}>Stop Casino {tierInfo.name}</Text>
             <Text style={styles.activePlan}>
-              {subscription.billingCycle === 'lifetime' ? 'Accès à vie' :
-               subscription.billingCycle === 'yearly' ? 'Abonnement annuel' : 'Abonnement mensuel'}
+              {subscription.billingCycle === 'lifetime' ? t('sub.lifetimeAccess') :
+               subscription.billingCycle === 'yearly' ? t('sub.annual') : t('sub.monthly')}
             </Text>
             {subscription.billingCycle !== 'lifetime' && (
               <Text style={[styles.activeDays, { color: tierInfo.color }]}>
-                {daysRemaining()} jours restants
+                {t('sub.daysLeft', { count: daysRemaining() })}
               </Text>
             )}
             {isElite && (
-              <Text style={[styles.activeDays, { color: tierInfo.color }]}>Pour toujours</Text>
+              <Text style={[styles.activeDays, { color: tierInfo.color }]}>{t('sub.forever')}</Text>
             )}
           </View>
 
-          <Text style={styles.sectionTitle}>Tes avantages</Text>
+          <Text style={styles.sectionTitle}>{t('sub.benefits')}</Text>
           {features.features.filter(f => f.included).map((feat, i) => (
             <View key={i} style={styles.featureCheckRow}>
               <View style={[styles.featureCheck, { backgroundColor: tierInfo.color }]}>
@@ -126,17 +127,17 @@ export default function AbonnementScreen() {
               }}
             >
               <Ionicons name="arrow-up-circle" size={20} color="#FFF" />
-              <Text style={styles.upgradeText}>Changer d'offre</Text>
+              <Text style={styles.upgradeText}>{t('sub.changeOffer')}</Text>
             </TouchableOpacity>
           )}
 
           <TouchableOpacity style={styles.cancelBtn} onPress={() => {
-            Alert.alert('Annuler', 'Tu veux vraiment annuler ?', [
-              { text: 'Non', style: 'cancel' },
-              { text: 'Oui', style: 'destructive', onPress: cancelSubscription },
+            Alert.alert(t('cancel'), t('sub.cancelConfirm'), [
+              { text: t('no'), style: 'cancel' },
+              { text: t('yes'), style: 'destructive', onPress: cancelSubscription },
             ]);
           }}>
-            <Text style={styles.cancelText}>Annuler l'abonnement</Text>
+            <Text style={styles.cancelText}>{t('sub.cancelSub')}</Text>
           </TouchableOpacity>
           <View style={{ height: 40 }} />
         </ScrollView>
@@ -158,10 +159,8 @@ export default function AbonnementScreen() {
           <View style={styles.heroIcon}>
             <Ionicons name="rocket" size={40} color="#F59E0B" />
           </View>
-          <Text style={styles.heroTitle}>Choisis ton plan</Text>
-          <Text style={styles.heroSub}>
-            Tu dépensais des fortunes au casino.{'\n'}Investis dans ta liberté.
-          </Text>
+          <Text style={styles.heroTitle}>{t('sub.choosePlan')}</Text>
+          <Text style={styles.heroSub}>{t('sub.heroText')}</Text>
         </View>
 
         {/* === ESSENTIEL === */}
@@ -232,7 +231,7 @@ export default function AbonnementScreen() {
         <View style={styles.planSection}>
           <View style={styles.recommendBadge}>
             <Ionicons name="flame" size={12} color="#FFF" />
-            <Text style={styles.recommendText}>RECOMMANDÉ</Text>
+            <Text style={styles.recommendText}>{t('sub.recommended')}</Text>
           </View>
           <TouchableOpacity
             style={[
@@ -316,7 +315,7 @@ export default function AbonnementScreen() {
 
             <View style={styles.elitePriceRow}>
               <Text style={[styles.elitePrice, { color: PLANS.elite.color }]}>{PLANS.elite.lifetime.label}</Text>
-              <Text style={styles.eliteDetail}>Paiement unique — accès à vie</Text>
+              <Text style={styles.eliteDetail}>{t('sub.lifetime')}</Text>
             </View>
 
             <View style={styles.featuresList}>
@@ -343,7 +342,7 @@ export default function AbonnementScreen() {
             <>
               <Ionicons name={PLANS[selected.tier].icon} size={20} color="#FFF" />
               <Text style={styles.ctaText}>
-                {selected.tier === 'elite' ? 'Devenir Elite' : 'Commencer'} — {getPrice()}
+                {selected.tier === 'elite' ? t('sub.eliteBtn') : t('sub.startBtn')} — {getPrice()}
               </Text>
             </>
           )}
@@ -352,18 +351,16 @@ export default function AbonnementScreen() {
         {/* Footer */}
         <View style={styles.footer}>
           <TouchableOpacity onPress={handleRestore}>
-            <Text style={styles.footerLink}>Restaurer mon achat</Text>
+            <Text style={styles.footerLink}>{t('sub.restore')}</Text>
           </TouchableOpacity>
-          <Text style={styles.footerText}>
-            Paiement sécurisé via l'App Store.{'\n'}Annulable à tout moment.
-          </Text>
+          <Text style={styles.footerText}>{t('sub.securePayment')}</Text>
           <View style={styles.footerLinks}>
             <TouchableOpacity>
-              <Text style={styles.footerSmall}>CGU</Text>
+              <Text style={styles.footerSmall}>{t('sub.terms')}</Text>
             </TouchableOpacity>
             <Text style={styles.footerDot}>·</Text>
             <TouchableOpacity>
-              <Text style={styles.footerSmall}>Confidentialité</Text>
+              <Text style={styles.footerSmall}>{t('sub.privacy')}</Text>
             </TouchableOpacity>
           </View>
         </View>

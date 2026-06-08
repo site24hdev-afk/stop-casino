@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { useUserData } from '../src/hooks/useUserData';
 import { useCravingLog } from '../src/hooks/useCravingLog';
+import i18n, { t } from '../src/i18n';
 
 const { width } = Dimensions.get('window');
 const BAR_WIDTH = (width - 80) / 7;
@@ -23,7 +24,7 @@ export default function StatsScreen() {
   const { entries, overcameCount, totalCravings, peakHour } = useCravingLog();
 
   // Stats par jour de la semaine
-  const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+  const dayNames = i18n.t('stats.days') as unknown as string[];
   const dayStats = dayNames.map((name, i) => {
     const dayEntries = entries.filter(e => {
       const d = new Date(e.date).getDay();
@@ -84,7 +85,7 @@ export default function StatsScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Statistiques</Text>
+        <Text style={styles.headerTitle}>{t('stats.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -93,21 +94,21 @@ export default function StatsScreen() {
         <View style={styles.summaryRow}>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryNumber}>{daysSinceQuit}</Text>
-            <Text style={styles.summaryLabel}>jours</Text>
+            <Text style={styles.summaryLabel}>{t('days')}</Text>
           </View>
           <View style={styles.summaryDivider} />
           <View style={styles.summaryItem}>
             <Text style={[styles.summaryNumber, { color: COLORS.primary }]}>
               {moneySaved.toLocaleString('fr-FR')} €
             </Text>
-            <Text style={styles.summaryLabel}>économisés</Text>
+            <Text style={styles.summaryLabel}>{t('stats.saved')}</Text>
           </View>
           <View style={styles.summaryDivider} />
           <View style={styles.summaryItem}>
             <Text style={[styles.summaryNumber, { color: COLORS.info }]}>
               {successRate}%
             </Text>
-            <Text style={styles.summaryLabel}>résistance</Text>
+            <Text style={styles.summaryLabel}>{t('stats.resistance')}</Text>
           </View>
         </View>
       </View>
@@ -116,20 +117,20 @@ export default function StatsScreen() {
       <View style={styles.projectionCard}>
         <Text style={styles.sectionTitle}>
           <Ionicons name="trending-up" size={18} color={COLORS.primary} />
-          {'  '}Projections d'économies
+          {'  '}{t('stats.projections')}
         </Text>
         <View style={styles.projectionRow}>
           <View style={styles.projectionItem}>
             <Text style={styles.projectionValue}>
               {monthProjection.toLocaleString('fr-FR')} €
             </Text>
-            <Text style={styles.projectionLabel}>dans 1 mois</Text>
+            <Text style={styles.projectionLabel}>{t('stats.inOneMonth')}</Text>
           </View>
           <View style={styles.projectionItem}>
             <Text style={[styles.projectionValue, { color: COLORS.primaryLight }]}>
               {yearProjection.toLocaleString('fr-FR')} €
             </Text>
-            <Text style={styles.projectionLabel}>dans 1 an</Text>
+            <Text style={styles.projectionLabel}>{t('stats.inOneYear')}</Text>
           </View>
         </View>
       </View>
@@ -139,7 +140,7 @@ export default function StatsScreen() {
         <View style={styles.chartCard}>
           <Text style={styles.sectionTitle}>
             <Ionicons name="calendar-outline" size={18} color={COLORS.warning} />
-            {'  '}Envies par jour
+            {'  '}{t('stats.cravingsByDay')}
           </Text>
           <View style={styles.barChart}>
             {dayStats.map((day, i) => (
@@ -168,11 +169,11 @@ export default function StatsScreen() {
         <View style={styles.chartCard}>
           <Text style={styles.sectionTitle}>
             <Ionicons name="time-outline" size={18} color={COLORS.info} />
-            {'  '}Quand arrivent tes envies
+            {'  '}{t('stats.cravingsByTime')}
           </Text>
           {peakHour && (
             <Text style={styles.insightText}>
-              Tes envies arrivent surtout <Text style={styles.insightHighlight}>{peakHour}</Text>
+              {t('stats.peakTime', { time: peakHour })}
             </Text>
           )}
           <View style={styles.horizontalBars}>
@@ -202,7 +203,7 @@ export default function StatsScreen() {
         <View style={styles.chartCard}>
           <Text style={styles.sectionTitle}>
             <Ionicons name="flash-outline" size={18} color={COLORS.danger} />
-            {'  '}Tes déclencheurs principaux
+            {'  '}{t('stats.topTriggers')}
           </Text>
           <View style={styles.horizontalBars}>
             {topTriggers.map(([trigger, count], i) => (
@@ -230,11 +231,8 @@ export default function StatsScreen() {
       {totalCravings === 0 && (
         <View style={styles.emptyCard}>
           <Ionicons name="analytics-outline" size={48} color={COLORS.textMuted} />
-          <Text style={styles.emptyTitle}>Pas encore de données</Text>
-          <Text style={styles.emptyText}>
-            Utilise le journal pour noter tes envies.{'\n'}
-            Les statistiques apparaîtront ici automatiquement.
-          </Text>
+          <Text style={styles.emptyTitle}>{t('stats.noData')}</Text>
+          <Text style={styles.emptyText}>{t('stats.noDataText')}</Text>
         </View>
       )}
 

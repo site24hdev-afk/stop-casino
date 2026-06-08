@@ -10,6 +10,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { useUserData } from '../src/hooks/useUserData';
+import { t } from '../src/i18n';
 import BlackjackGame from '../src/components/BlackjackGame';
 import RouletteGame from '../src/components/RouletteGame';
 
@@ -41,23 +42,22 @@ export default function JeuxScreen() {
       <SafeAreaView style={styles.reminderContainer}>
         <View style={styles.reminderCard}>
           <Ionicons name="time-outline" size={48} color={COLORS.warning} />
-          <Text style={styles.reminderTitle}>Petit rappel</Text>
+          <Text style={styles.reminderTitle}>{t('games.reminderTitle')}</Text>
           <Text style={styles.reminderText}>
-            Tu joues depuis {sessionMinutes} minutes.{'\n\n'}
-            En vrai casino, ça t'aurait coûté environ{' '}
+            {t('games.reminderText', { mins: sessionMinutes })}{' '}
             <Text style={styles.reminderAmount}>{estimatedLoss} €</Text>.
           </Text>
           <TouchableOpacity
             style={styles.reminderButton}
             onPress={() => router.back()}
           >
-            <Text style={styles.reminderButtonText}>J'arrête, merci</Text>
+            <Text style={styles.reminderButtonText}>{t('games.stopPlaying')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.continueButton}
             onPress={() => setShowReminder(false)}
           >
-            <Text style={styles.continueText}>Continuer encore un peu</Text>
+            <Text style={styles.continueText}>{t('games.continuePlay')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -71,16 +71,13 @@ export default function JeuxScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color={COLORS.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Jeux simulés</Text>
+          <Text style={styles.headerTitle}>{t('games.title')}</Text>
           <View style={{ width: 24 }} />
         </View>
 
         <View style={styles.warningCard}>
           <Ionicons name="information-circle" size={24} color={COLORS.warning} />
-          <Text style={styles.warningText}>
-            Ces jeux sont sans argent réel ni monnaie virtuelle.
-            Ils sont là pour te montrer que le casino gagne toujours.
-          </Text>
+          <Text style={styles.warningText}>{t('games.warning')}</Text>
         </View>
 
         <TouchableOpacity
@@ -91,10 +88,8 @@ export default function JeuxScreen() {
             <Text style={styles.gameEmoji}>🃏</Text>
           </View>
           <View style={styles.gameInfo}>
-            <Text style={styles.gameTitle}>Blackjack</Text>
-            <Text style={styles.gameDesc}>
-              Essaie d'approcher 21 sans dépasser
-            </Text>
+            <Text style={styles.gameTitle}>{t('games.blackjack')}</Text>
+            <Text style={styles.gameDesc}>{t('games.blackjackDesc')}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
         </TouchableOpacity>
@@ -107,10 +102,8 @@ export default function JeuxScreen() {
             <Text style={styles.gameEmoji}>🎰</Text>
           </View>
           <View style={styles.gameInfo}>
-            <Text style={styles.gameTitle}>Roulette</Text>
-            <Text style={styles.gameDesc}>
-              Rouge, noir, pair, impair...
-            </Text>
+            <Text style={styles.gameTitle}>{t('games.roulette')}</Text>
+            <Text style={styles.gameDesc}>{t('games.rouletteDesc')}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
         </TouchableOpacity>
@@ -119,7 +112,7 @@ export default function JeuxScreen() {
           <View style={styles.timerBadge}>
             <Ionicons name="time-outline" size={14} color={COLORS.textSecondary} />
             <Text style={styles.timerText}>
-              Session : {sessionMinutes} min · ~{estimatedLoss} € en vrai casino
+              {t('games.session', { mins: sessionMinutes, cost: estimatedLoss })}
             </Text>
           </View>
         )}
@@ -134,7 +127,7 @@ export default function JeuxScreen() {
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
-          {selectedGame === 'blackjack' ? 'Blackjack' : 'Roulette'}
+          {selectedGame === 'blackjack' ? t('games.blackjack') : t('games.roulette')}
         </Text>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="close" size={24} color={COLORS.text} />
@@ -151,7 +144,7 @@ export default function JeuxScreen() {
         <View style={styles.timerBadge}>
           <Ionicons name="time-outline" size={14} color={COLORS.textSecondary} />
           <Text style={styles.timerText}>
-            {sessionMinutes} min · ~{estimatedLoss} € en vrai casino
+            {t('games.session', { mins: sessionMinutes, cost: estimatedLoss })}
           </Text>
         </View>
       )}

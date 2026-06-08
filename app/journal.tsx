@@ -15,9 +15,10 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { useCravingLog } from '../src/hooks/useCravingLog';
+import i18n, { t } from '../src/i18n';
 
-const TRIGGERS = ['Ennui', 'Stress', 'Solitude', 'Pub / Notif', 'Amis', 'Alcool', 'Autre'];
-const LOCATIONS = ['Maison', 'Travail', 'Transports', 'Dehors', 'Bar / Restaurant', 'Autre'];
+const TRIGGER_KEYS = ['boredom', 'stress', 'sadness', 'ads', 'friends', 'alcohol', 'other'] as const;
+const LOCATION_KEYS = ['home', 'work', 'transport', 'outside', 'restaurant', 'other'] as const;
 
 export default function JournalScreen() {
   const router = useRouter();
@@ -68,7 +69,7 @@ export default function JournalScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Journal des envies</Text>
+        <Text style={styles.headerTitle}>{t('journal.headerTitle')}</Text>
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => setShowModal(true)}
@@ -82,21 +83,21 @@ export default function JournalScreen() {
         <View style={styles.statsCard}>
           <View style={styles.statItem}>
             <Text style={styles.statNumber}>{totalCravings}</Text>
-            <Text style={styles.statLabel}>Envies notées</Text>
+            <Text style={styles.statLabel}>{t('journal.logged')}</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Text style={[styles.statNumber, { color: COLORS.primary }]}>
               {overcameCount}
             </Text>
-            <Text style={styles.statLabel}>Surmontées</Text>
+            <Text style={styles.statLabel}>{t('journal.overcome')}</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statItem}>
             <Text style={[styles.statNumber, { color: COLORS.warning }]}>
               {peakHour || '—'}
             </Text>
-            <Text style={styles.statLabel}>Pic fréquent</Text>
+            <Text style={styles.statLabel}>{t('journal.peak')}</Text>
           </View>
         </View>
       )}
@@ -106,11 +107,8 @@ export default function JournalScreen() {
         {entries.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="book-outline" size={48} color={COLORS.textMuted} />
-            <Text style={styles.emptyTitle}>Aucune envie notée</Text>
-            <Text style={styles.emptyText}>
-              Quand tu ressens une envie, note-la ici.{'\n'}
-              Avec le temps, tu comprendras tes déclencheurs.
-            </Text>
+            <Text style={styles.emptyTitle}>{t('journal.noEntries')}</Text>
+            <Text style={styles.emptyText}>{t('journal.noEntriesText')}</Text>
           </View>
         ) : (
           entries.map((entry) => (
@@ -125,13 +123,13 @@ export default function JournalScreen() {
                     styles.entryBadgeText,
                     { color: entry.overcame ? COLORS.primary : COLORS.danger },
                   ]}>
-                    {entry.overcame ? 'Surmontée' : 'Rechute'}
+                    {entry.overcame ? t('journal.overcame') : t('journal.relapse')}
                   </Text>
                 </View>
               </View>
               <View style={styles.entryDetails}>
                 <View style={styles.entryDetail}>
-                  <Text style={styles.detailLabel}>Intensité</Text>
+                  <Text style={styles.detailLabel}>{t('journal.intensity')}</Text>
                   <View style={styles.intensityDots}>
                     {[1, 2, 3, 4, 5].map(i => (
                       <View
@@ -145,11 +143,11 @@ export default function JournalScreen() {
                   </View>
                 </View>
                 <View style={styles.entryDetail}>
-                  <Text style={styles.detailLabel}>Lieu</Text>
+                  <Text style={styles.detailLabel}>{t('journal.location')}</Text>
                   <Text style={styles.detailValue}>{entry.location}</Text>
                 </View>
                 <View style={styles.entryDetail}>
-                  <Text style={styles.detailLabel}>Déclencheur</Text>
+                  <Text style={styles.detailLabel}>{t('journal.trigger')}</Text>
                   <Text style={styles.detailValue}>{entry.trigger}</Text>
                 </View>
               </View>
@@ -167,7 +165,7 @@ export default function JournalScreen() {
         >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Nouvelle envie</Text>
+              <Text style={styles.modalTitle}>{t('journal.newCraving')}</Text>
               <TouchableOpacity onPress={() => setShowModal(false)}>
                 <Ionicons name="close" size={24} color={COLORS.text} />
               </TouchableOpacity>
@@ -175,7 +173,7 @@ export default function JournalScreen() {
 
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Intensité */}
-              <Text style={styles.fieldLabel}>Intensité</Text>
+              <Text style={styles.fieldLabel}>{t('journal.intensity')}</Text>
               <View style={styles.intensityRow}>
                 {([1, 2, 3, 4, 5] as const).map(i => (
                   <TouchableOpacity
@@ -197,56 +195,62 @@ export default function JournalScreen() {
               </View>
 
               {/* Lieu */}
-              <Text style={styles.fieldLabel}>Où es-tu ?</Text>
+              <Text style={styles.fieldLabel}>{t('journal.whereAreYou')}</Text>
               <View style={styles.chipRow}>
-                {LOCATIONS.map(l => (
-                  <TouchableOpacity
-                    key={l}
-                    style={[styles.chip, location === l && styles.chipActive]}
-                    onPress={() => setLocation(l)}
-                  >
-                    <Text style={[
-                      styles.chipText,
-                      location === l && styles.chipTextActive,
-                    ]}>
-                      {l}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                {LOCATION_KEYS.map(key => {
+                  const label = t(`journal.locations.${key}`);
+                  return (
+                    <TouchableOpacity
+                      key={key}
+                      style={[styles.chip, location === label && styles.chipActive]}
+                      onPress={() => setLocation(label)}
+                    >
+                      <Text style={[
+                        styles.chipText,
+                        location === label && styles.chipTextActive,
+                      ]}>
+                        {label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
 
               {/* Déclencheur */}
-              <Text style={styles.fieldLabel}>Qu'est-ce qui a déclenché l'envie ?</Text>
+              <Text style={styles.fieldLabel}>{t('journal.whatTriggered')}</Text>
               <View style={styles.chipRow}>
-                {TRIGGERS.map(t => (
-                  <TouchableOpacity
-                    key={t}
-                    style={[styles.chip, trigger === t && styles.chipActive]}
-                    onPress={() => setTrigger(t)}
-                  >
-                    <Text style={[
-                      styles.chipText,
-                      trigger === t && styles.chipTextActive,
-                    ]}>
-                      {t}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                {TRIGGER_KEYS.map(key => {
+                  const label = t(`journal.triggers.${key}`);
+                  return (
+                    <TouchableOpacity
+                      key={key}
+                      style={[styles.chip, trigger === label && styles.chipActive]}
+                      onPress={() => setTrigger(label)}
+                    >
+                      <Text style={[
+                        styles.chipText,
+                        trigger === label && styles.chipTextActive,
+                      ]}>
+                        {label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
 
               {/* Action prise */}
-              <Text style={styles.fieldLabel}>Qu'as-tu fait ?</Text>
+              <Text style={styles.fieldLabel}>{t('journal.whatDidYouDo')}</Text>
               <TextInput
                 style={styles.textArea}
                 value={action}
                 onChangeText={setAction}
-                placeholder="Ex : sorti marcher, appelé un ami..."
+                placeholder={t('journal.whatDidYouDoPlaceholder')}
                 placeholderTextColor={COLORS.textMuted}
                 multiline
               />
 
               {/* Surmonté ? */}
-              <Text style={styles.fieldLabel}>As-tu résisté ?</Text>
+              <Text style={styles.fieldLabel}>{t('journal.didYouResist')}</Text>
               <View style={styles.toggleRow}>
                 <TouchableOpacity
                   style={[styles.toggleButton, overcame && styles.toggleActive]}
@@ -261,7 +265,7 @@ export default function JournalScreen() {
                     styles.toggleText,
                     overcame && styles.toggleTextActive,
                   ]}>
-                    Oui
+                    {t('yes')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -277,19 +281,19 @@ export default function JournalScreen() {
                     styles.toggleText,
                     !overcame && styles.toggleTextActive,
                   ]}>
-                    Non
+                    {t('no')}
                   </Text>
                 </TouchableOpacity>
               </View>
 
               {!overcame && (
                 <Text style={styles.encourageText}>
-                  Ce n'est pas grave. L'important c'est de noter et de comprendre.
+                  {t('journal.encourageText')}
                 </Text>
               )}
 
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                <Text style={styles.submitText}>Enregistrer</Text>
+                <Text style={styles.submitText}>{t('save')}</Text>
               </TouchableOpacity>
 
               <View style={{ height: 40 }} />

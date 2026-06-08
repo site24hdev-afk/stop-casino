@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { useUserData } from '../src/hooks/useUserData';
+import { t } from '../src/i18n';
 
 export default function AideScreen() {
   const router = useRouter();
@@ -19,11 +20,11 @@ export default function AideScreen() {
 
   const handleCall = (number: string, name: string) => {
     Alert.alert(
-      `Appeler ${name}`,
-      `Numéro : ${number}`,
+      t('aide.callConfirm', { name }),
+      t('aide.callNumber', { number }),
       [
-        { text: 'Annuler', style: 'cancel' },
-        { text: 'Appeler', onPress: () => Linking.openURL(`tel:${number}`) },
+        { text: t('cancel'), style: 'cancel' },
+        { text: t('aide.call'), onPress: () => Linking.openURL(`tel:${number}`) },
       ]
     );
   };
@@ -35,28 +36,24 @@ export default function AideScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Aide</Text>
+        <Text style={styles.headerTitle}>{t('aide.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
       {/* Joueurs Info Service */}
       <TouchableOpacity
         style={styles.mainCard}
-        onPress={() => handleCall('0974751313', 'Joueurs Info Service')}
+        onPress={() => handleCall(t('aide.emergencyNumber').replace(/\s/g, ''), t('aide.emergencyName'))}
       >
         <View style={styles.mainIcon}>
           <Ionicons name="headset" size={36} color={COLORS.info} />
         </View>
-        <Text style={styles.mainTitle}>Joueurs Info Service</Text>
-        <Text style={styles.mainNumber}>09 74 75 13 13</Text>
-        <Text style={styles.mainDescription}>
-          Service national d'aide aux joueurs.{'\n'}
-          Appel non surtaxé, anonyme et confidentiel.{'\n'}
-          Du lundi au vendredi, 8h-2h.
-        </Text>
+        <Text style={styles.mainTitle}>{t('aide.emergencyName')}</Text>
+        <Text style={styles.mainNumber}>{t('aide.emergencyNumber')}</Text>
+        <Text style={styles.mainDescription}>{t('aide.emergencyFullDesc')}</Text>
         <View style={styles.callBadge}>
           <Ionicons name="call" size={18} color="#FFF" />
-          <Text style={styles.callBadgeText}>Appeler maintenant</Text>
+          <Text style={styles.callBadgeText}>{t('aide.callNow')}</Text>
         </View>
       </TouchableOpacity>
 
@@ -74,7 +71,7 @@ export default function AideScreen() {
           </View>
           <View style={styles.contactInfo}>
             <Text style={styles.contactName}>{userData.trustedContactName}</Text>
-            <Text style={styles.contactLabel}>Ton proche de confiance</Text>
+            <Text style={styles.contactLabel}>{t('aide.trustedContact')}</Text>
           </View>
           <View style={styles.contactCallIcon}>
             <Ionicons name="call" size={20} color={COLORS.primary} />
@@ -87,10 +84,10 @@ export default function AideScreen() {
           </View>
           <View style={styles.contactInfo}>
             <Text style={[styles.contactName, { color: COLORS.textMuted }]}>
-              Aucun proche enregistré
+              {t('aide.noContact')}
             </Text>
             <Text style={styles.contactLabel}>
-              Tu pourras en ajouter un plus tard
+              {t('aide.noContactSub')}
             </Text>
           </View>
         </View>
@@ -98,7 +95,7 @@ export default function AideScreen() {
 
       {/* Ressources */}
       <View style={styles.resourcesSection}>
-        <Text style={styles.sectionTitle}>Ressources utiles</Text>
+        <Text style={styles.sectionTitle}>{t('aide.resources')}</Text>
 
         <TouchableOpacity
           style={styles.resourceCard}
@@ -132,7 +129,7 @@ export default function AideScreen() {
       <View style={styles.messageCard}>
         <Ionicons name="shield-checkmark" size={20} color={COLORS.primary} />
         <Text style={styles.messageText}>
-          Demander de l'aide est un signe de force, pas de faiblesse.
+          {t('aide.helpMessage')}
         </Text>
       </View>
     </SafeAreaView>

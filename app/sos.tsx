@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { SOS_STEPS } from '../src/constants/messages';
 import { useUserData } from '../src/hooks/useUserData';
+import { t } from '../src/i18n';
 
 export default function SOSScreen() {
   const router = useRouter();
@@ -106,22 +107,19 @@ export default function SOSScreen() {
         <View style={[styles.completedCircle, { backgroundColor: COLORS.warningBg }]}>
           <Ionicons name="game-controller-outline" size={60} color={COLORS.warning} />
         </View>
-        <Text style={styles.completedTitle}>L'envie persiste ?</Text>
-        <Text style={styles.completedText}>
-          Tu as fait tous les exercices. Si l'envie est toujours là,{'\n'}
-          tu peux essayer un jeu simulé — sans argent, sans enjeu.
-        </Text>
+        <Text style={styles.completedTitle}>{t('sos.urgePersists')}</Text>
+        <Text style={styles.completedText}>{t('sos.urgePersistsText')}</Text>
         <TouchableOpacity
           style={[styles.backButton, { backgroundColor: COLORS.primary, marginBottom: SPACING.md }]}
           onPress={handleOvercome}
         >
-          <Text style={[styles.backButtonText, { color: '#FFF' }]}>Non, j'ai tenu bon !</Text>
+          <Text style={[styles.backButtonText, { color: '#FFF' }]}>{t('sos.iHeldStrong')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.backButton, { backgroundColor: COLORS.surface }]}
           onPress={() => router.replace('/jeux')}
         >
-          <Text style={styles.backButtonText}>Jeu simulé (dernier recours)</Text>
+          <Text style={styles.backButtonText}>{t('sos.simulatedGame')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -133,19 +131,18 @@ export default function SOSScreen() {
         <View style={styles.completedCircle}>
           <Ionicons name="checkmark-circle" size={80} color={COLORS.primary} />
         </View>
-        <Text style={styles.completedTitle}>Bravo !</Text>
-        <Text style={styles.completedText}>
-          Tu as surmonté cette envie.{'\n'}
-          C'est une vraie victoire.
-        </Text>
+        <Text style={styles.completedTitle}>{t('sos.bravo')}</Text>
+        <Text style={styles.completedText}>{t('sos.bravoText')}</Text>
         <Text style={styles.completedCount}>
-          {userData.cravingsOvercome + 1} envie{userData.cravingsOvercome > 0 ? 's' : ''} surmontée{userData.cravingsOvercome > 0 ? 's' : ''}
+          {userData.cravingsOvercome > 0
+            ? t('sos.cravingsCountPlural', { count: userData.cravingsOvercome + 1 })
+            : t('sos.cravingsCount', { count: 1 })}
         </Text>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
         >
-          <Text style={styles.backButtonText}>Retour à l'accueil</Text>
+          <Text style={styles.backButtonText}>{t('sos.backHome')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -158,7 +155,7 @@ export default function SOSScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="close" size={28} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>SOS Envie</Text>
+        <Text style={styles.headerTitle}>{t('sos.sosUrge')}</Text>
         <View style={styles.stepIndicator}>
           <Text style={styles.stepText}>{currentStep + 1}/{SOS_STEPS.length}</Text>
         </View>
@@ -215,14 +212,14 @@ export default function SOSScreen() {
         {timer === 0 || step.durationSeconds === 0 ? (
           <TouchableOpacity style={styles.primaryButton} onPress={handleNext}>
             <Text style={styles.primaryButtonText}>
-              {currentStep < SOS_STEPS.length - 1 ? 'Étape suivante' : "J'ai tenu bon"}
+              {currentStep < SOS_STEPS.length - 1 ? t('sos.nextStep') : t('sos.iResisted')}
             </Text>
             <Ionicons name="arrow-forward" size={20} color="#FFF" />
           </TouchableOpacity>
         ) : (
           <View style={styles.waitingMessage}>
             <Ionicons name="time-outline" size={20} color={COLORS.textSecondary} />
-            <Text style={styles.waitingText}>Prends le temps de faire l'exercice...</Text>
+            <Text style={styles.waitingText}>{t('sos.waitExercise')}</Text>
           </View>
         )}
 
@@ -230,7 +227,7 @@ export default function SOSScreen() {
           style={styles.overcomeButton}
           onPress={handleOvercome}
         >
-          <Text style={styles.overcomeText}>L'envie est passée</Text>
+          <Text style={styles.overcomeText}>{t('sos.urgePassed')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

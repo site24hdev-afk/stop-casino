@@ -12,9 +12,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
-import { ENCOURAGEMENTS } from '../src/constants/messages';
 import { useUserData } from '../src/hooks/useUserData';
 import { useSubscription, PLANS } from '../src/hooks/useSubscription';
+import i18n, { t } from '../src/i18n';
 import Onboarding from '../src/components/Onboarding';
 
 const { width } = Dimensions.get('window');
@@ -26,8 +26,9 @@ export default function HomeScreen() {
   const [encouragement, setEncouragement] = useState('');
 
   useEffect(() => {
-    const idx = Math.floor(Math.random() * ENCOURAGEMENTS.length);
-    setEncouragement(ENCOURAGEMENTS[idx]);
+    const quotes = i18n.t('quotes') as unknown as string[];
+    const idx = Math.floor(Math.random() * quotes.length);
+    setEncouragement(quotes[idx]);
   }, []);
 
   if (loading) {
@@ -55,8 +56,8 @@ export default function HomeScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View>
-            <Text style={styles.greeting}>Salut, guerrier 💪</Text>
-            <Text style={styles.appName}>Stop Casino</Text>
+            <Text style={styles.greeting}>{t('home.greeting')} 💪</Text>
+            <Text style={styles.appName}>{t('appName')}</Text>
           </View>
           <View style={styles.headerRight}>
             {isPaid ? (
@@ -94,15 +95,15 @@ export default function HomeScreen() {
           </View>
           <Text style={styles.heroNumber}>{daysSinceQuit}</Text>
           <Text style={styles.heroLabel}>
-            {daysSinceQuit <= 1 ? 'jour sans casino' : 'jours sans casino'}
+            {daysSinceQuit <= 1 ? t('home.daySingle') : t('home.dayPlural')}
           </Text>
           {daysSinceQuit >= 7 && (
             <View style={styles.heroBadge}>
               <Ionicons name="flame" size={14} color={COLORS.warning} />
               <Text style={styles.heroBadgeText}>
-                {daysSinceQuit >= 365 ? '1 an !' :
-                 daysSinceQuit >= 30 ? `${Math.floor(daysSinceQuit / 30)} mois !` :
-                 `${Math.floor(daysSinceQuit / 7)} semaine${Math.floor(daysSinceQuit / 7) > 1 ? 's' : ''} !`}
+                {daysSinceQuit >= 365 ? t('home.yearCount') :
+                 daysSinceQuit >= 30 ? t('home.monthCount', { count: Math.floor(daysSinceQuit / 30) }) :
+                 Math.floor(daysSinceQuit / 7) > 1 ? t('home.weeksCount', { count: Math.floor(daysSinceQuit / 7) }) : t('home.weekCount', { count: Math.floor(daysSinceQuit / 7) })}
               </Text>
             </View>
           )}
@@ -115,7 +116,7 @@ export default function HomeScreen() {
               <Ionicons name="wallet-outline" size={20} color={COLORS.primary} />
             </View>
             <Text style={styles.statValue}>{moneySaved.toLocaleString('fr-FR')} €</Text>
-            <Text style={styles.statLabel}>économisés</Text>
+            <Text style={styles.statLabel}>{t('home.saved')}</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statCard}>
@@ -125,7 +126,7 @@ export default function HomeScreen() {
             <Text style={[styles.statValue, { color: COLORS.info }]}>
               {userData.cravingsOvercome}
             </Text>
-            <Text style={styles.statLabel}>envies vaincues</Text>
+            <Text style={styles.statLabel}>{t('home.cravingsWon')}</Text>
           </View>
         </View>
 
@@ -147,12 +148,12 @@ export default function HomeScreen() {
           <View style={styles.sosIconCircle}>
             <Ionicons name="warning" size={28} color="#FFF" />
           </View>
-          <Text style={styles.sosTitle}>Envie de jouer ?</Text>
-          <Text style={styles.sosSubtitle}>Appuie ici, on gère ensemble</Text>
+          <Text style={styles.sosTitle}>{t('home.sosTitle')}</Text>
+          <Text style={styles.sosSubtitle}>{t('home.sosSub')}</Text>
         </TouchableOpacity>
 
         {/* Navigation — 2x2 grid */}
-        <Text style={styles.sectionTitle}>Explorer</Text>
+        <Text style={styles.sectionTitle}>{t('home.explore')}</Text>
         <View style={styles.navGrid}>
           {/* Journal — verrouillé en gratuit */}
           <TouchableOpacity
@@ -164,14 +165,14 @@ export default function HomeScreen() {
               <Ionicons name="book-outline" size={26} color={canAccess('journal') ? COLORS.primary : COLORS.textMuted} />
             </View>
             <View style={styles.navTitleRow}>
-              <Text style={[styles.navTitle, !canAccess('journal') && styles.navTitleLocked]}>Journal</Text>
+              <Text style={[styles.navTitle, !canAccess('journal') && styles.navTitleLocked]}>{t('home.journal')}</Text>
               {!canAccess('journal') && (
                 <View style={styles.lockBadge}>
                   <Ionicons name="lock-closed" size={10} color="#F59E0B" />
                 </View>
               )}
             </View>
-            <Text style={styles.navDesc}>Note tes envies</Text>
+            <Text style={styles.navDesc}>{t('home.journalDesc')}</Text>
           </TouchableOpacity>
 
           {/* Aide — toujours accessible (basique en gratuit) */}
@@ -183,8 +184,8 @@ export default function HomeScreen() {
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
               <Ionicons name="call-outline" size={26} color={COLORS.info} />
             </View>
-            <Text style={styles.navTitle}>Aide</Text>
-            <Text style={styles.navDesc}>{canAccess('fullAide') ? 'Parler à quelqu\'un' : 'Numéro urgence'}</Text>
+            <Text style={styles.navTitle}>{t('home.aide')}</Text>
+            <Text style={styles.navDesc}>{canAccess('fullAide') ? t('home.aideDesc') : t('home.aideDescFree')}</Text>
           </TouchableOpacity>
 
           {/* Bibliothèque — verrouillé en gratuit */}
@@ -197,14 +198,14 @@ export default function HomeScreen() {
               <Ionicons name="library-outline" size={26} color={canAccess('library') ? '#A78BFA' : COLORS.textMuted} />
             </View>
             <View style={styles.navTitleRow}>
-              <Text style={[styles.navTitle, !canAccess('library') && styles.navTitleLocked]}>Bibliothèque</Text>
+              <Text style={[styles.navTitle, !canAccess('library') && styles.navTitleLocked]}>{t('home.library')}</Text>
               {!canAccess('library') && (
                 <View style={styles.lockBadge}>
                   <Ionicons name="lock-closed" size={10} color="#F59E0B" />
                 </View>
               )}
             </View>
-            <Text style={styles.navDesc}>Comprendre & agir</Text>
+            <Text style={styles.navDesc}>{t('home.libraryDesc')}</Text>
           </TouchableOpacity>
 
           {/* Stats — verrouillé en gratuit */}
@@ -217,14 +218,14 @@ export default function HomeScreen() {
               <Ionicons name="stats-chart-outline" size={26} color={canAccess('stats') ? COLORS.warning : COLORS.textMuted} />
             </View>
             <View style={styles.navTitleRow}>
-              <Text style={[styles.navTitle, !canAccess('stats') && styles.navTitleLocked]}>Statistiques</Text>
+              <Text style={[styles.navTitle, !canAccess('stats') && styles.navTitleLocked]}>{t('home.stats')}</Text>
               {!canAccess('stats') && (
                 <View style={styles.lockBadge}>
                   <Ionicons name="lock-closed" size={10} color="#F59E0B" />
                 </View>
               )}
             </View>
-            <Text style={styles.navDesc}>Ton évolution</Text>
+            <Text style={styles.navDesc}>{t('home.statsDesc')}</Text>
           </TouchableOpacity>
 
           {/* Jeux — Pro+ seulement */}
@@ -237,14 +238,14 @@ export default function HomeScreen() {
               <Ionicons name="game-controller-outline" size={26} color={canAccess('games') ? COLORS.danger : COLORS.textMuted} />
             </View>
             <View style={styles.navTitleRow}>
-              <Text style={[styles.navTitle, !canAccess('games') && styles.navTitleLocked]}>Jeux</Text>
+              <Text style={[styles.navTitle, !canAccess('games') && styles.navTitleLocked]}>{t('home.games')}</Text>
               {!canAccess('games') && (
                 <View style={styles.lockBadge}>
                   <Ionicons name="lock-closed" size={10} color="#F59E0B" />
                 </View>
               )}
             </View>
-            <Text style={styles.navDesc}>Blackjack & Roulette</Text>
+            <Text style={styles.navDesc}>{t('home.gamesDesc')}</Text>
           </TouchableOpacity>
 
           {/* Abonnement */}
@@ -256,8 +257,8 @@ export default function HomeScreen() {
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
               <Ionicons name="diamond" size={26} color="#F59E0B" />
             </View>
-            <Text style={styles.navTitle}>{isPaid ? PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].name : 'Débloquer'}</Text>
-            <Text style={styles.navDesc}>{isPaid ? 'Gérer mon offre' : 'Voir les offres'}</Text>
+            <Text style={styles.navTitle}>{isPaid ? PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].name : t('home.unlock')}</Text>
+            <Text style={styles.navDesc}>{isPaid ? t('home.manageOffer') : t('home.unlockDesc')}</Text>
           </TouchableOpacity>
         </View>
 
