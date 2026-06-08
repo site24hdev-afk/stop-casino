@@ -8,10 +8,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Dimensions,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../constants/theme';
+import { IMAGES } from '../constants/images';
 import { UserData } from '../types';
+
+const { width, height } = Dimensions.get('window');
 
 interface Props {
   onComplete: (data: Partial<UserData>) => void;
@@ -37,23 +42,44 @@ export default function Onboarding({ onComplete }: Props) {
   const steps = [
     // Étape 0 — Bienvenue
     <View key="welcome" style={styles.stepContainer}>
-      <View style={styles.iconCircle}>
-        <Ionicons name="shield-checkmark" size={64} color={COLORS.primary} />
+      <View style={styles.imageContainer}>
+        <Image
+          source={IMAGES.onboarding.welcome}
+          style={styles.stepImage}
+          contentFit="cover"
+          transition={600}
+        />
+        <View style={styles.imageOverlay} />
+        <View style={styles.imageContent}>
+          <View style={styles.iconBadge}>
+            <Ionicons name="shield-checkmark" size={28} color="#FFF" />
+          </View>
+        </View>
       </View>
-      <Text style={styles.title}>Bienvenue</Text>
-      <Text style={styles.description}>
-        Cette app est ton allié pour arrêter le casino.{'\n\n'}
-        Pas de jugement. Pas de compte à rendre.{'\n'}
-        Juste toi et ta décision de reprendre le contrôle.
-      </Text>
-      <Text style={styles.privacy}>
-        <Ionicons name="lock-closed" size={14} color={COLORS.textMuted} />
-        {' '}Toutes tes données restent sur ton téléphone.
-      </Text>
-      <TouchableOpacity style={styles.nextButton} onPress={() => setStep(1)}>
-        <Text style={styles.nextText}>Commencer</Text>
-        <Ionicons name="arrow-forward" size={20} color="#FFF" />
-      </TouchableOpacity>
+
+      <View style={styles.textArea}>
+        <Text style={styles.title}>Bienvenue</Text>
+        <Text style={styles.description}>
+          Cette app est ton allié pour arrêter le casino.{'\n\n'}
+          Pas de jugement. Pas de compte à rendre.{'\n'}
+          Juste toi et ta décision de reprendre le contrôle.
+        </Text>
+        <Text style={styles.privacy}>
+          <Ionicons name="lock-closed" size={14} color={COLORS.textMuted} />
+          {' '}Toutes tes données restent sur ton téléphone.
+        </Text>
+        <TouchableOpacity style={styles.nextButton} onPress={() => setStep(1)}>
+          <Text style={styles.nextText}>Commencer</Text>
+          <Ionicons name="arrow-forward" size={20} color="#FFF" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Dots */}
+      <View style={styles.dots}>
+        {[0, 1, 2].map(i => (
+          <View key={i} style={[styles.dot, i === 0 && styles.dotActive]} />
+        ))}
+      </View>
     </View>,
 
     // Étape 1 — Dépense moyenne
@@ -62,10 +88,22 @@ export default function Onboarding({ onComplete }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.stepContainer}
     >
-      <ScrollView contentContainerStyle={styles.stepContent} showsVerticalScrollIndicator={false}>
-        <View style={[styles.iconCircle, { backgroundColor: COLORS.warningBg }]}>
-          <Ionicons name="wallet" size={48} color={COLORS.warning} />
+      <View style={styles.imageContainer}>
+        <Image
+          source={IMAGES.onboarding.money}
+          style={styles.stepImage}
+          contentFit="cover"
+          transition={600}
+        />
+        <View style={styles.imageOverlay} />
+        <View style={styles.imageContent}>
+          <View style={[styles.iconBadge, { backgroundColor: 'rgba(245,158,11,0.9)' }]}>
+            <Ionicons name="wallet" size={28} color="#FFF" />
+          </View>
         </View>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.textArea} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Combien dépensais-tu ?</Text>
         <Text style={styles.description}>
           En moyenne, combien dépensais-tu par jour au casino ?{'\n'}
@@ -88,6 +126,12 @@ export default function Onboarding({ onComplete }: Props) {
           <Ionicons name="arrow-forward" size={20} color="#FFF" />
         </TouchableOpacity>
       </ScrollView>
+
+      <View style={styles.dots}>
+        {[0, 1, 2].map(i => (
+          <View key={i} style={[styles.dot, i === 1 && styles.dotActive]} />
+        ))}
+      </View>
     </KeyboardAvoidingView>,
 
     // Étape 2 — Proche de confiance
@@ -96,10 +140,22 @@ export default function Onboarding({ onComplete }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.stepContainer}
     >
-      <ScrollView contentContainerStyle={styles.stepContent} showsVerticalScrollIndicator={false}>
-        <View style={[styles.iconCircle, { backgroundColor: COLORS.infoBg }]}>
-          <Ionicons name="people" size={48} color={COLORS.info} />
+      <View style={styles.imageContainer}>
+        <Image
+          source={IMAGES.onboarding.community}
+          style={styles.stepImage}
+          contentFit="cover"
+          transition={600}
+        />
+        <View style={styles.imageOverlay} />
+        <View style={styles.imageContent}>
+          <View style={[styles.iconBadge, { backgroundColor: 'rgba(59,130,246,0.9)' }]}>
+            <Ionicons name="people" size={28} color="#FFF" />
+          </View>
         </View>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.textArea} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Ton proche de confiance</Text>
         <Text style={styles.description}>
           Quelqu'un à appeler quand l'envie est forte.{'\n'}
@@ -128,6 +184,12 @@ export default function Onboarding({ onComplete }: Props) {
           <Text style={styles.skipText}>Passer cette étape</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <View style={styles.dots}>
+        {[0, 1, 2].map(i => (
+          <View key={i} style={[styles.dot, i === 2 && styles.dotActive]} />
+        ))}
+      </View>
     </KeyboardAvoidingView>,
   ];
 
@@ -141,26 +203,54 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: SPACING.xl,
   },
-  stepContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
+
+  // Image hero en haut
+  imageContainer: {
+    height: height * 0.38,
+    width: '100%',
+    position: 'relative',
+    overflow: 'hidden',
   },
-  iconCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: COLORS.primaryBg,
+  stepImage: {
+    width: '100%',
+    height: '100%',
+  },
+  imageOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(15,23,42,0.4)',
+  },
+  imageContent: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  iconBadge: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(16,185,129,0.9)',
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
-    marginBottom: SPACING.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+
+  // Texte en bas
+  textArea: {
+    flex: 1,
+    paddingHorizontal: SPACING.xl,
+    paddingTop: SPACING.xl,
+    justifyContent: 'center',
   },
   title: {
-    fontSize: FONT_SIZE.xxl,
-    fontWeight: '800',
+    fontSize: 30,
+    fontWeight: '900',
     color: COLORS.text,
     textAlign: 'center',
     marginBottom: SPACING.md,
@@ -178,6 +268,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: SPACING.xl,
   },
+
+  // Dots
+  dots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    paddingBottom: 40,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.surfaceLight,
+  },
+  dotActive: {
+    width: 24,
+    borderRadius: 4,
+    backgroundColor: COLORS.primary,
+  },
+
+  // Inputs
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -217,7 +328,7 @@ const styles = StyleSheet.create({
   nextButton: {
     backgroundColor: COLORS.primary,
     borderRadius: BORDER_RADIUS.lg,
-    paddingVertical: SPACING.md,
+    paddingVertical: 16,
     paddingHorizontal: SPACING.xl,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -225,6 +336,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     gap: SPACING.sm,
     marginTop: SPACING.md,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   nextText: {
     fontSize: FONT_SIZE.lg,

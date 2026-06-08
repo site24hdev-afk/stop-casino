@@ -8,6 +8,7 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
@@ -87,19 +88,24 @@ export default function BibliothequeScreen() {
             onPress={() => setSelectedArticle(article)}
             activeOpacity={0.7}
           >
-            <View style={styles.articleLeft}>
-              <View style={[
-                styles.articleIcon,
-                { backgroundColor: `${getCategoryColor(article.category)}20` },
-              ]}>
-                <Ionicons
-                  name={article.icon as any}
-                  size={22}
-                  color={getCategoryColor(article.category)}
+            {article.image && (
+              <View style={styles.articleImageWrap}>
+                <Image
+                  source={article.image}
+                  style={styles.articleImage}
+                  contentFit="cover"
+                  transition={400}
                 />
+                <View style={styles.articleImageOverlay} />
+                <View style={[
+                  styles.articleImageBadge,
+                  { backgroundColor: getCategoryColor(article.category) },
+                ]}>
+                  <Ionicons name={article.icon as any} size={14} color="#FFF" />
+                </View>
               </View>
-            </View>
-            <View style={styles.articleRight}>
+            )}
+            <View style={styles.articleBody}>
               <View style={styles.articleMeta}>
                 <Text style={[
                   styles.articleCategory,
@@ -139,6 +145,18 @@ export default function BibliothequeScreen() {
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false}>
+                  {selectedArticle.image && (
+                    <View style={styles.modalImageWrap}>
+                      <Image
+                        source={selectedArticle.image}
+                        style={styles.modalImage}
+                        contentFit="cover"
+                        transition={400}
+                      />
+                      <View style={styles.modalImageGradient} />
+                    </View>
+                  )}
+
                   <View style={[
                     styles.modalCategoryBadge,
                     { backgroundColor: `${getCategoryColor(selectedArticle.category)}20` },
@@ -239,25 +257,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
   },
   articleCard: {
-    flexDirection: 'row',
     backgroundColor: COLORS.surface,
     borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.lg,
     marginBottom: SPACING.md,
-    gap: SPACING.md,
+    overflow: 'hidden',
   },
-  articleLeft: {
-    justifyContent: 'flex-start',
+  articleImageWrap: {
+    height: 120,
+    width: '100%',
+    position: 'relative',
   },
-  articleIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: BORDER_RADIUS.md,
+  articleImage: {
+    width: '100%',
+    height: '100%',
+  },
+  articleImageOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(15,23,42,0.25)',
+  },
+  articleImageBadge: {
+    position: 'absolute',
+    bottom: 8,
+    left: 12,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  articleRight: {
-    flex: 1,
+  articleBody: {
+    padding: SPACING.lg,
   },
   articleMeta: {
     flexDirection: 'row',
@@ -315,6 +344,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: SPACING.md,
+  },
+  modalImageWrap: {
+    height: 160,
+    width: '100%',
+    borderRadius: BORDER_RADIUS.lg,
+    overflow: 'hidden',
+    marginBottom: SPACING.lg,
+  },
+  modalImage: {
+    width: '100%',
+    height: '100%',
+  },
+  modalImageGradient: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(15,23,42,0.15)',
   },
   modalCategoryBadge: {
     flexDirection: 'row',

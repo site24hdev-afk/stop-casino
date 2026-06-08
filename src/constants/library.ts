@@ -5,8 +5,11 @@ export interface Article {
   categoryLabel: string;
   icon: string;
   readTime: string;
+  image?: string;
   content: string[];
 }
+
+import { IMAGES } from './images';
 
 export const CATEGORIES = [
   { key: 'all', label: 'Tout', icon: 'grid-outline' },
@@ -24,6 +27,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Comprendre',
     icon: 'brain-outline',
     readTime: '4 min',
+    image: IMAGES.articles.brain,
     content: [
       "Le jeu active le circuit de la récompense dans ton cerveau — le même que la nourriture, le sexe ou les drogues. Quand tu joues, ton cerveau libère de la dopamine, le neurotransmetteur du plaisir.",
       "Le problème : avec le temps, ton cerveau s'habitue. Il lui faut des doses de plus en plus fortes pour ressentir le même plaisir. C'est la tolérance. Tu joues plus, tu mises plus, tu restes plus longtemps.",
@@ -38,6 +42,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Pièges mentaux',
     icon: 'warning-outline',
     readTime: '3 min',
+    image: IMAGES.articles.trigger,
     content: [
       "« Je connais la machine », « J'ai un système », « Je sens que ça va payer »… L'illusion de contrôle est le piège numéro 1 du joueur.",
       "En réalité, chaque tour de roulette, chaque main de blackjack, chaque tour de machine est INDÉPENDANT du précédent. Le casino n'a pas de mémoire. La bille ne « doit » rien à personne.",
@@ -52,6 +57,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Pièges mentaux',
     icon: 'warning-outline',
     readTime: '3 min',
+    image: IMAGES.articles.cycle,
     content: [
       "Tu as 2 cerises sur 3, le numéro juste à côté du tien est sorti, tu avais 20 au blackjack et le croupier a fait 21… Ces « presque gagnés » sont le carburant de l'addiction.",
       "Ton cerveau traite un « presque gagné » presque comme une victoire. La dopamine monte. Tu te dis « j'y étais presque, la prochaine fois c'est la bonne ».",
@@ -66,6 +72,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Pièges mentaux',
     icon: 'warning-outline',
     readTime: '3 min',
+    image: IMAGES.articles.finance,
     content: [
       "La martingale classique : doubler sa mise après chaque perte pour « se refaire ». Sur le papier, ça semble logique. En pratique, c'est une catastrophe.",
       "Après 7 pertes consécutives à 10 €, ta mise est à 1 280 €. Après 10 pertes : 10 240 €. Et tu n'as « gagné » que 10 €. Le risque est délirant pour un gain ridicule.",
@@ -80,6 +87,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Témoignages',
     icon: 'people-outline',
     readTime: '5 min',
+    image: IMAGES.articles.success,
     content: [
       "« J'ai commencé aux machines à sous à 22 ans. Au début c'était pour rigoler avec les potes. En 6 mois, j'y allais seul, tous les jours après le boulot. »",
       "« J'ai perdu mon appart, ma copine, 40 000 euros d'économies. Le pire c'est que même quand je gagnais, je rejouais tout. Le gain n'était jamais assez. »",
@@ -94,6 +102,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Témoignages',
     icon: 'people-outline',
     readTime: '4 min',
+    image: IMAGES.articles.family,
     content: [
       "« Tout le monde pense que les joueurs problématiques c'est des vieux au PMU. Moi j'avais 24 ans, un master, un bon job. Et je jouais au poker en ligne jusqu'à 4h du matin. »",
       "« Je me disais que le poker c'est un jeu d'adresse, pas de hasard. C'est vrai en partie, mais l'addiction s'en fiche. Mon cerveau voulait juste la prochaine main. »",
@@ -108,6 +117,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Exercices',
     icon: 'barbell-outline',
     readTime: '10 min',
+    image: IMAGES.articles.therapy,
     content: [
       "Prends 10 minutes pour écrire une lettre à toi-même. Cette lettre, tu la reliras quand l'envie sera forte.",
       "Écris pourquoi tu as décidé d'arrêter. Sois précis : qu'est-ce que tu as perdu ? De l'argent, du temps, des relations, ta santé mentale ? Note les montants si tu les connais.",
@@ -123,6 +133,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Exercices',
     icon: 'barbell-outline',
     readTime: '8 min',
+    image: IMAGES.articles.nature,
     content: [
       "Les envies ne viennent pas de nulle part. Elles sont déclenchées par des situations, des émotions ou des environnements précis. Les identifier, c'est les désarmer.",
       "Fais la liste de tes 5 dernières envies fortes. Pour chacune, note : où étais-tu ? Avec qui ? Quelle heure ? Qu'est-ce que tu ressentais juste avant (ennui, stress, tristesse, excitation) ?",
@@ -138,6 +149,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Pièges mentaux',
     icon: 'warning-outline',
     readTime: '3 min',
+    image: IMAGES.articles.finance,
     content: [
       "« Je dois me refaire » — c'est la phrase la plus dangereuse du joueur. L'idée que tu peux récupérer l'argent perdu en jouant encore.",
       "En psychologie, on appelle ça l'aversion à la perte. Perdre 100 € fait deux fois plus mal que gagner 100 € fait plaisir. Ton cerveau te pousse à « réparer » cette douleur.",
@@ -152,6 +164,7 @@ export const ARTICLES: Article[] = [
     categoryLabel: 'Exercices',
     icon: 'barbell-outline',
     readTime: '5 min',
+    image: IMAGES.articles.meditation,
     content: [
       "La respiration 4-7-8 est une technique puissante pour calmer une envie en quelques minutes. Elle active le système nerveux parasympathique (le mode « calme »).",
       "Comment faire :\n• Inspire par le nez pendant 4 secondes\n• Retiens ton souffle pendant 7 secondes\n• Expire lentement par la bouche pendant 8 secondes",
