@@ -5,16 +5,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   Dimensions,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { ENCOURAGEMENTS } from '../src/constants/messages';
 import { useUserData } from '../src/hooks/useUserData';
-import { useSubscription } from '../src/hooks/useSubscription';
+import { useSubscription, PLANS } from '../src/hooks/useSubscription';
 import Onboarding from '../src/components/Onboarding';
 
 const { width } = Dimensions.get('window');
@@ -22,7 +22,7 @@ const { width } = Dimensions.get('window');
 export default function HomeScreen() {
   const router = useRouter();
   const { userData, loading, saveData, daysSinceQuit, moneySaved } = useUserData();
-  const { isPremium } = useSubscription();
+  const { isPaid, tier, canAccess, isElite } = useSubscription();
   const [encouragement, setEncouragement] = useState('');
 
   useEffect(() => {
@@ -59,7 +59,15 @@ export default function HomeScreen() {
             <Text style={styles.appName}>Stop Casino</Text>
           </View>
           <View style={styles.headerRight}>
-            {!isPremium && (
+            {isPaid ? (
+              <TouchableOpacity
+                style={[styles.tierBadge, { borderColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color}40`, backgroundColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color}15` }]}
+                onPress={() => router.push('/abonnement')}
+              >
+                <Ionicons name={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].icon} size={14} color={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color} />
+                <Text style={[styles.tierBadgeText, { color: PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color }]}>{tier.toUpperCase()}</Text>
+              </TouchableOpacity>
+            ) : (
               <TouchableOpacity
                 style={styles.proButton}
                 onPress={() => router.push('/abonnement')}
@@ -146,18 +154,27 @@ export default function HomeScreen() {
         {/* Navigation — 2x2 grid */}
         <Text style={styles.sectionTitle}>Explorer</Text>
         <View style={styles.navGrid}>
+          {/* Journal — verrouillé en gratuit */}
           <TouchableOpacity
-            style={styles.navCard}
-            onPress={() => router.push('/journal')}
+            style={[styles.navCard, !canAccess('journal') && styles.navCardLocked]}
+            onPress={() => canAccess('journal') ? router.push('/journal') : router.push('/abonnement')}
             activeOpacity={0.8}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
-              <Ionicons name="book-outline" size={26} color={COLORS.primary} />
+              <Ionicons name="book-outline" size={26} color={canAccess('journal') ? COLORS.primary : COLORS.textMuted} />
             </View>
-            <Text style={styles.navTitle}>Journal</Text>
+            <View style={styles.navTitleRow}>
+              <Text style={[styles.navTitle, !canAccess('journal') && styles.navTitleLocked]}>Journal</Text>
+              {!canAccess('journal') && (
+                <View style={styles.lockBadge}>
+                  <Ionicons name="lock-closed" size={10} color="#F59E0B" />
+                </View>
+              )}
+            </View>
             <Text style={styles.navDesc}>Note tes envies</Text>
           </TouchableOpacity>
 
+          {/* Aide — toujours accessible (basique en gratuit) */}
           <TouchableOpacity
             style={styles.navCard}
             onPress={() => router.push('/aide')}
@@ -167,44 +184,61 @@ export default function HomeScreen() {
               <Ionicons name="call-outline" size={26} color={COLORS.info} />
             </View>
             <Text style={styles.navTitle}>Aide</Text>
-            <Text style={styles.navDesc}>Parler à quelqu'un</Text>
+            <Text style={styles.navDesc}>{canAccess('fullAide') ? 'Parler à quelqu\'un' : 'Numéro urgence'}</Text>
           </TouchableOpacity>
 
+          {/* Bibliothèque — verrouillé en gratuit */}
           <TouchableOpacity
-            style={styles.navCard}
-            onPress={() => router.push('/bibliotheque')}
+            style={[styles.navCard, !canAccess('library') && styles.navCardLocked]}
+            onPress={() => canAccess('library') ? router.push('/bibliotheque') : router.push('/abonnement')}
             activeOpacity={0.8}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(167, 139, 250, 0.15)' }]}>
-              <Ionicons name="library-outline" size={26} color="#A78BFA" />
+              <Ionicons name="library-outline" size={26} color={canAccess('library') ? '#A78BFA' : COLORS.textMuted} />
             </View>
-            <Text style={styles.navTitle}>Bibliothèque</Text>
+            <View style={styles.navTitleRow}>
+              <Text style={[styles.navTitle, !canAccess('library') && styles.navTitleLocked]}>Bibliothèque</Text>
+              {!canAccess('library') && (
+                <View style={styles.lockBadge}>
+                  <Ionicons name="lock-closed" size={10} color="#F59E0B" />
+                </View>
+              )}
+            </View>
             <Text style={styles.navDesc}>Comprendre & agir</Text>
           </TouchableOpacity>
 
+          {/* Stats — verrouillé en gratuit */}
           <TouchableOpacity
-            style={styles.navCard}
-            onPress={() => router.push('/stats')}
+            style={[styles.navCard, !canAccess('stats') && styles.navCardLocked]}
+            onPress={() => canAccess('stats') ? router.push('/stats') : router.push('/abonnement')}
             activeOpacity={0.8}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-              <Ionicons name="stats-chart-outline" size={26} color={COLORS.warning} />
+              <Ionicons name="stats-chart-outline" size={26} color={canAccess('stats') ? COLORS.warning : COLORS.textMuted} />
             </View>
-            <Text style={styles.navTitle}>Statistiques</Text>
+            <View style={styles.navTitleRow}>
+              <Text style={[styles.navTitle, !canAccess('stats') && styles.navTitleLocked]}>Statistiques</Text>
+              {!canAccess('stats') && (
+                <View style={styles.lockBadge}>
+                  <Ionicons name="lock-closed" size={10} color="#F59E0B" />
+                </View>
+              )}
+            </View>
             <Text style={styles.navDesc}>Ton évolution</Text>
           </TouchableOpacity>
 
+          {/* Jeux — Pro+ seulement */}
           <TouchableOpacity
-            style={styles.navCard}
-            onPress={() => isPremium ? router.push('/jeux') : router.push('/abonnement')}
+            style={[styles.navCard, !canAccess('games') && styles.navCardLocked]}
+            onPress={() => canAccess('games') ? router.push('/jeux') : router.push('/abonnement')}
             activeOpacity={0.8}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
-              <Ionicons name="game-controller-outline" size={26} color={COLORS.danger} />
+              <Ionicons name="game-controller-outline" size={26} color={canAccess('games') ? COLORS.danger : COLORS.textMuted} />
             </View>
             <View style={styles.navTitleRow}>
-              <Text style={styles.navTitle}>Jeux</Text>
-              {!isPremium && (
+              <Text style={[styles.navTitle, !canAccess('games') && styles.navTitleLocked]}>Jeux</Text>
+              {!canAccess('games') && (
                 <View style={styles.lockBadge}>
                   <Ionicons name="lock-closed" size={10} color="#F59E0B" />
                 </View>
@@ -213,6 +247,7 @@ export default function HomeScreen() {
             <Text style={styles.navDesc}>Blackjack & Roulette</Text>
           </TouchableOpacity>
 
+          {/* Abonnement */}
           <TouchableOpacity
             style={[styles.navCard, styles.navCardPro]}
             onPress={() => router.push('/abonnement')}
@@ -221,8 +256,8 @@ export default function HomeScreen() {
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
               <Ionicons name="diamond" size={26} color="#F59E0B" />
             </View>
-            <Text style={styles.navTitle}>{isPremium ? 'Mon abo' : 'Pro'}</Text>
-            <Text style={styles.navDesc}>{isPremium ? 'Gérer mon offre' : 'Tout débloquer'}</Text>
+            <Text style={styles.navTitle}>{isPaid ? PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].name : 'Débloquer'}</Text>
+            <Text style={styles.navDesc}>{isPaid ? 'Gérer mon offre' : 'Voir les offres'}</Text>
           </TouchableOpacity>
         </View>
 
@@ -540,9 +575,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(245, 158, 11, 0.2)',
   },
+  navCardLocked: {
+    opacity: 0.6,
+  },
+  navTitleLocked: {
+    color: COLORS.textMuted,
+  },
   navDesc: {
     fontSize: 12,
     color: COLORS.textMuted,
     lineHeight: 16,
+  },
+  tierBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 14,
+    gap: 4,
+    borderWidth: 1,
+  },
+  tierBadgeText: {
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
 });

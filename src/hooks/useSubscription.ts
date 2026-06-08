@@ -1,39 +1,155 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from 'expo-router';
 
 const SUBSCRIPTION_KEY = '@stop_casino_subscription';
 
-export type PlanType = 'free' | 'monthly' | 'yearly';
+// 3 paliers + gratuit
+export type TierType = 'free' | 'essentiel' | 'pro' | 'elite';
 
 export interface SubscriptionData {
-  plan: PlanType;
+  tier: TierType;
+  billingCycle: 'monthly' | 'yearly' | 'lifetime' | null;
   startDate: string | null;
   expiryDate: string | null;
   isActive: boolean;
 }
 
 const DEFAULT_SUB: SubscriptionData = {
-  plan: 'free',
+  tier: 'free',
+  billingCycle: null,
   startDate: null,
   expiryDate: null,
   isActive: false,
 };
 
-// Prix
-export const PRICES = {
-  monthly: { amount: 4.99, label: '4,99 €/mois', period: 'mois' },
-  yearly: { amount: 29.99, label: '29,99 €/an', period: 'an', savings: '50%' },
+// Grille de prix
+export const PLANS = {
+  essentiel: {
+    name: 'Essentiel',
+    monthly: { amount: 2.99, label: '2,99 €/mois' },
+    yearly: { amount: 19.99, label: '19,99 €/an', perMonth: '1,67 €/mois', savings: '44%' },
+    color: '#3B82F6',
+    icon: 'star-outline' as const,
+    tagline: 'Le premier pas',
+  },
+  pro: {
+    name: 'Pro',
+    monthly: { amount: 5.99, label: '5,99 €/mois' },
+    yearly: { amount: 34.99, label: '34,99 €/an', perMonth: '2,92 €/mois', savings: '51%' },
+    color: '#10B981',
+    icon: 'diamond-outline' as const,
+    tagline: 'Le plus populaire',
+    recommended: true,
+  },
+  elite: {
+    name: 'Elite',
+    lifetime: { amount: 69.99, label: '69,99 € une fois' },
+    color: '#F59E0B',
+    icon: 'trophy-outline' as const,
+    tagline: 'Pour toujours',
+  },
 };
 
-// Fonctionnalités premium
-export const PREMIUM_FEATURES = [
-  { icon: 'library-outline', title: 'Bibliothèque complète', desc: '10+ articles et exercices' },
-  { icon: 'stats-chart-outline', title: 'Statistiques avancées', desc: 'Graphiques et analyses détaillées' },
-  { icon: 'book-outline', title: 'Journal illimité', desc: 'Historique complet de tes envies' },
-  { icon: 'game-controller-outline', title: 'Jeux simulés', desc: 'Blackjack & Roulette sans argent' },
-  { icon: 'heart-outline', title: 'Citations quotidiennes', desc: 'Nouvelles motivations chaque jour' },
-  { icon: 'shield-checkmark-outline', title: 'Sans publicité', desc: 'Expérience 100% clean' },
-];
+// Ce que chaque palier débloque
+export const TIER_FEATURES = {
+  free: {
+    label: 'Gratuit',
+    features: [
+      { text: 'Compteur de jours', included: true },
+      { text: 'SOS : 1 étape sur 4', included: true },
+      { text: 'Aide : numéro urgence', included: true },
+      { text: '1 citation fixe', included: true },
+      { text: 'Journal', included: false },
+      { text: 'Bibliothèque', included: false },
+      { text: 'Statistiques', included: false },
+      { text: 'Jeux simulés', included: false },
+    ],
+  },
+  essentiel: {
+    label: 'Essentiel',
+    features: [
+      { text: 'Tout le gratuit +', included: true },
+      { text: 'SOS complet (4 étapes)', included: true },
+      { text: 'Aide complète + contact', included: true },
+      { text: 'Journal (5 entrées/mois)', included: true },
+      { text: '3 articles bibliothèque', included: true },
+      { text: 'Stats basiques', included: true },
+      { text: 'Citations quotidiennes', included: true },
+      { text: 'Sans publicité', included: true },
+      { text: 'Jeux simulés', included: false },
+      { text: 'Stats avancées', included: false },
+    ],
+  },
+  pro: {
+    label: 'Pro',
+    features: [
+      { text: 'Tout Essentiel +', included: true },
+      { text: 'Journal illimité', included: true },
+      { text: 'Bibliothèque complète', included: true },
+      { text: 'Stats avancées + graphiques', included: true },
+      { text: 'Jeux simulés (Blackjack, Roulette)', included: true },
+      { text: 'Analyse des déclencheurs', included: true },
+    ],
+  },
+  elite: {
+    label: 'Elite',
+    features: [
+      { text: 'Tout Pro, pour toujours', included: true },
+      { text: 'Paiement unique', included: true },
+      { text: 'Accès prioritaire nouveautés', included: true },
+      { text: 'Badge Elite', included: true },
+    ],
+  },
+};
+
+// Limites par palier
+export const TIER_LIMITS = {
+  free: {
+    sosSteps: 1,            // 1 seule étape SOS
+    journalEntries: 0,      // pas de journal
+    libraryArticles: 0,     // pas de biblio
+    hasStats: false,
+    hasAdvancedStats: false,
+    hasGames: false,
+    hasCitations: false,     // 1 citation fixe seulement
+    hasAds: true,
+    hasFullAide: false,
+  },
+  essentiel: {
+    sosSteps: 4,
+    journalEntries: 5,      // 5 par mois
+    libraryArticles: 3,
+    hasStats: true,
+    hasAdvancedStats: false,
+    hasGames: false,
+    hasCitations: true,
+    hasAds: false,
+    hasFullAide: true,
+  },
+  pro: {
+    sosSteps: 4,
+    journalEntries: -1,     // illimité
+    libraryArticles: -1,    // illimité
+    hasStats: true,
+    hasAdvancedStats: true,
+    hasGames: true,
+    hasCitations: true,
+    hasAds: false,
+    hasFullAide: true,
+  },
+  elite: {
+    sosSteps: 4,
+    journalEntries: -1,
+    libraryArticles: -1,
+    hasStats: true,
+    hasAdvancedStats: true,
+    hasGames: true,
+    hasCitations: true,
+    hasAds: false,
+    hasFullAide: true,
+  },
+};
 
 export function useSubscription() {
   const [subscription, setSubscription] = useState<SubscriptionData>(DEFAULT_SUB);
@@ -43,15 +159,27 @@ export function useSubscription() {
     loadSubscription();
   }, []);
 
+  // Recharger quand l'écran revient au premier plan
+  useFocusEffect(
+    useCallback(() => {
+      loadSubscription();
+    }, [])
+  );
+
   const loadSubscription = async () => {
     try {
       const data = await AsyncStorage.getItem(SUBSCRIPTION_KEY);
       if (data) {
         const parsed: SubscriptionData = JSON.parse(data);
-        // Vérifier si l'abonnement est encore actif
-        if (parsed.expiryDate) {
+        // Vérifier expiration (sauf lifetime)
+        if (parsed.billingCycle === 'lifetime') {
+          parsed.isActive = true;
+        } else if (parsed.expiryDate) {
           const expiry = new Date(parsed.expiryDate);
           parsed.isActive = expiry > new Date();
+        }
+        if (!parsed.isActive) {
+          parsed.tier = 'free';
         }
         setSubscription(parsed);
       }
@@ -61,21 +189,32 @@ export function useSubscription() {
     setLoading(false);
   };
 
-  const subscribe = async (plan: 'monthly' | 'yearly') => {
+  const subscribe = async (tier: 'essentiel' | 'pro' | 'elite', cycle?: 'monthly' | 'yearly') => {
     // En production : intégrer RevenueCat / StoreKit
-    // Pour l'instant : simulation locale
     const now = new Date();
-    const expiry = new Date(now);
-    if (plan === 'monthly') {
+    let expiryDate: string | null = null;
+    let billingCycle: 'monthly' | 'yearly' | 'lifetime' = 'lifetime';
+
+    if (tier === 'elite') {
+      billingCycle = 'lifetime';
+      expiryDate = null; // jamais
+    } else if (cycle === 'monthly') {
+      billingCycle = 'monthly';
+      const expiry = new Date(now);
       expiry.setMonth(expiry.getMonth() + 1);
+      expiryDate = expiry.toISOString();
     } else {
+      billingCycle = 'yearly';
+      const expiry = new Date(now);
       expiry.setFullYear(expiry.getFullYear() + 1);
+      expiryDate = expiry.toISOString();
     }
 
     const newSub: SubscriptionData = {
-      plan,
+      tier,
+      billingCycle,
       startDate: now.toISOString(),
-      expiryDate: expiry.toISOString(),
+      expiryDate,
       isActive: true,
     };
 
@@ -85,7 +224,6 @@ export function useSubscription() {
   };
 
   const restorePurchase = async () => {
-    // En production : vérifier via RevenueCat
     await loadSubscription();
   };
 
@@ -94,9 +232,31 @@ export function useSubscription() {
     setSubscription(DEFAULT_SUB);
   };
 
-  const isPremium = subscription.isActive && subscription.plan !== 'free';
+  const tier = subscription.isActive ? subscription.tier : 'free';
+  const limits = TIER_LIMITS[tier];
+
+  // Helpers pratiques
+  const isPaid = tier !== 'free';
+  const isEssentiel = tier === 'essentiel' || tier === 'pro' || tier === 'elite';
+  const isPro = tier === 'pro' || tier === 'elite';
+  const isElite = tier === 'elite';
+
+  const canAccess = (feature: 'journal' | 'library' | 'stats' | 'advancedStats' | 'games' | 'fullSos' | 'fullAide' | 'citations') => {
+    switch (feature) {
+      case 'journal': return limits.journalEntries !== 0;
+      case 'library': return limits.libraryArticles !== 0;
+      case 'stats': return limits.hasStats;
+      case 'advancedStats': return limits.hasAdvancedStats;
+      case 'games': return limits.hasGames;
+      case 'fullSos': return limits.sosSteps === 4;
+      case 'fullAide': return limits.hasFullAide;
+      case 'citations': return limits.hasCitations;
+      default: return false;
+    }
+  };
 
   const daysRemaining = () => {
+    if (subscription.billingCycle === 'lifetime') return Infinity;
     if (!subscription.expiryDate) return 0;
     const diff = new Date(subscription.expiryDate).getTime() - Date.now();
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
@@ -105,7 +265,13 @@ export function useSubscription() {
   return {
     subscription,
     loading,
-    isPremium,
+    tier,
+    limits,
+    isPaid,
+    isEssentiel,
+    isPro,
+    isElite,
+    canAccess,
     subscribe,
     restorePurchase,
     cancelSubscription,

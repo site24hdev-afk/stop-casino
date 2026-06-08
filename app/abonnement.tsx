@@ -14,26 +14,40 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import {
   useSubscription,
-  PRICES,
-  PREMIUM_FEATURES,
-  PlanType,
+  PLANS,
+  TIER_FEATURES,
+  TierType,
 } from '../src/hooks/useSubscription';
+
+type SelectedPlan = {
+  tier: 'essentiel' | 'pro' | 'elite';
+  cycle?: 'monthly' | 'yearly';
+};
 
 export default function AbonnementScreen() {
   const router = useRouter();
-  const { subscription, isPremium, subscribe, restorePurchase, cancelSubscription, daysRemaining } = useSubscription();
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
+  const { subscription, tier, isPaid, isElite, subscribe, restorePurchase, cancelSubscription, daysRemaining } = useSubscription();
+  const [selected, setSelected] = useState<SelectedPlan>({ tier: 'pro', cycle: 'yearly' });
   const [processing, setProcessing] = useState(false);
+  const [showDetails, setShowDetails] = useState<TierType | null>(null);
+
+  const getPrice = () => {
+    if (selected.tier === 'elite') return PLANS.elite.lifetime.label;
+    const plan = PLANS[selected.tier];
+    if ('monthly' in plan && 'yearly' in plan) {
+      return selected.cycle === 'yearly' ? plan.yearly.label : plan.monthly.label;
+    }
+    return '';
+  };
 
   const handleSubscribe = async () => {
     setProcessing(true);
     try {
-      // En production : ouvrir le flow de paiement StoreKit / RevenueCat
-      const success = await subscribe(selectedPlan);
+      const success = await subscribe(selected.tier, selected.cycle);
       if (success) {
         Alert.alert(
-          'Bienvenue dans Pro !',
-          'Ton abonnement Stop Casino Pro est actif. Merci de soutenir ton parcours.',
+          selected.tier === 'elite' ? 'Bienvenue dans Elite !' : `Bienvenue dans ${PLANS[selected.tier].name} !`,
+          'Ton abonnement est actif. Merci pour ta confiance.',
           [{ text: 'Super !', onPress: () => router.back() }]
         );
       }
@@ -47,33 +61,17 @@ export default function AbonnementScreen() {
     setProcessing(true);
     await restorePurchase();
     setProcessing(false);
-    if (isPremium) {
-      Alert.alert('Abonnement restauré', 'Ton abonnement Pro a été restauré avec succès.');
+    if (isPaid) {
+      Alert.alert('Restauré', 'Ton abonnement a été restauré.');
     } else {
-      Alert.alert('Aucun abonnement', "Aucun abonnement actif n'a été trouvé.");
+      Alert.alert('Aucun abonnement', "Aucun abonnement actif trouvé.");
     }
   };
 
-  const handleCancel = () => {
-    Alert.alert(
-      'Annuler l\'abonnement',
-      'Es-tu sûr de vouloir annuler ton abonnement Pro ?',
-      [
-        { text: 'Non', style: 'cancel' },
-        {
-          text: 'Oui, annuler',
-          style: 'destructive',
-          onPress: async () => {
-            await cancelSubscription();
-            Alert.alert('Abonnement annulé', 'Tu peux te réabonner à tout moment.');
-          },
-        },
-      ]
-    );
-  };
-
-  // Écran pour les abonnés actifs
-  if (isPremium) {
+  // Écran gestion pour abonnés actifs
+  if (isPaid) {
+    const tierInfo = PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'];
+    const features = TIER_FEATURES[tier];
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
@@ -83,155 +81,258 @@ export default function AbonnementScreen() {
           <Text style={styles.headerTitle}>Mon abonnement</Text>
           <View style={{ width: 24 }} />
         </View>
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.activeCard}>
-            <View style={styles.activeBadge}>
-              <Ionicons name="checkmark-circle" size={20} color="#FFF" />
-              <Text style={styles.activeBadgeText}>PRO ACTIF</Text>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACING.lg }}>
+          <View style={[styles.activeCard, { borderColor: `${tierInfo.color}40` }]}>
+            <View style={[styles.activeBadge, { backgroundColor: tierInfo.color }]}>
+              <Ionicons name="checkmark-circle" size={16} color="#FFF" />
+              <Text style={styles.activeBadgeText}>{tierInfo.name.toUpperCase()} ACTIF</Text>
             </View>
-            <View style={styles.activeIconCircle}>
-              <Ionicons name="diamond" size={40} color="#F59E0B" />
+            <View style={[styles.activeIconCircle, { backgroundColor: `${tierInfo.color}20` }]}>
+              <Ionicons name={tierInfo.icon} size={36} color={tierInfo.color} />
             </View>
-            <Text style={styles.activeTitle}>Stop Casino Pro</Text>
+            <Text style={styles.activeTitle}>Stop Casino {tierInfo.name}</Text>
             <Text style={styles.activePlan}>
-              Abonnement {subscription.plan === 'monthly' ? 'mensuel' : 'annuel'}
+              {subscription.billingCycle === 'lifetime' ? 'Accès à vie' :
+               subscription.billingCycle === 'yearly' ? 'Abonnement annuel' : 'Abonnement mensuel'}
             </Text>
-            <Text style={styles.activeDays}>
-              {daysRemaining()} jours restants
-            </Text>
+            {subscription.billingCycle !== 'lifetime' && (
+              <Text style={[styles.activeDays, { color: tierInfo.color }]}>
+                {daysRemaining()} jours restants
+              </Text>
+            )}
+            {isElite && (
+              <Text style={[styles.activeDays, { color: tierInfo.color }]}>Pour toujours</Text>
+            )}
           </View>
 
-          <View style={styles.activeFeatures}>
-            <Text style={styles.sectionTitle}>Tes avantages</Text>
-            {PREMIUM_FEATURES.map((feat, i) => (
-              <View key={i} style={styles.featureRowActive}>
-                <View style={styles.featureCheckCircle}>
-                  <Ionicons name="checkmark" size={14} color="#FFF" />
-                </View>
-                <Text style={styles.featureActiveText}>{feat.title}</Text>
+          <Text style={styles.sectionTitle}>Tes avantages</Text>
+          {features.features.filter(f => f.included).map((feat, i) => (
+            <View key={i} style={styles.featureCheckRow}>
+              <View style={[styles.featureCheck, { backgroundColor: tierInfo.color }]}>
+                <Ionicons name="checkmark" size={12} color="#FFF" />
               </View>
-            ))}
-          </View>
+              <Text style={styles.featureCheckText}>{feat.text}</Text>
+            </View>
+          ))}
 
-          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+          {tier !== 'elite' && (
+            <TouchableOpacity
+              style={[styles.upgradeButton, { backgroundColor: PLANS.pro.color }]}
+              onPress={() => {
+                // Reset pour montrer le paywall
+                cancelSubscription().then(() => {
+                  // L'écran va re-render en mode paywall
+                });
+              }}
+            >
+              <Ionicons name="arrow-up-circle" size={20} color="#FFF" />
+              <Text style={styles.upgradeText}>Changer d'offre</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={styles.cancelBtn} onPress={() => {
+            Alert.alert('Annuler', 'Tu veux vraiment annuler ?', [
+              { text: 'Non', style: 'cancel' },
+              { text: 'Oui', style: 'destructive', onPress: cancelSubscription },
+            ]);
+          }}>
             <Text style={styles.cancelText}>Annuler l'abonnement</Text>
           </TouchableOpacity>
-
           <View style={{ height: 40 }} />
         </ScrollView>
       </SafeAreaView>
     );
   }
 
-  // Écran paywall
+  // PAYWALL — 3 paliers
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Close button */}
-        <TouchableOpacity style={styles.closeButton} onPress={() => router.back()}>
+        {/* Close */}
+        <TouchableOpacity style={styles.closeBtn} onPress={() => router.back()}>
           <Ionicons name="close" size={28} color={COLORS.text} />
         </TouchableOpacity>
 
         {/* Hero */}
-        <View style={styles.heroSection}>
-          <View style={styles.heroIconCircle}>
-            <Ionicons name="diamond" size={44} color="#F59E0B" />
+        <View style={styles.hero}>
+          <View style={styles.heroIcon}>
+            <Ionicons name="rocket" size={40} color="#F59E0B" />
           </View>
-          <Text style={styles.heroTitle}>Stop Casino Pro</Text>
-          <Text style={styles.heroSubtitle}>
-            Débloque tous les outils pour{'\n'}vaincre l'addiction
+          <Text style={styles.heroTitle}>Choisis ton plan</Text>
+          <Text style={styles.heroSub}>
+            Tu dépensais des fortunes au casino.{'\n'}Investis dans ta liberté.
           </Text>
         </View>
 
-        {/* Features */}
-        <View style={styles.featuresSection}>
-          {PREMIUM_FEATURES.map((feat, i) => (
-            <View key={i} style={styles.featureRow}>
-              <View style={[styles.featureIconBg, {
-                backgroundColor: i % 2 === 0
-                  ? 'rgba(16, 185, 129, 0.12)'
-                  : 'rgba(59, 130, 246, 0.12)',
-              }]}>
-                <Ionicons
-                  name={feat.icon as any}
-                  size={22}
-                  color={i % 2 === 0 ? COLORS.primary : COLORS.info}
-                />
-              </View>
-              <View style={styles.featureTextBlock}>
-                <Text style={styles.featureTitle}>{feat.title}</Text>
-                <Text style={styles.featureDesc}>{feat.desc}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        {/* Plans */}
-        <View style={styles.plansSection}>
-          {/* Yearly — recommended */}
+        {/* === ESSENTIEL === */}
+        <View style={styles.planSection}>
           <TouchableOpacity
             style={[
-              styles.planCard,
-              selectedPlan === 'yearly' && styles.planCardSelected,
+              styles.planHeader,
+              selected.tier === 'essentiel' && { borderColor: PLANS.essentiel.color },
             ]}
-            onPress={() => setSelectedPlan('yearly')}
+            onPress={() => setSelected({ tier: 'essentiel', cycle: 'yearly' })}
             activeOpacity={0.8}
           >
-            <View style={styles.planBadge}>
-              <Text style={styles.planBadgeText}>-50%</Text>
+            <View style={styles.planHeaderTop}>
+              <View style={[styles.planIcon, { backgroundColor: `${PLANS.essentiel.color}20` }]}>
+                <Ionicons name="star" size={22} color={PLANS.essentiel.color} />
+              </View>
+              <View style={styles.planHeaderInfo}>
+                <Text style={styles.planName}>{PLANS.essentiel.name}</Text>
+                <Text style={styles.planTagline}>{PLANS.essentiel.tagline}</Text>
+              </View>
+              <View style={[styles.radio, selected.tier === 'essentiel' && { borderColor: PLANS.essentiel.color }]}>
+                {selected.tier === 'essentiel' && <View style={[styles.radioInner, { backgroundColor: PLANS.essentiel.color }]} />}
+              </View>
             </View>
-            <View style={styles.planRadio}>
-              <View style={[
-                styles.planRadioInner,
-                selectedPlan === 'yearly' && styles.planRadioInnerSelected,
-              ]} />
-            </View>
-            <View style={styles.planInfo}>
-              <Text style={[
-                styles.planName,
-                selectedPlan === 'yearly' && styles.planNameSelected,
-              ]}>
-                Annuel
-              </Text>
-              <Text style={styles.planPrice}>{PRICES.yearly.label}</Text>
-              <Text style={styles.planDetail}>
-                Soit 2,50 €/mois — Le plus avantageux
-              </Text>
+
+            {/* Prix Essentiel */}
+            {selected.tier === 'essentiel' && (
+              <View style={styles.cycleRow}>
+                <TouchableOpacity
+                  style={[styles.cycleChip, selected.cycle === 'yearly' && { backgroundColor: PLANS.essentiel.color }]}
+                  onPress={() => setSelected({ tier: 'essentiel', cycle: 'yearly' })}
+                >
+                  <Text style={[styles.cycleText, selected.cycle === 'yearly' && styles.cycleTextActive]}>
+                    {PLANS.essentiel.yearly.label}
+                  </Text>
+                  <View style={styles.saveBadge}>
+                    <Text style={styles.saveText}>-{PLANS.essentiel.yearly.savings}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.cycleChip, selected.cycle === 'monthly' && { backgroundColor: PLANS.essentiel.color }]}
+                  onPress={() => setSelected({ tier: 'essentiel', cycle: 'monthly' })}
+                >
+                  <Text style={[styles.cycleText, selected.cycle === 'monthly' && styles.cycleTextActive]}>
+                    {PLANS.essentiel.monthly.label}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Features Essentiel */}
+            <View style={styles.featuresList}>
+              {TIER_FEATURES.essentiel.features.slice(0, 4).map((f, i) => (
+                <View key={i} style={styles.featureItem}>
+                  <Ionicons
+                    name={f.included ? 'checkmark-circle' : 'close-circle'}
+                    size={16}
+                    color={f.included ? PLANS.essentiel.color : COLORS.textMuted}
+                  />
+                  <Text style={[styles.featureText, !f.included && styles.featureTextLocked]}>{f.text}</Text>
+                </View>
+              ))}
             </View>
           </TouchableOpacity>
+        </View>
 
-          {/* Monthly */}
+        {/* === PRO (recommandé) === */}
+        <View style={styles.planSection}>
+          <View style={styles.recommendBadge}>
+            <Ionicons name="flame" size={12} color="#FFF" />
+            <Text style={styles.recommendText}>RECOMMANDÉ</Text>
+          </View>
           <TouchableOpacity
             style={[
-              styles.planCard,
-              selectedPlan === 'monthly' && styles.planCardSelected,
+              styles.planHeader,
+              styles.planHeaderPro,
+              selected.tier === 'pro' && { borderColor: PLANS.pro.color },
             ]}
-            onPress={() => setSelectedPlan('monthly')}
+            onPress={() => setSelected({ tier: 'pro', cycle: 'yearly' })}
             activeOpacity={0.8}
           >
-            <View style={styles.planRadio}>
-              <View style={[
-                styles.planRadioInner,
-                selectedPlan === 'monthly' && styles.planRadioInnerSelected,
-              ]} />
+            <View style={styles.planHeaderTop}>
+              <View style={[styles.planIcon, { backgroundColor: `${PLANS.pro.color}20` }]}>
+                <Ionicons name="diamond" size={22} color={PLANS.pro.color} />
+              </View>
+              <View style={styles.planHeaderInfo}>
+                <Text style={styles.planName}>{PLANS.pro.name}</Text>
+                <Text style={styles.planTagline}>{PLANS.pro.tagline}</Text>
+              </View>
+              <View style={[styles.radio, selected.tier === 'pro' && { borderColor: PLANS.pro.color }]}>
+                {selected.tier === 'pro' && <View style={[styles.radioInner, { backgroundColor: PLANS.pro.color }]} />}
+              </View>
             </View>
-            <View style={styles.planInfo}>
-              <Text style={[
-                styles.planName,
-                selectedPlan === 'monthly' && styles.planNameSelected,
-              ]}>
-                Mensuel
-              </Text>
-              <Text style={styles.planPrice}>{PRICES.monthly.label}</Text>
-              <Text style={styles.planDetail}>Sans engagement</Text>
+
+            {selected.tier === 'pro' && (
+              <View style={styles.cycleRow}>
+                <TouchableOpacity
+                  style={[styles.cycleChip, selected.cycle === 'yearly' && { backgroundColor: PLANS.pro.color }]}
+                  onPress={() => setSelected({ tier: 'pro', cycle: 'yearly' })}
+                >
+                  <Text style={[styles.cycleText, selected.cycle === 'yearly' && styles.cycleTextActive]}>
+                    {PLANS.pro.yearly.label}
+                  </Text>
+                  <View style={styles.saveBadge}>
+                    <Text style={styles.saveText}>-{PLANS.pro.yearly.savings}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.cycleChip, selected.cycle === 'monthly' && { backgroundColor: PLANS.pro.color }]}
+                  onPress={() => setSelected({ tier: 'pro', cycle: 'monthly' })}
+                >
+                  <Text style={[styles.cycleText, selected.cycle === 'monthly' && styles.cycleTextActive]}>
+                    {PLANS.pro.monthly.label}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            <View style={styles.featuresList}>
+              {TIER_FEATURES.pro.features.map((f, i) => (
+                <View key={i} style={styles.featureItem}>
+                  <Ionicons name="checkmark-circle" size={16} color={PLANS.pro.color} />
+                  <Text style={styles.featureText}>{f.text}</Text>
+                </View>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* === ELITE === */}
+        <View style={styles.planSection}>
+          <TouchableOpacity
+            style={[
+              styles.planHeader,
+              selected.tier === 'elite' && { borderColor: PLANS.elite.color },
+            ]}
+            onPress={() => setSelected({ tier: 'elite' })}
+            activeOpacity={0.8}
+          >
+            <View style={styles.planHeaderTop}>
+              <View style={[styles.planIcon, { backgroundColor: `${PLANS.elite.color}20` }]}>
+                <Ionicons name="trophy" size={22} color={PLANS.elite.color} />
+              </View>
+              <View style={styles.planHeaderInfo}>
+                <Text style={styles.planName}>{PLANS.elite.name}</Text>
+                <Text style={styles.planTagline}>{PLANS.elite.tagline}</Text>
+              </View>
+              <View style={[styles.radio, selected.tier === 'elite' && { borderColor: PLANS.elite.color }]}>
+                {selected.tier === 'elite' && <View style={[styles.radioInner, { backgroundColor: PLANS.elite.color }]} />}
+              </View>
+            </View>
+
+            <View style={styles.elitePriceRow}>
+              <Text style={[styles.elitePrice, { color: PLANS.elite.color }]}>{PLANS.elite.lifetime.label}</Text>
+              <Text style={styles.eliteDetail}>Paiement unique — accès à vie</Text>
+            </View>
+
+            <View style={styles.featuresList}>
+              {TIER_FEATURES.elite.features.map((f, i) => (
+                <View key={i} style={styles.featureItem}>
+                  <Ionicons name="checkmark-circle" size={16} color={PLANS.elite.color} />
+                  <Text style={styles.featureText}>{f.text}</Text>
+                </View>
+              ))}
             </View>
           </TouchableOpacity>
         </View>
 
         {/* CTA */}
         <TouchableOpacity
-          style={styles.ctaButton}
+          style={[styles.cta, { backgroundColor: PLANS[selected.tier].color }]}
           onPress={handleSubscribe}
           disabled={processing}
           activeOpacity={0.85}
@@ -240,9 +341,9 @@ export default function AbonnementScreen() {
             <ActivityIndicator color="#FFF" />
           ) : (
             <>
-              <Ionicons name="diamond" size={20} color="#FFF" />
+              <Ionicons name={PLANS[selected.tier].icon} size={20} color="#FFF" />
               <Text style={styles.ctaText}>
-                Commencer — {selectedPlan === 'yearly' ? PRICES.yearly.label : PRICES.monthly.label}
+                {selected.tier === 'elite' ? 'Devenir Elite' : 'Commencer'} — {getPrice()}
               </Text>
             </>
           )}
@@ -254,16 +355,15 @@ export default function AbonnementScreen() {
             <Text style={styles.footerLink}>Restaurer mon achat</Text>
           </TouchableOpacity>
           <Text style={styles.footerText}>
-            Paiement sécurisé via l'App Store.{'\n'}
-            Annulable à tout moment.
+            Paiement sécurisé via l'App Store.{'\n'}Annulable à tout moment.
           </Text>
           <View style={styles.footerLinks}>
             <TouchableOpacity>
-              <Text style={styles.footerSmallLink}>Conditions d'utilisation</Text>
+              <Text style={styles.footerSmall}>CGU</Text>
             </TouchableOpacity>
             <Text style={styles.footerDot}>·</Text>
             <TouchableOpacity>
-              <Text style={styles.footerSmallLink}>Politique de confidentialité</Text>
+              <Text style={styles.footerSmall}>Confidentialité</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -275,313 +375,114 @@ export default function AbonnementScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
+  container: { flex: 1, backgroundColor: COLORS.background },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.lg,
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: SPACING.lg, marginBottom: SPACING.lg,
   },
-  headerTitle: {
-    fontSize: FONT_SIZE.xl,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  closeButton: {
-    alignSelf: 'flex-end',
-    padding: SPACING.lg,
-  },
+  headerTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text },
+  closeBtn: { alignSelf: 'flex-end', padding: SPACING.lg },
 
   // Hero
-  heroSection: {
-    alignItems: 'center',
-    paddingHorizontal: SPACING.xl,
-    marginBottom: SPACING.xl,
+  hero: { alignItems: 'center', paddingHorizontal: SPACING.xl, marginBottom: SPACING.xl },
+  heroIcon: {
+    width: 72, height: 72, borderRadius: 36,
+    backgroundColor: 'rgba(245,158,11,0.12)', justifyContent: 'center', alignItems: 'center',
+    marginBottom: SPACING.md,
   },
-  heroIconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: SPACING.lg,
+  heroTitle: { fontSize: 28, fontWeight: '900', color: COLORS.text, marginBottom: 6 },
+  heroSub: { fontSize: FONT_SIZE.md, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 24 },
+
+  // Plan cards
+  planSection: { paddingHorizontal: SPACING.lg, marginBottom: SPACING.md, position: 'relative' },
+  recommendBadge: {
+    position: 'absolute', top: -10, right: SPACING.lg + 16, zIndex: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor: COLORS.primary, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10,
   },
-  heroTitle: {
-    fontSize: 32,
-    fontWeight: '900',
-    color: COLORS.text,
-    marginBottom: SPACING.sm,
-    letterSpacing: -0.5,
+  recommendText: { fontSize: 10, fontWeight: '800', color: '#FFF', letterSpacing: 0.5 },
+
+  planHeader: {
+    backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.lg, borderWidth: 2, borderColor: 'transparent',
   },
-  heroSubtitle: {
-    fontSize: FONT_SIZE.md,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 24,
+  planHeaderPro: { borderColor: 'rgba(16,185,129,0.15)' },
+  planHeaderTop: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.sm },
+  planIcon: { width: 44, height: 44, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
+  planHeaderInfo: { flex: 1, marginLeft: SPACING.md },
+  planName: { fontSize: FONT_SIZE.lg, fontWeight: '800', color: COLORS.text },
+  planTagline: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary },
+
+  radio: {
+    width: 22, height: 22, borderRadius: 11,
+    borderWidth: 2, borderColor: COLORS.textMuted,
+    justifyContent: 'center', alignItems: 'center',
   },
+  radioInner: { width: 12, height: 12, borderRadius: 6 },
+
+  // Cycle picker
+  cycleRow: { flexDirection: 'row', gap: SPACING.sm, marginVertical: SPACING.sm },
+  cycleChip: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    paddingVertical: 10, borderRadius: BORDER_RADIUS.lg,
+    backgroundColor: COLORS.surfaceLight, gap: 6,
+  },
+  cycleText: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: COLORS.textSecondary },
+  cycleTextActive: { color: '#FFF' },
+  saveBadge: { backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
+  saveText: { fontSize: 10, fontWeight: '800', color: '#FFF' },
+
+  // Elite price
+  elitePriceRow: { marginVertical: SPACING.sm, alignItems: 'center' },
+  elitePrice: { fontSize: FONT_SIZE.xl, fontWeight: '900' },
+  eliteDetail: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary, marginTop: 2 },
 
   // Features
-  featuresSection: {
-    paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.xl,
-    gap: SPACING.md,
-  },
-  featureRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.md,
-    gap: SPACING.md,
-  },
-  featureIconBg: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  featureTextBlock: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 2,
-  },
-  featureDesc: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-  },
-
-  // Plans
-  plansSection: {
-    paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.xl,
-    gap: SPACING.md,
-  },
-  planCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg,
-    gap: SPACING.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    overflow: 'visible',
-  },
-  planCardSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: 'rgba(16, 185, 129, 0.06)',
-  },
-  planBadge: {
-    position: 'absolute',
-    top: -10,
-    right: 16,
-    backgroundColor: '#F59E0B',
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
-  planBadgeText: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#FFF',
-  },
-  planRadio: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: COLORS.textMuted,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  planRadioInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: 'transparent',
-  },
-  planRadioInnerSelected: {
-    backgroundColor: COLORS.primary,
-  },
-  planInfo: {
-    flex: 1,
-  },
-  planName: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: 2,
-  },
-  planNameSelected: {
-    color: COLORS.primary,
-  },
-  planPrice: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: '800',
-    color: COLORS.text,
-    marginBottom: 2,
-  },
-  planDetail: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
-  },
+  featuresList: { gap: 6, marginTop: SPACING.xs },
+  featureItem: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  featureText: { fontSize: FONT_SIZE.sm, color: COLORS.text },
+  featureTextLocked: { color: COLORS.textMuted, textDecorationLine: 'line-through' },
 
   // CTA
-  ctaButton: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.primary,
-    marginHorizontal: SPACING.lg,
-    borderRadius: BORDER_RADIUS.xl,
-    paddingVertical: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 6,
+  cta: {
+    flexDirection: 'row', marginHorizontal: SPACING.lg, borderRadius: BORDER_RADIUS.xl,
+    paddingVertical: 18, justifyContent: 'center', alignItems: 'center', gap: SPACING.sm,
+    shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6,
     marginBottom: SPACING.xl,
   },
-  ctaText: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: '800',
-    color: '#FFF',
-  },
+  ctaText: { fontSize: FONT_SIZE.lg, fontWeight: '800', color: '#FFF' },
 
   // Footer
-  footer: {
-    alignItems: 'center',
-    paddingHorizontal: SPACING.lg,
-    gap: SPACING.sm,
-  },
-  footerLink: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.info,
-    fontWeight: '600',
-    marginBottom: SPACING.sm,
-  },
-  footerText: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textMuted,
-    textAlign: 'center',
-    lineHeight: 18,
-  },
-  footerLinks: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    marginTop: SPACING.xs,
-  },
-  footerSmallLink: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    textDecorationLine: 'underline',
-  },
-  footerDot: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-  },
+  footer: { alignItems: 'center', paddingHorizontal: SPACING.lg, gap: SPACING.sm },
+  footerLink: { fontSize: FONT_SIZE.sm, color: COLORS.info, fontWeight: '600' },
+  footerText: { fontSize: FONT_SIZE.xs, color: COLORS.textMuted, textAlign: 'center', lineHeight: 18 },
+  footerLinks: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  footerSmall: { fontSize: 11, color: COLORS.textMuted, textDecorationLine: 'underline' },
+  footerDot: { fontSize: 11, color: COLORS.textMuted },
 
-  // Active subscription screen
+  // Active subscription
   activeCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.xl,
-    marginHorizontal: SPACING.lg,
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
-    marginBottom: SPACING.xl,
+    backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.xl,
+    padding: SPACING.xl, alignItems: 'center', borderWidth: 1.5, marginBottom: SPACING.xl,
   },
   activeBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    gap: 6,
-    marginBottom: SPACING.lg,
+    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 5,
+    borderRadius: 16, gap: 5, marginBottom: SPACING.lg,
   },
-  activeBadgeText: {
-    fontSize: FONT_SIZE.xs,
-    fontWeight: '800',
-    color: '#FFF',
-    letterSpacing: 1,
+  activeBadgeText: { fontSize: 11, fontWeight: '800', color: '#FFF', letterSpacing: 0.5 },
+  activeIconCircle: { width: 64, height: 64, borderRadius: 32, justifyContent: 'center', alignItems: 'center', marginBottom: SPACING.md },
+  activeTitle: { fontSize: FONT_SIZE.xxl, fontWeight: '900', color: COLORS.text, marginBottom: 4 },
+  activePlan: { fontSize: FONT_SIZE.md, color: COLORS.textSecondary },
+  activeDays: { fontSize: FONT_SIZE.sm, fontWeight: '600', marginTop: 4 },
+  sectionTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: COLORS.text, marginBottom: SPACING.md, paddingHorizontal: 4 },
+  featureCheckRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md, paddingVertical: 6 },
+  featureCheck: { width: 22, height: 22, borderRadius: 11, justifyContent: 'center', alignItems: 'center' },
+  featureCheckText: { fontSize: FONT_SIZE.md, color: COLORS.text },
+  upgradeButton: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: SPACING.sm,
+    paddingVertical: SPACING.md, borderRadius: BORDER_RADIUS.lg, marginTop: SPACING.xl,
   },
-  activeIconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-  },
-  activeTitle: {
-    fontSize: FONT_SIZE.xxl,
-    fontWeight: '900',
-    color: COLORS.text,
-    marginBottom: 4,
-  },
-  activePlan: {
-    fontSize: FONT_SIZE.md,
-    color: COLORS.textSecondary,
-    marginBottom: 4,
-  },
-  activeDays: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.primary,
-    fontWeight: '600',
-  },
-  activeFeatures: {
-    paddingHorizontal: SPACING.lg,
-    marginBottom: SPACING.xl,
-  },
-  sectionTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: SPACING.md,
-  },
-  featureRowActive: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.md,
-    paddingVertical: SPACING.sm,
-  },
-  featureCheckCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: COLORS.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  featureActiveText: {
-    fontSize: FONT_SIZE.md,
-    color: COLORS.text,
-    fontWeight: '500',
-  },
-  cancelButton: {
-    alignSelf: 'center',
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.xl,
-  },
-  cancelText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.danger,
-    fontWeight: '600',
-  },
+  upgradeText: { fontSize: FONT_SIZE.md, fontWeight: '700', color: '#FFF' },
+  cancelBtn: { alignSelf: 'center', paddingVertical: SPACING.lg },
+  cancelText: { fontSize: FONT_SIZE.sm, color: COLORS.danger, fontWeight: '600' },
 });
