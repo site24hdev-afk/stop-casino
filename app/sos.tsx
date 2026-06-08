@@ -5,8 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Vibration,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -53,7 +53,7 @@ export default function SOSScreen() {
       setTimer(prev => {
         if (prev <= 1) {
           clearInterval(interval);
-          Vibration.vibrate(200);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           return 0;
         }
         return prev - 1;
@@ -91,7 +91,7 @@ export default function SOSScreen() {
 
   const handleOvercome = async () => {
     await incrementCravingsOvercome();
-    Vibration.vibrate([0, 100, 100, 100]);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setCompleted(true);
   };
 

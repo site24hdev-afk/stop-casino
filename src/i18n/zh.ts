@@ -264,6 +264,23 @@ export default {
     noGames: '模拟游戏',
   },
 
+  settings: {
+    title: '设置',
+    language: '语言',
+    languageDesc: '选择应用语言',
+    currentLanguage: '当前语言',
+    selectLanguage: '选择语言',
+    appInfo: '关于',
+    version: '版本',
+    resetOnboarding: '重新引导',
+    resetConfirm: '你要重新引导吗？',
+    resetDone: '引导已重置',
+    dataPrivacy: '数据与隐私',
+    dataLocal: '所有数据都存储在你的手机上',
+    languageChanged: '语言已更改',
+    restartHint: '重启应用以全面应用',
+  },
+
   quotes: [
     '一天一天来。你可以的。',
     '每一个不赌博的小时都是胜利。',

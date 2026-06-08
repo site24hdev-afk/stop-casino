@@ -15,9 +15,10 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { useCravingLog } from '../src/hooks/useCravingLog';
+import * as Haptics from 'expo-haptics';
 import i18n, { t } from '../src/i18n';
 
-const TRIGGER_KEYS = ['boredom', 'stress', 'sadness', 'ads', 'friends', 'alcohol', 'other'] as const;
+const TRIGGER_KEYS = ['boredom', 'stress', 'sadness', 'money', 'ads', 'friends', 'alcohol', 'other'] as const;
 const LOCATION_KEYS = ['home', 'work', 'transport', 'outside', 'restaurant', 'other'] as const;
 
 export default function JournalScreen() {
@@ -40,6 +41,11 @@ export default function JournalScreen() {
       actionTaken: action || 'Non précisé',
       overcame,
     });
+    Haptics.notificationAsync(
+      overcame
+        ? Haptics.NotificationFeedbackType.Success
+        : Haptics.NotificationFeedbackType.Warning
+    );
     setShowModal(false);
     resetForm();
   };

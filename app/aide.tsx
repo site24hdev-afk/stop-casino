@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Linking,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -40,6 +41,7 @@ export default function AideScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
       {/* Joueurs Info Service */}
       <TouchableOpacity
         style={styles.mainCard}
@@ -132,6 +134,7 @@ export default function AideScreen() {
           {t('aide.helpMessage')}
         </Text>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

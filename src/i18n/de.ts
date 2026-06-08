@@ -223,6 +223,23 @@ export default {
     noJournal: 'Tagebuch', noLibrary: 'Bibliothek', noStats: 'Statistiken', noGames: 'Simulierte Spiele',
   },
 
+  settings: {
+    title: 'Einstellungen',
+    language: 'Sprache',
+    languageDesc: 'App-Sprache auswählen',
+    currentLanguage: 'Aktuelle Sprache',
+    selectLanguage: 'Sprache auswählen',
+    appInfo: 'Über',
+    version: 'Version',
+    resetOnboarding: 'Einführung wiederholen',
+    resetConfirm: 'Möchtest du die Einführung wiederholen?',
+    resetDone: 'Einführung zurückgesetzt',
+    dataPrivacy: 'Daten & Datenschutz',
+    dataLocal: 'Alle Daten bleiben auf deinem Handy',
+    languageChanged: 'Sprache geändert',
+    restartHint: 'Starte die App neu, um überall zu übernehmen',
+  },
+
   quotes: [
     'Ein Tag nach dem anderen. Du schaffst das.', 'Jede Stunde ohne Spielen ist ein Sieg.', 'Du bist stärker als dieser Drang.',
     'Das Geld, das du behältst, ist deine Freiheit.', 'Gestern hast du durchgehalten. Heute auch.', 'Das Casino hat dir nie etwas gegeben. Es hat alles genommen.',

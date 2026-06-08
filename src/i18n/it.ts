@@ -277,6 +277,23 @@ export default {
     noGames: 'Giochi simulati',
   },
 
+  settings: {
+    title: 'Impostazioni',
+    language: 'Lingua',
+    languageDesc: 'Scegli la lingua dell\'app',
+    currentLanguage: 'Lingua attuale',
+    selectLanguage: 'Seleziona una lingua',
+    appInfo: 'Informazioni',
+    version: 'Versione',
+    resetOnboarding: 'Ripeti introduzione',
+    resetConfirm: 'Vuoi ripetere l\'introduzione?',
+    resetDone: 'Introduzione reimpostata',
+    dataPrivacy: 'Dati e privacy',
+    dataLocal: 'Tutti i tuoi dati restano sul tuo telefono',
+    languageChanged: 'Lingua cambiata',
+    restartHint: 'Riavvia l\'app per applicare ovunque',
+  },
+
   // === CITAZIONI ===
   quotes: [
     'Un giorno alla volta. Ce la fai.',

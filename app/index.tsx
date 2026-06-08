@@ -79,9 +79,9 @@ export default function HomeScreen() {
             )}
             <TouchableOpacity
               style={styles.settingsButton}
-              onPress={() => router.push('/stats')}
+              onPress={() => router.push('/parametres')}
             >
-              <Ionicons name="bar-chart-outline" size={20} color={COLORS.textSecondary} />
+              <Ionicons name="settings-outline" size={20} color={COLORS.textSecondary} />
             </TouchableOpacity>
           </View>
         </View>

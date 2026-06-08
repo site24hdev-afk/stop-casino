@@ -264,6 +264,23 @@ export default {
     noGames: 'ألعاب المحاكاة',
   },
 
+  settings: {
+    title: 'الإعدادات',
+    language: 'اللغة',
+    languageDesc: 'اختر لغة التطبيق',
+    currentLanguage: 'اللغة الحالية',
+    selectLanguage: 'اختر لغة',
+    appInfo: 'حول',
+    version: 'الإصدار',
+    resetOnboarding: 'إعادة المقدمة',
+    resetConfirm: 'هل تريد إعادة المقدمة؟',
+    resetDone: 'تمت إعادة المقدمة',
+    dataPrivacy: 'البيانات والخصوصية',
+    dataLocal: 'جميع بياناتك تبقى على هاتفك',
+    languageChanged: 'تم تغيير اللغة',
+    restartHint: 'أعد تشغيل التطبيق لتطبيق التغيير في كل مكان',
+  },
+
   quotes: [
     'يومًا بيوم. أنت تستطيع.',
     'كل ساعة بدون قمار هي انتصار.',

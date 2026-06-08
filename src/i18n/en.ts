@@ -264,6 +264,24 @@ export default {
     noGames: 'Simulated games',
   },
 
+  // === SETTINGS ===
+  settings: {
+    title: 'Settings',
+    language: 'Language',
+    languageDesc: 'Choose the app language',
+    currentLanguage: 'Current language',
+    selectLanguage: 'Select a language',
+    appInfo: 'About',
+    version: 'Version',
+    resetOnboarding: 'Redo introduction',
+    resetConfirm: 'Do you want to redo the introduction?',
+    resetDone: 'Introduction reset',
+    dataPrivacy: 'Data & privacy',
+    dataLocal: 'All your data stays on your phone',
+    languageChanged: 'Language changed',
+    restartHint: 'Restart the app to apply everywhere',
+  },
+
   quotes: [
     'One day at a time. You got this.',
     'Every hour without gambling is a victory.',

@@ -292,6 +292,24 @@ export default {
     noGames: 'Jeux simulés',
   },
 
+  // === PARAMÈTRES ===
+  settings: {
+    title: 'Paramètres',
+    language: 'Langue',
+    languageDesc: 'Choisir la langue de l\'application',
+    currentLanguage: 'Langue actuelle',
+    selectLanguage: 'Sélectionner une langue',
+    appInfo: 'À propos',
+    version: 'Version',
+    resetOnboarding: 'Refaire l\'introduction',
+    resetConfirm: 'Tu voudras refaire l\'introduction ?',
+    resetDone: 'Introduction réinitialisée',
+    dataPrivacy: 'Données & confidentialité',
+    dataLocal: 'Toutes tes données restent sur ton téléphone',
+    languageChanged: 'Langue changée',
+    restartHint: 'Redémarre l\'app pour appliquer partout',
+  },
+
   // === CITATIONS ===
   quotes: [
     'Un jour à la fois. Tu y arrives.',

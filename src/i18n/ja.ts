@@ -292,6 +292,23 @@ export default {
     noGames: 'シミュレーションゲーム',
   },
 
+  settings: {
+    title: '設定',
+    language: '言語',
+    languageDesc: 'アプリの言語を選択',
+    currentLanguage: '現在の言語',
+    selectLanguage: '言語を選択',
+    appInfo: 'アプリについて',
+    version: 'バージョン',
+    resetOnboarding: 'イントロをやり直す',
+    resetConfirm: 'イントロをやり直しますか？',
+    resetDone: 'イントロをリセットしました',
+    dataPrivacy: 'データとプライバシー',
+    dataLocal: 'すべてのデータはあなたのスマートフォンに保存されます',
+    languageChanged: '言語が変更されました',
+    restartHint: 'アプリを再起動して全体に適用してください',
+  },
+
   // === 名言 ===
   quotes: [
     '一日一日を大切に。あなたならできます。',

@@ -264,6 +264,23 @@ export default {
     noGames: 'Jogos simulados',
   },
 
+  settings: {
+    title: 'Configurações',
+    language: 'Idioma',
+    languageDesc: 'Escolher o idioma do aplicativo',
+    currentLanguage: 'Idioma atual',
+    selectLanguage: 'Selecionar um idioma',
+    appInfo: 'Sobre',
+    version: 'Versão',
+    resetOnboarding: 'Refazer introdução',
+    resetConfirm: 'Quer refazer a introdução?',
+    resetDone: 'Introdução reiniciada',
+    dataPrivacy: 'Dados e privacidade',
+    dataLocal: 'Todos os seus dados ficam no seu celular',
+    languageChanged: 'Idioma alterado',
+    restartHint: 'Reinicie o app para aplicar em tudo',
+  },
+
   quotes: [
     'Um dia de cada vez. Você consegue.',
     'Cada hora sem apostar é uma vitória.',

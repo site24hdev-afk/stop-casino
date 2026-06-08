@@ -292,6 +292,23 @@ export default {
     noGames: '모의 게임',
   },
 
+  settings: {
+    title: '설정',
+    language: '언어',
+    languageDesc: '앱 언어를 선택해요',
+    currentLanguage: '현재 언어',
+    selectLanguage: '언어를 선택해요',
+    appInfo: '앱 정보',
+    version: '버전',
+    resetOnboarding: '소개 다시 보기',
+    resetConfirm: '소개를 다시 보시겠어요?',
+    resetDone: '소개가 초기화됐어요',
+    dataPrivacy: '데이터 및 개인정보',
+    dataLocal: '모든 데이터는 당신의 휴대폰에만 저장돼요',
+    languageChanged: '언어가 변경됐어요',
+    restartHint: '전체 적용을 위해 앱을 다시 시작해 주세요',
+  },
+
   // === 명언 ===
   quotes: [
     '하루하루 한 걸음씩. 해낼 수 있어요.',
