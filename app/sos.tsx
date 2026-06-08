@@ -20,6 +20,7 @@ export default function SOSScreen() {
   const [timer, setTimer] = useState(SOS_STEPS[0].durationSeconds);
   const [timerActive, setTimerActive] = useState(true);
   const [completed, setCompleted] = useState(false);
+  const [showGameOption, setShowGameOption] = useState(false);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
 
@@ -81,7 +82,8 @@ export default function SOSScreen() {
       setTimerActive(true);
       progressAnim.setValue(0);
     } else {
-      handleOvercome();
+      // Après toutes les étapes, proposer le jeu simulé en dernier recours
+      setShowGameOption(true);
     }
   };
 
@@ -96,6 +98,33 @@ export default function SOSScreen() {
     const s = seconds % 60;
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
+
+  if (showGameOption && !completed) {
+    return (
+      <View style={styles.completedContainer}>
+        <View style={[styles.completedCircle, { backgroundColor: COLORS.warningBg }]}>
+          <Ionicons name="game-controller-outline" size={60} color={COLORS.warning} />
+        </View>
+        <Text style={styles.completedTitle}>L'envie persiste ?</Text>
+        <Text style={styles.completedText}>
+          Tu as fait tous les exercices. Si l'envie est toujours là,{'\n'}
+          tu peux essayer un jeu simulé — sans argent, sans enjeu.
+        </Text>
+        <TouchableOpacity
+          style={[styles.backButton, { backgroundColor: COLORS.primary, marginBottom: SPACING.md }]}
+          onPress={handleOvercome}
+        >
+          <Text style={[styles.backButtonText, { color: '#FFF' }]}>Non, j'ai tenu bon !</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.backButton, { backgroundColor: COLORS.surface }]}
+          onPress={() => router.replace('/jeux')}
+        >
+          <Text style={styles.backButtonText}>Jeu simulé (dernier recours)</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   if (completed) {
     return (

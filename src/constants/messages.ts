@@ -28,14 +28,14 @@ export const SOS_STEPS = [
     id: 1,
     title: "Respire",
     description: "Inspire 4 secondes, retiens 4 secondes, expire 4 secondes. Répète 3 fois.",
-    icon: "wind",
+    icon: "leaf-outline",
     durationSeconds: 60,
   },
   {
     id: 2,
     title: "Bouge",
     description: "Sors marcher 5 minutes. Change d'environnement, l'envie passera.",
-    icon: "walk",
+    icon: "footsteps-outline",
     durationSeconds: 120,
   },
   {

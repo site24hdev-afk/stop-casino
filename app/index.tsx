@@ -124,7 +124,7 @@ export default function HomeScreen() {
           <View style={[styles.actionIcon, { backgroundColor: COLORS.infoBg }]}>
             <Ionicons name="call" size={20} color={COLORS.info} />
           </View>
-          <Text style={styles.actionText}>Aide humaine</Text>
+          <Text style={styles.actionText}>Aide</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -132,9 +132,29 @@ export default function HomeScreen() {
           onPress={() => router.push('/journal')}
         >
           <View style={[styles.actionIcon, { backgroundColor: COLORS.warningBg }]}>
-            <Ionicons name="analytics" size={20} color={COLORS.warning} />
+            <Ionicons name="book-outline" size={20} color={COLORS.warning} />
           </View>
-          <Text style={styles.actionText}>Mon journal</Text>
+          <Text style={styles.actionText}>Journal</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.actionCard}
+          onPress={() => router.push('/bibliotheque')}
+        >
+          <View style={[styles.actionIcon, { backgroundColor: 'rgba(167, 139, 250, 0.12)' }]}>
+            <Ionicons name="library-outline" size={20} color="#A78BFA" />
+          </View>
+          <Text style={styles.actionText}>Lire</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.actionCard}
+          onPress={() => router.push('/stats')}
+        >
+          <View style={[styles.actionIcon, { backgroundColor: COLORS.primaryBg }]}>
+            <Ionicons name="stats-chart" size={20} color={COLORS.primary} />
+          </View>
+          <Text style={styles.actionText}>Stats</Text>
         </TouchableOpacity>
       </View>
 
