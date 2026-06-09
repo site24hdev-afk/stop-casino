@@ -17,6 +17,7 @@ import * as Haptics from 'expo-haptics';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
 import { useUserData } from '../../src/hooks/useUserData';
 import { useSubscription, PLANS } from '../../src/hooks/useSubscription';
+import { useBadges } from '../../src/hooks/useBadges';
 import i18n, { t } from '../../src/i18n';
 import Onboarding from '../../src/components/Onboarding';
 
@@ -38,7 +39,11 @@ export default function HomeScreen() {
   const router = useRouter();
   const { userData, loading, saveData, daysSinceQuit, moneySaved, handleRelapse } = useUserData();
   const { isPaid, tier, canAccess } = useSubscription();
+  const { newBadge, dismissNewBadge, allBadges, unlockedCount, totalCount } = useBadges(
+    daysSinceQuit, moneySaved, userData.cravingsOvercome
+  );
   const [encouragement, setEncouragement] = useState('');
+  const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [showRelapseModal, setShowRelapseModal] = useState(false);
   const [relapseQuote, setRelapseQuote] = useState('');
   const [relapseConfirmed, setRelapseConfirmed] = useState(false);
@@ -48,6 +53,14 @@ export default function HomeScreen() {
     const idx = Math.floor(Math.random() * quotes.length);
     setEncouragement(quotes[idx]);
   }, []);
+
+  // Afficher le modal célébration quand un nouveau badge est débloqué
+  useEffect(() => {
+    if (newBadge) {
+      setShowBadgeModal(true);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  }, [newBadge]);
 
   const openRelapseModal = () => {
     const idx = Math.floor(Math.random() * RELAPSE_QUOTES.length);
@@ -190,6 +203,41 @@ export default function HomeScreen() {
             </View>
           </View>
 
+          {/* ═══ Badges ═══ */}
+          <View style={styles.badgesSection}>
+            <View style={styles.badgesHeader}>
+              <Text style={styles.badgesTitle}>Récompenses</Text>
+              <Text style={styles.badgesCount}>{unlockedCount}/{totalCount}</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.badgesScroll}
+            >
+              {allBadges.map((badge) => (
+                <View
+                  key={badge.id}
+                  style={[
+                    styles.badgeItem,
+                    !badge.unlocked && styles.badgeItemLocked,
+                  ]}
+                >
+                  <View style={[styles.badgeEmoji, { backgroundColor: badge.unlocked ? badge.colorBg : COLORS.surface }]}>
+                    <Text style={{ fontSize: 24, opacity: badge.unlocked ? 1 : 0.3 }}>
+                      {badge.emoji}
+                    </Text>
+                  </View>
+                  <Text
+                    style={[styles.badgeLabel, !badge.unlocked && { color: COLORS.textMuted }]}
+                    numberOfLines={1}
+                  >
+                    {badge.title}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+
           {/* ═══ Quote ═══ */}
           <View style={styles.quoteCard}>
             <View style={styles.quoteBar} />
@@ -303,6 +351,36 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 </>
               )}
+            </View>
+          </View>
+        </Modal>
+
+        {/* ═══ Modal Célébration Badge ═══ */}
+        <Modal
+          visible={showBadgeModal && newBadge !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => { setShowBadgeModal(false); dismissNewBadge(); }}
+        >
+          <View style={styles.relapseOverlay}>
+            <View style={styles.relapseModal}>
+              <View style={[styles.relapseEmojiWrap, { backgroundColor: newBadge?.colorBg ?? COLORS.primaryBg }]}>
+                <Text style={{ fontSize: 48 }}>{newBadge?.emoji}</Text>
+              </View>
+              <Text style={styles.badgeCelebTitle}>🎉 Nouveau badge !</Text>
+              <Text style={[styles.relapseTitle, { color: newBadge?.color ?? COLORS.primary, fontSize: 22 }]}>
+                {newBadge?.title}
+              </Text>
+              <Text style={styles.relapseSubtitle}>
+                {newBadge?.description}
+              </Text>
+              <TouchableOpacity
+                style={[styles.relapseConfirmBtn, { backgroundColor: newBadge?.color ?? COLORS.primary }]}
+                onPress={() => { setShowBadgeModal(false); dismissNewBadge(); }}
+              >
+                <Text style={styles.relapseConfirmText}>Super !</Text>
+                <Ionicons name="sparkles" size={18} color="#FFF" />
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -516,5 +594,60 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: COLORS.textMuted,
     fontWeight: '500',
+  },
+
+  // Badges section
+  badgesSection: {
+    marginBottom: 14,
+  },
+  badgesHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  badgesTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  badgesCount: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.textMuted,
+  },
+  badgesScroll: {
+    gap: 10,
+    paddingRight: 8,
+  },
+  badgeItem: {
+    alignItems: 'center',
+    width: 72,
+    gap: 6,
+  },
+  badgeItemLocked: {
+    opacity: 0.5,
+  },
+  badgeEmoji: {
+    width: 52,
+    height: 52,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...SHADOWS.sm,
+  },
+  badgeLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: COLORS.text,
+    textAlign: 'center',
+  },
+
+  // Badge celebration
+  badgeCelebTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
+    marginBottom: 4,
   },
 });
