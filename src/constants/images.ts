@@ -6,6 +6,7 @@ export const IMAGES = {
   onboarding: {
     welcome: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80',       // Sommet montagne au lever du soleil — nouveau départ
     money: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&q=80',          // Tirelire — économies
+    quitDate: 'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=800&q=80',      // Lever de soleil champ — date d'arrêt
     community: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&q=80',      // Groupe d'amis — soutien
   },
 

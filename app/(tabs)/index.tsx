@@ -6,28 +6,67 @@ import {
   TouchableOpacity,
   ScrollView,
   Platform,
+  Modal,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
 import { useUserData } from '../../src/hooks/useUserData';
 import { useSubscription, PLANS } from '../../src/hooks/useSubscription';
 import i18n, { t } from '../../src/i18n';
 import Onboarding from '../../src/components/Onboarding';
 
+// Citations encourageantes pour la rechute
+const RELAPSE_QUOTES = [
+  "Tomber, c'est humain. Se relever, c'est héroïque.",
+  "Chaque jour est une nouvelle chance de recommencer.",
+  "Le courage, ce n'est pas de ne jamais tomber, c'est de se relever à chaque fois.",
+  "Tu n'as pas perdu tout ton progrès. Tu as gagné de l'expérience.",
+  "La rechute fait partie du chemin. L'abandon, jamais.",
+  "Un faux pas ne définit pas ton parcours. Continue d'avancer.",
+  "Les plus grandes victoires viennent après les plus dures batailles.",
+  "Pardonne-toi. Puis recommence, plus fort qu'avant.",
+  "Ce qui compte, ce n'est pas combien de fois tu tombes, mais combien de fois tu te relèves.",
+  "Aujourd'hui est le premier jour du reste de ta vie sans casino.",
+];
+
 export default function HomeScreen() {
   const router = useRouter();
-  const { userData, loading, saveData, daysSinceQuit, moneySaved } = useUserData();
+  const { userData, loading, saveData, daysSinceQuit, moneySaved, handleRelapse } = useUserData();
   const { isPaid, tier, canAccess } = useSubscription();
   const [encouragement, setEncouragement] = useState('');
+  const [showRelapseModal, setShowRelapseModal] = useState(false);
+  const [relapseQuote, setRelapseQuote] = useState('');
+  const [relapseConfirmed, setRelapseConfirmed] = useState(false);
 
   useEffect(() => {
     const quotes = i18n.t('quotes') as unknown as string[];
     const idx = Math.floor(Math.random() * quotes.length);
     setEncouragement(quotes[idx]);
   }, []);
+
+  const openRelapseModal = () => {
+    const idx = Math.floor(Math.random() * RELAPSE_QUOTES.length);
+    setRelapseQuote(RELAPSE_QUOTES[idx]);
+    setRelapseConfirmed(false);
+    setShowRelapseModal(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
+  const confirmRelapse = async () => {
+    await handleRelapse();
+    setRelapseConfirmed(true);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const closeRelapseModal = () => {
+    setShowRelapseModal(false);
+    setRelapseConfirmed(false);
+  };
 
   if (loading) {
     return (
@@ -122,6 +161,16 @@ export default function HomeScreen() {
             )}
           </View>
 
+          {/* ═══ Bouton J'ai rejoué ═══ */}
+          <TouchableOpacity
+            style={styles.relapseBtn}
+            onPress={openRelapseModal}
+            activeOpacity={0.6}
+          >
+            <Ionicons name="refresh" size={14} color={COLORS.textMuted} />
+            <Text style={styles.relapseBtnText}>J'ai rejoué</Text>
+          </TouchableOpacity>
+
           {/* ═══ Quick Stats ═══ */}
           <View style={styles.statsRow}>
             <View style={styles.statCard}>
@@ -197,6 +246,66 @@ export default function HomeScreen() {
 
           <View style={{ height: 20 }} />
         </ScrollView>
+
+        {/* ═══ Modal Rechute ═══ */}
+        <Modal
+          visible={showRelapseModal}
+          transparent
+          animationType="fade"
+          onRequestClose={closeRelapseModal}
+        >
+          <View style={styles.relapseOverlay}>
+            <View style={styles.relapseModal}>
+              {!relapseConfirmed ? (
+                <>
+                  {/* Encouragement avant confirmation */}
+                  <View style={styles.relapseEmojiWrap}>
+                    <Text style={styles.relapseEmoji}>🤝</Text>
+                  </View>
+                  <Text style={styles.relapseTitle}>C'est pas grave</Text>
+                  <Text style={styles.relapseSubtitle}>
+                    La rechute fait partie du parcours. L'important, c'est que tu sois là, prêt à recommencer.
+                  </Text>
+                  <View style={styles.relapseQuoteCard}>
+                    <View style={styles.relapseQuoteBar} />
+                    <Text style={styles.relapseQuoteText}>« {relapseQuote} »</Text>
+                  </View>
+                  <TouchableOpacity style={styles.relapseConfirmBtn} onPress={confirmRelapse}>
+                    <Text style={styles.relapseConfirmText}>Repartir de zéro</Text>
+                    <Ionicons name="refresh" size={18} color="#FFF" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.relapseCancelBtn} onPress={closeRelapseModal}>
+                    <Text style={styles.relapseCancelText}>Annuler</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  {/* Message après confirmation */}
+                  <View style={styles.relapseEmojiWrap}>
+                    <Text style={styles.relapseEmoji}>💪</Text>
+                  </View>
+                  <Text style={[styles.relapseTitle, { color: COLORS.primary }]}>
+                    C'est reparti !
+                  </Text>
+                  <Text style={styles.relapseSubtitle}>
+                    Ton compteur est remis à zéro. Chaque nouveau jour compte. Tu es plus fort que tu ne le crois.
+                  </Text>
+                  <View style={styles.relapseQuoteCard}>
+                    <View style={[styles.relapseQuoteBar, { backgroundColor: COLORS.primary }]} />
+                    <Text style={styles.relapseQuoteText}>« {relapseQuote} »</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={[styles.relapseConfirmBtn, { backgroundColor: COLORS.primary }]}
+                    onPress={closeRelapseModal}
+                  >
+                    <Text style={styles.relapseConfirmText}>Continuer</Text>
+                    <Ionicons name="arrow-forward" size={18} color="#FFF" />
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </View>
   );
@@ -286,5 +395,126 @@ const styles = StyleSheet.create({
   menuLock: {
     width: 28, height: 28, borderRadius: 14,
     backgroundColor: 'rgba(245,158,11,0.12)', justifyContent: 'center', alignItems: 'center',
+  },
+
+  // Relapse button
+  relapseBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    alignSelf: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginBottom: 14,
+    borderRadius: 20,
+    backgroundColor: 'rgba(156,163,175,0.08)',
+  },
+  relapseBtnText: {
+    fontSize: 13,
+    color: COLORS.textMuted,
+    fontWeight: '500',
+  },
+
+  // Relapse modal
+  relapseOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  relapseModal: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 28,
+    paddingVertical: 32,
+    paddingHorizontal: 28,
+    width: '100%',
+    maxWidth: 380,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  relapseEmojiWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(245,158,11,0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  relapseEmoji: {
+    fontSize: 40,
+  },
+  relapseTitle: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: COLORS.text,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  relapseSubtitle: {
+    fontSize: 15,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 23,
+    marginBottom: 20,
+  },
+  relapseQuoteCard: {
+    flexDirection: 'row',
+    gap: 10,
+    backgroundColor: 'rgba(245,158,11,0.06)',
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 24,
+    width: '100%',
+  },
+  relapseQuoteBar: {
+    width: 3,
+    borderRadius: 2,
+    backgroundColor: COLORS.warning,
+    alignSelf: 'stretch',
+  },
+  relapseQuoteText: {
+    flex: 1,
+    fontSize: 14,
+    color: COLORS.textSecondary,
+    fontStyle: 'italic',
+    lineHeight: 22,
+  },
+  relapseConfirmBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: COLORS.warning,
+    borderRadius: 16,
+    paddingVertical: 15,
+    paddingHorizontal: 32,
+    width: '100%',
+    marginBottom: 12,
+    shadowColor: COLORS.warning,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  relapseConfirmText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFF',
+  },
+  relapseCancelBtn: {
+    paddingVertical: 8,
+  },
+  relapseCancelText: {
+    fontSize: 15,
+    color: COLORS.textMuted,
+    fontWeight: '500',
   },
 });

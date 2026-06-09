@@ -12,16 +12,27 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../constants/theme';
 import { IMAGES } from '../constants/images';
 import { t } from '../i18n';
 import { UserData } from '../types';
 
 const { width, height } = Dimensions.get('window');
+const TOTAL_STEPS = 4;
 
 interface Props {
   onComplete: (data: Partial<UserData>) => void;
 }
+
+// Options rapides pour la date d'arrêt
+const DATE_OPTIONS = [
+  { key: 'today', label: "Aujourd'hui", icon: 'sunny' as const, days: 0 },
+  { key: 'yesterday', label: 'Hier', icon: 'time' as const, days: 1 },
+  { key: '3days', label: 'Il y a 3 jours', icon: 'calendar' as const, days: 3 },
+  { key: '1week', label: 'Il y a 1 semaine', icon: 'calendar-outline' as const, days: 7 },
+  { key: '1month', label: 'Il y a 1 mois', icon: 'calendar-clear' as const, days: 30 },
+];
 
 export default function Onboarding({ onComplete }: Props) {
   const [step, setStep] = useState(0);
@@ -29,9 +40,35 @@ export default function Onboarding({ onComplete }: Props) {
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
 
+  // Date d'arrêt
+  const [quitDate, setQuitDate] = useState(new Date());
+  const [dateOption, setDateOption] = useState('today');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const selectDateOption = (key: string, days: number) => {
+    setDateOption(key);
+    setShowDatePicker(false);
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    d.setHours(0, 0, 0, 0);
+    setQuitDate(d);
+  };
+
+  const onDatePickerChange = (_event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (Platform.OS === 'android') setShowDatePicker(false);
+    if (selectedDate) {
+      setQuitDate(selectedDate);
+      setDateOption('custom');
+    }
+  };
+
+  const formatDate = (d: Date) => {
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
   const handleFinish = () => {
     onComplete({
-      quitDate: new Date().toISOString(),
+      quitDate: quitDate.toISOString(),
       averageDailySpend: Number(averageSpend) || 50,
       trustedContactName: contactName,
       trustedContactPhone: contactPhone,
@@ -40,8 +77,16 @@ export default function Onboarding({ onComplete }: Props) {
     });
   };
 
+  const renderDots = (activeIdx: number) => (
+    <View style={styles.dots}>
+      {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+        <View key={i} style={[styles.dot, i === activeIdx && styles.dotActive]} />
+      ))}
+    </View>
+  );
+
   const steps = [
-    // Étape 0 — Bienvenue
+    // ═══ Étape 0 — Bienvenue ═══
     <View key="welcome" style={styles.stepContainer}>
       <View style={styles.imageContainer}>
         <Image
@@ -70,16 +115,10 @@ export default function Onboarding({ onComplete }: Props) {
           <Ionicons name="arrow-forward" size={20} color="#FFF" />
         </TouchableOpacity>
       </View>
-
-      {/* Dots */}
-      <View style={styles.dots}>
-        {[0, 1, 2].map(i => (
-          <View key={i} style={[styles.dot, i === 0 && styles.dotActive]} />
-        ))}
-      </View>
+      {renderDots(0)}
     </View>,
 
-    // Étape 1 — Dépense moyenne
+    // ═══ Étape 1 — Dépense moyenne ═══
     <KeyboardAvoidingView
       key="spend"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -120,15 +159,134 @@ export default function Onboarding({ onComplete }: Props) {
           <Ionicons name="arrow-forward" size={20} color="#FFF" />
         </TouchableOpacity>
       </ScrollView>
-
-      <View style={styles.dots}>
-        {[0, 1, 2].map(i => (
-          <View key={i} style={[styles.dot, i === 1 && styles.dotActive]} />
-        ))}
-      </View>
+      {renderDots(1)}
     </KeyboardAvoidingView>,
 
-    // Étape 2 — Proche de confiance
+    // ═══ Étape 2 — Date d'arrêt (NOUVEAU) ═══
+    <View key="quitdate" style={styles.stepContainer}>
+      <View style={styles.imageContainerSmall}>
+        <Image
+          source={IMAGES.onboarding.quitDate}
+          style={styles.stepImage}
+          contentFit="cover"
+          transition={600}
+        />
+        <View style={styles.imageOverlay} />
+        <View style={styles.imageContent}>
+          <View style={[styles.iconBadge, { backgroundColor: 'rgba(16,185,129,0.9)' }]}>
+            <Ionicons name="calendar" size={28} color="#FFF" />
+          </View>
+        </View>
+      </View>
+
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.dateArea} showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Quand as-tu arrêté ?</Text>
+        <Text style={styles.description}>
+          Choisis la date à laquelle tu as décidé d'arrêter le casino. Ton compteur démarrera à partir de ce jour.
+        </Text>
+
+        {/* Quick options */}
+        <View style={styles.dateOptions}>
+          {DATE_OPTIONS.map((opt) => (
+            <TouchableOpacity
+              key={opt.key}
+              style={[
+                styles.dateOptionBtn,
+                dateOption === opt.key && styles.dateOptionBtnActive,
+              ]}
+              onPress={() => selectDateOption(opt.key, opt.days)}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={opt.icon}
+                size={18}
+                color={dateOption === opt.key ? COLORS.primary : COLORS.textMuted}
+              />
+              <Text
+                style={[
+                  styles.dateOptionText,
+                  dateOption === opt.key && styles.dateOptionTextActive,
+                ]}
+              >
+                {opt.label}
+              </Text>
+              {dateOption === opt.key && (
+                <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
+              )}
+            </TouchableOpacity>
+          ))}
+
+          {/* Custom date picker button */}
+          <TouchableOpacity
+            style={[
+              styles.dateOptionBtn,
+              dateOption === 'custom' && styles.dateOptionBtnActive,
+            ]}
+            onPress={() => setShowDatePicker(true)}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="create"
+              size={18}
+              color={dateOption === 'custom' ? COLORS.primary : COLORS.textMuted}
+            />
+            <Text
+              style={[
+                styles.dateOptionText,
+                dateOption === 'custom' && styles.dateOptionTextActive,
+              ]}
+            >
+              Choisir une date
+            </Text>
+            {dateOption === 'custom' && (
+              <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Selected date display */}
+        <View style={styles.selectedDateCard}>
+          <Ionicons name="flag" size={18} color={COLORS.primary} />
+          <Text style={styles.selectedDateText}>{formatDate(quitDate)}</Text>
+        </View>
+
+        {/* Date picker (iOS inline, Android modal) */}
+        {showDatePicker && (
+          <DateTimePicker
+            value={quitDate}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={onDatePickerChange}
+            maximumDate={new Date()}
+            locale="fr-FR"
+            style={styles.datePicker}
+          />
+        )}
+
+        {!showDatePicker && (
+          <TouchableOpacity style={styles.nextButton} onPress={() => setStep(3)}>
+            <Text style={styles.nextText}>{t('next')}</Text>
+            <Ionicons name="arrow-forward" size={20} color="#FFF" />
+          </TouchableOpacity>
+        )}
+
+        {showDatePicker && Platform.OS === 'ios' && (
+          <TouchableOpacity
+            style={styles.nextButton}
+            onPress={() => {
+              setShowDatePicker(false);
+              setDateOption('custom');
+            }}
+          >
+            <Text style={styles.nextText}>Valider</Text>
+            <Ionicons name="checkmark" size={20} color="#FFF" />
+          </TouchableOpacity>
+        )}
+      </ScrollView>
+      {renderDots(2)}
+    </View>,
+
+    // ═══ Étape 3 — Proche de confiance ═══
     <KeyboardAvoidingView
       key="contact"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -175,12 +333,7 @@ export default function Onboarding({ onComplete }: Props) {
           <Text style={styles.skipText}>{t('onboarding.skipStep')}</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      <View style={styles.dots}>
-        {[0, 1, 2].map(i => (
-          <View key={i} style={[styles.dot, i === 2 && styles.dotActive]} />
-        ))}
-      </View>
+      {renderDots(3)}
     </KeyboardAvoidingView>,
   ];
 
@@ -199,6 +352,12 @@ const styles = StyleSheet.create({
   // Image hero en haut
   imageContainer: {
     height: height * 0.38,
+    width: '100%',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  imageContainerSmall: {
+    height: height * 0.25,
     width: '100%',
     position: 'relative',
     overflow: 'hidden',
@@ -238,6 +397,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xl,
     paddingTop: SPACING.xl,
     justifyContent: 'center',
+  },
+  dateArea: {
+    paddingHorizontal: SPACING.xl,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.lg,
   },
   title: {
     fontSize: 30,
@@ -316,6 +480,63 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.border,
   },
+
+  // Date options
+  dateOptions: {
+    gap: 8,
+    marginBottom: SPACING.md,
+  },
+  dateOptionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: COLORS.surfaceGlass,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderWidth: 1.5,
+    borderColor: COLORS.borderLight,
+  },
+  dateOptionBtnActive: {
+    borderColor: COLORS.primary,
+    backgroundColor: 'rgba(16,185,129,0.06)',
+  },
+  dateOptionText: {
+    flex: 1,
+    fontSize: FONT_SIZE.md,
+    color: COLORS.text,
+    fontWeight: '500',
+  },
+  dateOptionTextActive: {
+    fontWeight: '700',
+    color: COLORS.primary,
+  },
+
+  // Selected date
+  selectedDateCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(16,185,129,0.08)',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: SPACING.lg,
+  },
+  selectedDateText: {
+    fontSize: FONT_SIZE.md,
+    fontWeight: '700',
+    color: COLORS.primary,
+  },
+
+  // Date picker
+  datePicker: {
+    height: 160,
+    marginBottom: SPACING.md,
+  },
+
+  // Buttons
   nextButton: {
     backgroundColor: COLORS.primary,
     borderRadius: BORDER_RADIUS.lg,

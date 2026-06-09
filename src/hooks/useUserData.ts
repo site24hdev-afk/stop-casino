@@ -48,6 +48,10 @@ export function useUserData() {
     await saveData({ cravingsOvercome: userData.cravingsOvercome + 1 });
   }, [userData.cravingsOvercome, saveData]);
 
+  const handleRelapse = useCallback(async () => {
+    await saveData({ quitDate: new Date().toISOString() });
+  }, [saveData]);
+
   // Calculs dérivés
   const daysSinceQuit = userData.quitDate
     ? Math.max(0, Math.floor((Date.now() - new Date(userData.quitDate).getTime()) / 86400000))
@@ -60,6 +64,7 @@ export function useUserData() {
     loading,
     saveData,
     incrementCravingsOvercome,
+    handleRelapse,
     daysSinceQuit,
     moneySaved,
   };
