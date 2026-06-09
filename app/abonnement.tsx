@@ -162,6 +162,36 @@ export default function AbonnementScreen() {
           <Text style={styles.heroSub}>{t('sub.heroText')}</Text>
         </View>
 
+        {/* === GRATUIT (info card, non sélectionnable) === */}
+        <View style={styles.planSection}>
+          <View style={[styles.planHeader, { borderColor: 'rgba(148,163,184,0.2)', opacity: 0.7 }]}>
+            <View style={styles.planHeaderTop}>
+              <View style={[styles.planIcon, { backgroundColor: 'rgba(148,163,184,0.15)' }]}>
+                <Ionicons name="gift-outline" size={22} color="#94A3B8" />
+              </View>
+              <View style={styles.planHeaderInfo}>
+                <Text style={styles.planName}>{t('sub.freeName')}</Text>
+                <Text style={styles.planTagline}>{t('sub.freeTagline')}</Text>
+              </View>
+              <Text style={styles.freeLabel}>{t('sub.freePrice')}</Text>
+            </View>
+            <View style={styles.featuresList}>
+              {TIER_FEATURES.free.features.slice(0, 7).map((f, i) => (
+                <View key={i} style={styles.featureItem}>
+                  <Ionicons
+                    name={f.included ? 'checkmark-circle' : 'close-circle'}
+                    size={16}
+                    color={f.included ? '#94A3B8' : COLORS.textMuted}
+                  />
+                  <Text style={[styles.featureText, !f.included && styles.featureTextLocked]}>
+                    {f.text}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+
         {/* === ESSENTIEL === */}
         <View style={styles.planSection}>
           <TouchableOpacity
@@ -483,6 +513,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
   },
   radioInner: { width: 12, height: 12, borderRadius: 6 },
+  freeLabel: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: '#94A3B8' },
 
   // Cycle picker
   cycleRow: { flexDirection: 'row', gap: SPACING.sm, marginVertical: SPACING.sm },

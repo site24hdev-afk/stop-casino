@@ -216,6 +216,9 @@ export default {
 
   // === サブスクリプション ===
   sub: {
+    freeName: '無料',
+    freeTagline: '基本利用',
+    freePrice: '0 €',
     choosePlan: 'プランを選ぶ',
     heroText: 'カジノに大金を費やしていました。\n自分の自由に投資しましょう。',
     recommended: 'おすすめ',

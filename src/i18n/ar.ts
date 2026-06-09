@@ -191,6 +191,9 @@ export default {
   },
 
   sub: {
+    freeName: 'مجاني',
+    freeTagline: 'استخدام أساسي',
+    freePrice: '0 €',
     choosePlan: 'اختر خطتك',
     heroText: 'كنت تنفق ثروات في الكازينو.\nاستثمر في حريتك.',
     recommended: 'موصى به',

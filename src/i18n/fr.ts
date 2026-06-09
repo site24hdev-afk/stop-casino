@@ -216,6 +216,9 @@ export default {
 
   // === ABONNEMENT ===
   sub: {
+    freeName: 'Gratuit',
+    freeTagline: 'Utilisation de base',
+    freePrice: '0 €',
     choosePlan: 'Choisis ton plan',
     heroText: 'Tu dépensais des fortunes au casino.\nInvestis dans ta liberté.',
     recommended: 'RECOMMANDÉ',

@@ -216,6 +216,9 @@ export default {
 
   // === 구독 ===
   sub: {
+    freeName: '무료',
+    freeTagline: '기본 이용',
+    freePrice: '0 €',
     choosePlan: '요금제를 선택해요',
     heroText: '카지노에 거금을 썼잖아요.\n이제 자유에 투자하세요.',
     recommended: '추천',

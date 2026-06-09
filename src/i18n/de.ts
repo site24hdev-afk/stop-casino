@@ -176,6 +176,9 @@ export default {
   },
 
   sub: {
+    freeName: 'Kostenlos',
+    freeTagline: 'Grundnutzung',
+    freePrice: '0 €',
     choosePlan: 'Wähle deinen Plan',
     heroText: 'Du hast Vermögen im Casino verspielt.\nInvestiere in deine Freiheit.',
     recommended: 'EMPFOHLEN',

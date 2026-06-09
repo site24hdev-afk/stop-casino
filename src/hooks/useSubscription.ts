@@ -65,13 +65,15 @@ export const TIER_FEATURES = {
     label: 'Gratuit',
     features: [
       { text: 'Compteur de jours', included: true },
-      { text: 'SOS : 1 étape sur 4', included: true },
-      { text: 'Aide : numéro urgence', included: true },
-      { text: '1 citation fixe', included: true },
-      { text: 'Journal', included: false },
-      { text: 'Bibliothèque', included: false },
-      { text: 'Statistiques', included: false },
+      { text: 'SOS (2 étapes sur 4)', included: true },
+      { text: 'Aide : numéro d\'urgence', included: true },
+      { text: 'Journal (2 entrées/mois)', included: true },
+      { text: '1 article bibliothèque', included: true },
+      { text: 'Stats basiques', included: true },
+      { text: '1 citation/jour', included: true },
       { text: 'Jeux simulés', included: false },
+      { text: 'Stats avancées', included: false },
+      { text: 'Bibliothèque complète', included: false },
     ],
   },
   essentiel: {
@@ -125,15 +127,15 @@ export const TIER_FEATURES = {
 // Limites par palier
 export const TIER_LIMITS = {
   free: {
-    sosSteps: 1,            // 1 seule étape SOS
-    journalEntries: 0,      // pas de journal
-    libraryArticles: 0,     // pas de biblio
-    hasStats: false,
+    sosSteps: 2,            // 2 étapes sur 4
+    journalEntries: 2,      // 2 par mois
+    libraryArticles: 1,     // 1 article
+    hasStats: true,          // stats basiques
     hasAdvancedStats: false,
     hasGames: false,
-    hasCitations: false,     // 1 citation fixe seulement
+    hasCitations: true,      // 1 citation/jour
     hasAds: true,
-    hasFullAide: false,
+    hasFullAide: false,      // numéro urgence uniquement (pas contact de confiance)
     hasCustomReminders: false,
     hasExport: false,
     hasWidget: false,

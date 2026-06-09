@@ -191,6 +191,9 @@ export default {
   },
 
   sub: {
+    freeName: 'Free',
+    freeTagline: 'Basic usage',
+    freePrice: '0 €',
     choosePlan: 'Choose your plan',
     heroText: 'You used to spend fortunes at the casino.\nInvest in your freedom.',
     recommended: 'RECOMMENDED',

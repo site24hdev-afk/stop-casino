@@ -201,6 +201,9 @@ export default {
 
   // === ABBONAMENTO ===
   sub: {
+    freeName: 'Gratuito',
+    freeTagline: 'Uso base',
+    freePrice: '0 €',
     choosePlan: 'Scegli il tuo piano',
     heroText: 'Spendevi fortune al casinò.\nInvesti nella tua libertà.',
     recommended: 'CONSIGLIATO',

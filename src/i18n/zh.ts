@@ -191,6 +191,9 @@ export default {
   },
 
   sub: {
+    freeName: '免费',
+    freeTagline: '基础功能',
+    freePrice: '0 €',
     choosePlan: '选择你的方案',
     heroText: '你曾在赌场花费巨款。\n投资你的自由吧。',
     recommended: '推荐',
