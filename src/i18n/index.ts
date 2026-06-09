@@ -1,5 +1,4 @@
 import { I18n } from 'i18n-js';
-import { getLocales } from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import fr from './fr';
@@ -30,8 +29,14 @@ const i18n = new I18n({
 i18n.defaultLocale = 'fr';
 i18n.enableFallback = true;
 
-// Détection automatique de la langue du téléphone
-const deviceLocale = getLocales()[0]?.languageCode ?? 'fr';
+// Détection automatique de la langue du téléphone (safe)
+let deviceLocale = 'fr';
+try {
+  const { getLocales } = require('expo-localization');
+  deviceLocale = getLocales()[0]?.languageCode ?? 'fr';
+} catch {
+  // Module natif indisponible (Expo Go / simulateur) → fallback FR
+}
 i18n.locale = deviceLocale;
 
 const LANG_KEY = '@stop_casino_language';
