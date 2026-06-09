@@ -62,13 +62,13 @@ export default function HomeScreen() {
           <View style={styles.headerRight}>
             {isPaid ? (
               <TouchableOpacity
-                style={[styles.tierBadge, { borderColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color}40`, backgroundColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color}15` }]}
+                style={[styles.tierBadge, { borderColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].color}40`, backgroundColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].color}15` }]}
                 onPress={() => router.push('/abonnement')}
                 accessibilityRole="button"
                 accessibilityLabel="View subscription tier"
               >
-                <Ionicons name={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].icon} size={14} color={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color} />
-                <Text style={[styles.tierBadgeText, { color: PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color }]}>{tier.toUpperCase()}</Text>
+                <Ionicons name={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].icon} size={14} color={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].color} />
+                <Text style={[styles.tierBadgeText, { color: PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].color }]}>{tier.toUpperCase()}</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -277,7 +277,7 @@ export default function HomeScreen() {
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
               <Ionicons name="diamond" size={26} color="#F59E0B" />
             </View>
-            <Text style={styles.navTitle}>{isPaid ? PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].name : t('home.unlock')}</Text>
+            <Text style={styles.navTitle}>{isPaid ? PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].name : t('home.unlock')}</Text>
             <Text style={styles.navDesc}>{isPaid ? t('home.manageOffer') : t('home.unlockDesc')}</Text>
           </TouchableOpacity>
         </View>

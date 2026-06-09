@@ -4,8 +4,8 @@ import { useFocusEffect } from 'expo-router';
 
 const SUBSCRIPTION_KEY = '@stop_casino_subscription';
 
-// 3 paliers + gratuit
-export type TierType = 'free' | 'essentiel' | 'pro' | 'elite';
+// 4 paliers + gratuit
+export type TierType = 'free' | 'essentiel' | 'pro' | 'premium' | 'elite';
 
 export interface SubscriptionData {
   tier: TierType;
@@ -41,6 +41,14 @@ export const PLANS = {
     icon: 'diamond-outline' as const,
     tagline: 'Le plus populaire',
     recommended: true,
+  },
+  premium: {
+    name: 'Premium',
+    monthly: { amount: 14.99, label: '14,99 €/mois' },
+    yearly: { amount: 109.99, label: '109,99 €/an', perMonth: '9,17 €/mois', savings: '39%' },
+    color: '#8B5CF6',
+    icon: 'shield-checkmark-outline' as const,
+    tagline: 'L\'engagement total',
   },
   elite: {
     name: 'Elite',
@@ -92,13 +100,24 @@ export const TIER_FEATURES = {
       { text: 'Analyse des déclencheurs', included: true },
     ],
   },
+  premium: {
+    label: 'Premium',
+    features: [
+      { text: 'Tout Pro +', included: true },
+      { text: 'Rappels personnalisés', included: true },
+      { text: 'Export données (PDF)', included: true },
+      { text: 'Widget iOS', included: true },
+      { text: 'Thèmes personnalisés', included: true },
+      { text: 'Support prioritaire', included: true },
+    ],
+  },
   elite: {
     label: 'Elite',
     features: [
-      { text: 'Tout Pro, pour toujours', included: true },
+      { text: 'Tout Premium, pour toujours', included: true },
       { text: 'Paiement unique', included: true },
       { text: 'Accès prioritaire nouveautés', included: true },
-      { text: 'Badge Elite', included: true },
+      { text: 'Badge Elite exclusif', included: true },
     ],
   },
 };
@@ -115,6 +134,11 @@ export const TIER_LIMITS = {
     hasCitations: false,     // 1 citation fixe seulement
     hasAds: true,
     hasFullAide: false,
+    hasCustomReminders: false,
+    hasExport: false,
+    hasWidget: false,
+    hasThemes: false,
+    hasPrioritySupport: false,
   },
   essentiel: {
     sosSteps: 4,
@@ -126,6 +150,11 @@ export const TIER_LIMITS = {
     hasCitations: true,
     hasAds: false,
     hasFullAide: true,
+    hasCustomReminders: false,
+    hasExport: false,
+    hasWidget: false,
+    hasThemes: false,
+    hasPrioritySupport: false,
   },
   pro: {
     sosSteps: 4,
@@ -137,6 +166,27 @@ export const TIER_LIMITS = {
     hasCitations: true,
     hasAds: false,
     hasFullAide: true,
+    hasCustomReminders: false,
+    hasExport: false,
+    hasWidget: false,
+    hasThemes: false,
+    hasPrioritySupport: false,
+  },
+  premium: {
+    sosSteps: 4,
+    journalEntries: -1,
+    libraryArticles: -1,
+    hasStats: true,
+    hasAdvancedStats: true,
+    hasGames: true,
+    hasCitations: true,
+    hasAds: false,
+    hasFullAide: true,
+    hasCustomReminders: true,
+    hasExport: true,
+    hasWidget: true,
+    hasThemes: true,
+    hasPrioritySupport: true,
   },
   elite: {
     sosSteps: 4,
@@ -148,6 +198,11 @@ export const TIER_LIMITS = {
     hasCitations: true,
     hasAds: false,
     hasFullAide: true,
+    hasCustomReminders: true,
+    hasExport: true,
+    hasWidget: true,
+    hasThemes: true,
+    hasPrioritySupport: true,
   },
 };
 
@@ -189,7 +244,7 @@ export function useSubscription() {
     setLoading(false);
   };
 
-  const subscribe = async (tier: 'essentiel' | 'pro' | 'elite', cycle?: 'monthly' | 'yearly') => {
+  const subscribe = async (tier: 'essentiel' | 'pro' | 'premium' | 'elite', cycle?: 'monthly' | 'yearly') => {
     // En production : intégrer RevenueCat / StoreKit
     const now = new Date();
     let expiryDate: string | null = null;
@@ -237,8 +292,9 @@ export function useSubscription() {
 
   // Helpers pratiques
   const isPaid = tier !== 'free';
-  const isEssentiel = tier === 'essentiel' || tier === 'pro' || tier === 'elite';
-  const isPro = tier === 'pro' || tier === 'elite';
+  const isEssentiel = tier === 'essentiel' || tier === 'pro' || tier === 'premium' || tier === 'elite';
+  const isPro = tier === 'pro' || tier === 'premium' || tier === 'elite';
+  const isPremium = tier === 'premium' || tier === 'elite';
   const isElite = tier === 'elite';
 
   const canAccess = (feature: 'journal' | 'library' | 'stats' | 'advancedStats' | 'games' | 'fullSos' | 'fullAide' | 'citations') => {
@@ -270,6 +326,7 @@ export function useSubscription() {
     isPaid,
     isEssentiel,
     isPro,
+    isPremium,
     isElite,
     canAccess,
     subscribe,

@@ -21,7 +21,7 @@ import {
 import { t } from '../src/i18n';
 
 type SelectedPlan = {
-  tier: 'essentiel' | 'pro' | 'elite';
+  tier: 'essentiel' | 'pro' | 'premium' | 'elite';
   cycle?: 'monthly' | 'yearly';
 };
 
@@ -34,11 +34,8 @@ export default function AbonnementScreen() {
 
   const getPrice = () => {
     if (selected.tier === 'elite') return PLANS.elite.lifetime.label;
-    const plan = PLANS[selected.tier];
-    if ('monthly' in plan && 'yearly' in plan) {
-      return selected.cycle === 'yearly' ? plan.yearly.label : plan.monthly.label;
-    }
-    return '';
+    const plan = PLANS[selected.tier as 'essentiel' | 'pro' | 'premium'];
+    return selected.cycle === 'yearly' ? plan.yearly.label : plan.monthly.label;
   };
 
   const handleSubscribe = async () => {
@@ -71,7 +68,7 @@ export default function AbonnementScreen() {
 
   // Écran gestion pour abonnés actifs
   if (isPaid) {
-    const tierInfo = PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'];
+    const tierInfo = PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'];
     const features = TIER_FEATURES[tier];
     return (
       <SafeAreaView style={styles.container}>
@@ -289,6 +286,66 @@ export default function AbonnementScreen() {
               {TIER_FEATURES.pro.features.map((f, i) => (
                 <View key={i} style={styles.featureItem}>
                   <Ionicons name="checkmark-circle" size={16} color={PLANS.pro.color} />
+                  <Text style={styles.featureText}>{f.text}</Text>
+                </View>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* === PREMIUM === */}
+        <View style={styles.planSection}>
+          <TouchableOpacity
+            style={[
+              styles.planHeader,
+              selected.tier === 'premium' && { borderColor: PLANS.premium.color },
+            ]}
+            onPress={() => setSelected({ tier: 'premium', cycle: 'yearly' })}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Select Premium plan"
+          >
+            <View style={styles.planHeaderTop}>
+              <View style={[styles.planIcon, { backgroundColor: `${PLANS.premium.color}20` }]}>
+                <Ionicons name="shield-checkmark" size={22} color={PLANS.premium.color} />
+              </View>
+              <View style={styles.planHeaderInfo}>
+                <Text style={styles.planName}>{PLANS.premium.name}</Text>
+                <Text style={styles.planTagline}>{PLANS.premium.tagline}</Text>
+              </View>
+              <View style={[styles.radio, selected.tier === 'premium' && { borderColor: PLANS.premium.color }]}>
+                {selected.tier === 'premium' && <View style={[styles.radioInner, { backgroundColor: PLANS.premium.color }]} />}
+              </View>
+            </View>
+
+            {selected.tier === 'premium' && (
+              <View style={styles.cycleRow}>
+                <TouchableOpacity
+                  style={[styles.cycleChip, selected.cycle === 'yearly' && { backgroundColor: PLANS.premium.color }]}
+                  onPress={() => setSelected({ tier: 'premium', cycle: 'yearly' })}
+                >
+                  <Text style={[styles.cycleText, selected.cycle === 'yearly' && styles.cycleTextActive]}>
+                    {PLANS.premium.yearly.label}
+                  </Text>
+                  <View style={styles.saveBadge}>
+                    <Text style={styles.saveText}>-{PLANS.premium.yearly.savings}</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.cycleChip, selected.cycle === 'monthly' && { backgroundColor: PLANS.premium.color }]}
+                  onPress={() => setSelected({ tier: 'premium', cycle: 'monthly' })}
+                >
+                  <Text style={[styles.cycleText, selected.cycle === 'monthly' && styles.cycleTextActive]}>
+                    {PLANS.premium.monthly.label}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            <View style={styles.featuresList}>
+              {TIER_FEATURES.premium.features.map((f, i) => (
+                <View key={i} style={styles.featureItem}>
+                  <Ionicons name="checkmark-circle" size={16} color={PLANS.premium.color} />
                   <Text style={styles.featureText}>{f.text}</Text>
                 </View>
               ))}
