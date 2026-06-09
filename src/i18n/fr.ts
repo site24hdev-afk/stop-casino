@@ -94,6 +94,9 @@ export default {
     nextStep: 'Étape suivante',
     waitExercise: 'Prends le temps de faire l\'exercice...',
     urgePassed: 'L\'envie est passée',
+    lockedTitle: 'Étapes limitées',
+    lockedText: 'Tu as accès à %{current} étapes sur %{total}.\nPasse à Essentiel pour débloquer le SOS complet.',
+    unlockAll: 'Voir les offres',
   },
 
   // === JOURNAL ===
@@ -140,6 +143,11 @@ export default {
       ads: 'Pub / Notif',
       other: 'Autre',
     },
+    limitTitle: 'Limite atteinte',
+    limitText: 'Tu as utilisé tes %{count} entrées du mois.\nPasse à un abonnement pour écrire plus.',
+    entriesLeft: '%{count}/%{total} entrées restantes ce mois',
+    limitReached: 'Limite du mois atteinte',
+    upgrade: 'Passer Pro',
   },
 
   // === AIDE ===
@@ -197,6 +205,9 @@ export default {
     noData: 'Pas encore de données',
     noDataText: 'Utilise le journal pour noter tes envies.\nLes statistiques apparaîtront ici automatiquement.',
     days: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+    advancedLocked: 'Stats avancées',
+    advancedLockedText: 'Graphiques, analyse des déclencheurs et tendances par heure.\nDisponible à partir de Pro.',
+    unlockAdvanced: 'Débloquer les stats',
   },
 
   // === JEUX ===

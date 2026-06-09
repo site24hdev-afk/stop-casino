@@ -90,6 +90,9 @@ export default {
     nextStep: 'Siguiente paso',
     waitExercise: 'Tómate el tiempo para hacer el ejercicio...',
     urgePassed: 'El impulso ha pasado',
+    lockedTitle: 'Pasos limitados',
+    lockedText: 'Tienes acceso a %{current} de %{total} pasos.\nMejora para desbloquear todos los pasos SOS.',
+    unlockAll: 'Ver planes',
   },
 
   journal: {
@@ -120,6 +123,11 @@ export default {
       ads: 'Publicidad',
       other: 'Otro',
     },
+    limitTitle: 'Límite alcanzado',
+    limitText: 'Has usado tus %{count} entradas del mes.\nMejora para escribir más.',
+    entriesLeft: '%{count}/%{total} entradas restantes',
+    limitReached: 'Límite mensual alcanzado',
+    upgrade: 'Pasar a Pro',
   },
 
   aide: {
@@ -174,6 +182,9 @@ export default {
     noData: 'Sin datos aún',
     noDataText: 'Usa el diario para registrar tus impulsos.\nLas estadísticas aparecerán aquí automáticamente.',
     days: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+    advancedLocked: 'Estadísticas avanzadas',
+    advancedLockedText: 'Gráficos, análisis de desencadenantes y tendencias por hora.\nDisponible desde Pro.',
+    unlockAdvanced: 'Desbloquear stats',
   },
 
   games: {

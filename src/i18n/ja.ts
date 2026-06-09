@@ -94,6 +94,9 @@ export default {
     nextStep: '次のステップ',
     waitExercise: 'エクササイズに取り組んでください...',
     urgePassed: '衝動が過ぎ去りました',
+    lockedTitle: 'ステップ制限',
+    lockedText: '%{current}/%{total} ステップが利用可能です。\nアップグレードして全ステップを解放しましょう。',
+    unlockAll: 'プランを見る',
   },
 
   // === 日記 ===
@@ -140,6 +143,11 @@ export default {
       ads: '広告 / 通知',
       other: 'その他',
     },
+    limitTitle: '上限に達しました',
+    limitText: '今月の %{count} 件の記録を使い切りました。\nアップグレードしてもっと記録しましょう。',
+    entriesLeft: '今月残り %{count}/%{total} 件',
+    limitReached: '月間上限に達しました',
+    upgrade: 'Proにする',
   },
 
   // === サポート ===
@@ -197,6 +205,9 @@ export default {
     noData: 'まだデータがありません',
     noDataText: '日記で衝動を記録してください。\n統計は自動的にここに表示されます。',
     days: ['月', '火', '水', '木', '金', '土', '日'],
+    advancedLocked: '高度な統計',
+    advancedLockedText: 'グラフ、トリガー分析、時間帯別トレンド。\nProから利用可能。',
+    unlockAdvanced: '統計を解放',
   },
 
   // === ゲーム ===

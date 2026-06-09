@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  Alert,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,11 +14,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { SOS_STEPS } from '../src/constants/messages';
 import { useUserData } from '../src/hooks/useUserData';
+import { useSubscription } from '../src/hooks/useSubscription';
 import { t } from '../src/i18n';
 
 export default function SOSScreen() {
   const router = useRouter();
   const { incrementCravingsOvercome, userData } = useUserData();
+  const { limits } = useSubscription();
+  const maxSteps = limits.sosSteps; // 2 pour gratuit, 4 pour payant
   const [currentStep, setCurrentStep] = useState(0);
   const [timer, setTimer] = useState(SOS_STEPS[0].durationSeconds);
   const [timerActive, setTimerActive] = useState(true);
@@ -77,8 +81,20 @@ export default function SOSScreen() {
   const step = SOS_STEPS[currentStep];
 
   const handleNext = () => {
+    const nextIdx = currentStep + 1;
+    // Vérifier la limite du tier (gratuit = 2 étapes, payant = 4)
+    if (nextIdx >= maxSteps && maxSteps < SOS_STEPS.length) {
+      Alert.alert(
+        t('sos.lockedTitle'),
+        t('sos.lockedText', { current: maxSteps, total: SOS_STEPS.length }),
+        [
+          { text: t('sos.urgePassed'), onPress: handleOvercome },
+          { text: t('sos.unlockAll'), onPress: () => router.push('/abonnement') },
+        ]
+      );
+      return;
+    }
     if (currentStep < SOS_STEPS.length - 1) {
-      const nextIdx = currentStep + 1;
       setCurrentStep(nextIdx);
       setTimer(SOS_STEPS[nextIdx].durationSeconds);
       setTimerActive(true);

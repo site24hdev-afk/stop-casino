@@ -9,12 +9,14 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { useCravingLog } from '../src/hooks/useCravingLog';
+import { useSubscription } from '../src/hooks/useSubscription';
 import * as Haptics from 'expo-haptics';
 import i18n, { t } from '../src/i18n';
 
@@ -24,7 +26,19 @@ const LOCATION_KEYS = ['home', 'work', 'transport', 'outside', 'restaurant', 'ot
 export default function JournalScreen() {
   const router = useRouter();
   const { entries, addEntry, overcameCount, peakHour, totalCravings } = useCravingLog();
+  const { limits } = useSubscription();
   const [showModal, setShowModal] = useState(false);
+
+  // Vérifier la limite d'entrées par mois
+  const now = new Date();
+  const thisMonthEntries = entries.filter(e => {
+    const d = new Date(e.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  const entryLimit = limits.journalEntries;
+  const isLimited = entryLimit > 0; // -1 = illimité
+  const canAddEntry = entryLimit === -1 || thisMonthEntries.length < entryLimit;
+  const entriesRemaining = entryLimit === -1 ? Infinity : Math.max(0, entryLimit - thisMonthEntries.length);
 
   // Form state
   const [intensity, setIntensity] = useState<1 | 2 | 3 | 4 | 5>(3);
@@ -77,14 +91,44 @@ export default function JournalScreen() {
         </TouchableOpacity>
         <Text style={styles.headerTitle} accessibilityRole="header">{t('journal.headerTitle')}</Text>
         <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setShowModal(true)}
+          style={[styles.addButton, !canAddEntry && { backgroundColor: COLORS.textMuted }]}
+          onPress={() => {
+            if (canAddEntry) {
+              setShowModal(true);
+            } else {
+              Alert.alert(
+                t('journal.limitTitle'),
+                t('journal.limitText', { count: entryLimit }),
+                [
+                  { text: t('cancel'), style: 'cancel' },
+                  { text: t('journal.upgrade'), onPress: () => router.push('/abonnement') },
+                ]
+              );
+            }
+          }}
           accessibilityRole="button"
           accessibilityLabel="Add new journal entry"
         >
           <Ionicons name="add" size={24} color="#FFF" />
         </TouchableOpacity>
       </View>
+
+      {/* Compteur d'entrées restantes (si limité) */}
+      {isLimited && (
+        <View style={styles.limitBanner}>
+          <Ionicons name="information-circle" size={16} color={canAddEntry ? COLORS.info : COLORS.danger} />
+          <Text style={[styles.limitText, !canAddEntry && { color: COLORS.danger }]}>
+            {canAddEntry
+              ? t('journal.entriesLeft', { count: entriesRemaining, total: entryLimit })
+              : t('journal.limitReached')}
+          </Text>
+          {!canAddEntry && (
+            <TouchableOpacity onPress={() => router.push('/abonnement')}>
+              <Text style={styles.upgradeLink}>{t('journal.upgrade')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       {/* Stats */}
       {totalCravings > 0 && (
@@ -577,5 +621,26 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     color: '#FFF',
+  },
+  // Limite banner
+  limitBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.md,
+    padding: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    marginBottom: SPACING.md,
+    gap: SPACING.sm,
+  },
+  limitText: {
+    flex: 1,
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.textSecondary,
+  },
+  upgradeLink: {
+    fontSize: FONT_SIZE.xs,
+    color: COLORS.info,
+    fontWeight: '700',
   },
 });

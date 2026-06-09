@@ -90,6 +90,9 @@ export default {
     nextStep: 'Nächster Schritt',
     waitExercise: 'Nimm dir Zeit für die Übung...',
     urgePassed: 'Der Drang ist vorbei',
+    lockedTitle: 'Schritte begrenzt',
+    lockedText: 'Du hast Zugang zu %{current} von %{total} Schritten.\nUpgrade, um alle SOS-Schritte freizuschalten.',
+    unlockAll: 'Angebote ansehen',
   },
 
   journal: {
@@ -105,6 +108,11 @@ export default {
     save: 'Speichern',
     locations: { home: 'Zuhause', work: 'Arbeit', bar: 'Bar', online: 'Online', other: 'Andere' },
     triggers: { boredom: 'Langeweile', stress: 'Stress', sadness: 'Traurigkeit', friends: 'Freunde', alcohol: 'Alkohol', money: 'Geld', ads: 'Werbung', other: 'Andere' },
+    limitTitle: 'Limit erreicht',
+    limitText: 'Du hast deine %{count} Einträge diesen Monat verbraucht.\nUpgrade für mehr.',
+    entriesLeft: '%{count}/%{total} Einträge übrig',
+    limitReached: 'Monatslimit erreicht',
+    upgrade: 'Pro werden',
   },
 
   aide: {
@@ -159,6 +167,9 @@ export default {
     noData: 'Noch keine Daten',
     noDataText: 'Nutze das Tagebuch, um deine Gelüste zu notieren.\nStatistiken erscheinen hier automatisch.',
     days: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+    advancedLocked: 'Erweiterte Statistiken',
+    advancedLockedText: 'Diagramme, Auslöser-Analyse und stündliche Trends.\nAb Pro verfügbar.',
+    unlockAdvanced: 'Stats freischalten',
   },
 
   games: {

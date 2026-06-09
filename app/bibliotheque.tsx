@@ -13,13 +13,16 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { ARTICLES, CATEGORIES, Article } from '../src/constants/library';
+import { useSubscription } from '../src/hooks/useSubscription';
 import { t } from '../src/i18n';
 
 export default function BibliothequeScreen() {
   const router = useRouter();
+  const { limits } = useSubscription();
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
+  const articleLimit = limits.libraryArticles; // -1 = illimité, 1 = gratuit, 3 = essentiel
   const filtered = activeCategory === 'all'
     ? ARTICLES
     : ARTICLES.filter(a => a.category === activeCategory);
@@ -82,52 +85,68 @@ export default function BibliothequeScreen() {
 
       {/* Articles */}
       <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
-        {filtered.map(article => (
-          <TouchableOpacity
-            key={article.id}
-            style={styles.articleCard}
-            onPress={() => setSelectedArticle(article)}
-            activeOpacity={0.7}
-            accessibilityRole="button"
-            accessibilityLabel={`Read article: ${article.title}`}
-          >
-            {article.image && (
-              <View style={styles.articleImageWrap}>
-                <Image
-                  source={article.image}
-                  style={styles.articleImage}
-                  contentFit="cover"
-                  transition={400}
-                />
-                <View style={styles.articleImageOverlay} />
-                <View style={[
-                  styles.articleImageBadge,
-                  { backgroundColor: getCategoryColor(article.category) },
-                ]}>
-                  <Ionicons name={article.icon as any} size={14} color="#FFF" />
+        {filtered.map((article, index) => {
+          const isLocked = articleLimit !== -1 && index >= articleLimit;
+          return (
+            <TouchableOpacity
+              key={article.id}
+              style={[styles.articleCard, isLocked && { opacity: 0.5 }]}
+              onPress={() => {
+                if (isLocked) {
+                  router.push('/abonnement');
+                } else {
+                  setSelectedArticle(article);
+                }
+              }}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={isLocked ? `Locked article: ${article.title}` : `Read article: ${article.title}`}
+            >
+              {article.image && (
+                <View style={styles.articleImageWrap}>
+                  <Image
+                    source={article.image}
+                    style={styles.articleImage}
+                    contentFit="cover"
+                    transition={400}
+                  />
+                  <View style={styles.articleImageOverlay} />
+                  <View style={[
+                    styles.articleImageBadge,
+                    { backgroundColor: isLocked ? COLORS.textMuted : getCategoryColor(article.category) },
+                  ]}>
+                    <Ionicons name={isLocked ? 'lock-closed' : article.icon as any} size={14} color="#FFF" />
+                  </View>
                 </View>
-              </View>
-            )}
-            <View style={styles.articleBody}>
-              <View style={styles.articleMeta}>
-                <Text style={[
-                  styles.articleCategory,
-                  { color: getCategoryColor(article.category) },
-                ]}>
-                  {article.categoryLabel}
+              )}
+              <View style={styles.articleBody}>
+                <View style={styles.articleMeta}>
+                  <Text style={[
+                    styles.articleCategory,
+                    { color: isLocked ? COLORS.textMuted : getCategoryColor(article.category) },
+                  ]}>
+                    {article.categoryLabel}
+                  </Text>
+                  {isLocked ? (
+                    <View style={styles.lockBadge}>
+                      <Ionicons name="lock-closed" size={10} color={COLORS.warning} />
+                      <Text style={styles.lockText}>PRO</Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.articleTime}>
+                      <Ionicons name="time-outline" size={12} color={COLORS.textMuted} />
+                      {' '}{article.readTime}
+                    </Text>
+                  )}
+                </View>
+                <Text style={[styles.articleTitle, isLocked && { color: COLORS.textMuted }]}>{article.title}</Text>
+                <Text style={styles.articlePreview} numberOfLines={2}>
+                  {article.content[0]}
                 </Text>
-                <Text style={styles.articleTime}>
-                  <Ionicons name="time-outline" size={12} color={COLORS.textMuted} />
-                  {' '}{article.readTime}
-                </Text>
               </View>
-              <Text style={styles.articleTitle}>{article.title}</Text>
-              <Text style={styles.articlePreview} numberOfLines={2}>
-                {article.content[0]}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          );
+        })}
         <View style={{ height: 40 }} />
       </ScrollView>
 
@@ -320,6 +339,20 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.sm,
     color: COLORS.textSecondary,
     lineHeight: 20,
+  },
+  lockBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(245,158,11,0.15)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  lockText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: COLORS.warning,
   },
   // Modal
   modalOverlay: {

@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { useUserData } from '../src/hooks/useUserData';
 import { useCravingLog } from '../src/hooks/useCravingLog';
+import { useSubscription } from '../src/hooks/useSubscription';
 import i18n, { t } from '../src/i18n';
 
 const { width } = Dimensions.get('window');
@@ -22,6 +23,8 @@ export default function StatsScreen() {
   const router = useRouter();
   const { daysSinceQuit, moneySaved, userData } = useUserData();
   const { entries, overcameCount, totalCravings, peakHour } = useCravingLog();
+  const { limits } = useSubscription();
+  const hasAdvanced = limits.hasAdvancedStats;
 
   // Stats par jour de la semaine
   const dayNames = i18n.t('stats.days') as unknown as string[];
@@ -135,96 +138,115 @@ export default function StatsScreen() {
         </View>
       </View>
 
-      {/* Envies par jour */}
-      {totalCravings > 0 && (
-        <View style={styles.chartCard}>
-          <Text style={styles.sectionTitle}>
-            <Ionicons name="calendar-outline" size={18} color={COLORS.warning} />
-            {'  '}{t('stats.cravingsByDay')}
-          </Text>
-          <View style={styles.barChart}>
-            {dayStats.map((day, i) => (
-              <View key={i} style={styles.barColumn}>
-                <View style={styles.barContainer}>
-                  <View
-                    style={[
-                      styles.bar,
-                      {
-                        height: `${(day.count / maxDayCount) * 100}%`,
-                        backgroundColor: day.count === maxDayCount ? COLORS.danger : COLORS.primary,
-                      },
-                    ]}
-                  />
-                </View>
-                <Text style={styles.barLabel}>{day.name}</Text>
-                <Text style={styles.barValue}>{day.count}</Text>
+      {/* === STATS AVANCÉES (Pro+) === */}
+      {hasAdvanced ? (
+        <>
+          {/* Envies par jour */}
+          {totalCravings > 0 && (
+            <View style={styles.chartCard}>
+              <Text style={styles.sectionTitle}>
+                <Ionicons name="calendar-outline" size={18} color={COLORS.warning} />
+                {'  '}{t('stats.cravingsByDay')}
+              </Text>
+              <View style={styles.barChart}>
+                {dayStats.map((day, i) => (
+                  <View key={i} style={styles.barColumn}>
+                    <View style={styles.barContainer}>
+                      <View
+                        style={[
+                          styles.bar,
+                          {
+                            height: `${(day.count / maxDayCount) * 100}%`,
+                            backgroundColor: day.count === maxDayCount ? COLORS.danger : COLORS.primary,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <Text style={styles.barLabel}>{day.name}</Text>
+                    <Text style={styles.barValue}>{day.count}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-        </View>
-      )}
-
-      {/* Envies par tranche horaire */}
-      {totalCravings > 0 && (
-        <View style={styles.chartCard}>
-          <Text style={styles.sectionTitle}>
-            <Ionicons name="time-outline" size={18} color={COLORS.info} />
-            {'  '}{t('stats.cravingsByTime')}
-          </Text>
-          {peakHour && (
-            <Text style={styles.insightText}>
-              {t('stats.peakTime', { time: peakHour })}
-            </Text>
+            </View>
           )}
-          <View style={styles.horizontalBars}>
-            {timeStats.map((slot, i) => (
-              <View key={i} style={styles.hBarRow}>
-                <Text style={styles.hBarLabel}>{slot.label}</Text>
-                <View style={styles.hBarContainer}>
-                  <View
-                    style={[
-                      styles.hBar,
-                      {
-                        width: `${(slot.count / maxTimeCount) * 100}%`,
-                        backgroundColor: slot.count === maxTimeCount ? COLORS.warning : COLORS.info,
-                      },
-                    ]}
-                  />
-                </View>
-                <Text style={styles.hBarValue}>{slot.count}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      )}
 
-      {/* Déclencheurs */}
-      {topTriggers.length > 0 && (
-        <View style={styles.chartCard}>
-          <Text style={styles.sectionTitle}>
-            <Ionicons name="flash-outline" size={18} color={COLORS.danger} />
-            {'  '}{t('stats.topTriggers')}
-          </Text>
-          <View style={styles.horizontalBars}>
-            {topTriggers.map(([trigger, count], i) => (
-              <View key={i} style={styles.hBarRow}>
-                <Text style={[styles.hBarLabel, { width: 100 }]}>{trigger}</Text>
-                <View style={styles.hBarContainer}>
-                  <View
-                    style={[
-                      styles.hBar,
-                      {
-                        width: `${(count / maxTriggerCount) * 100}%`,
-                        backgroundColor: i === 0 ? COLORS.danger : COLORS.warning,
-                      },
-                    ]}
-                  />
-                </View>
-                <Text style={styles.hBarValue}>{count}</Text>
+          {/* Envies par tranche horaire */}
+          {totalCravings > 0 && (
+            <View style={styles.chartCard}>
+              <Text style={styles.sectionTitle}>
+                <Ionicons name="time-outline" size={18} color={COLORS.info} />
+                {'  '}{t('stats.cravingsByTime')}
+              </Text>
+              {peakHour && (
+                <Text style={styles.insightText}>
+                  {t('stats.peakTime', { time: peakHour })}
+                </Text>
+              )}
+              <View style={styles.horizontalBars}>
+                {timeStats.map((slot, i) => (
+                  <View key={i} style={styles.hBarRow}>
+                    <Text style={styles.hBarLabel}>{slot.label}</Text>
+                    <View style={styles.hBarContainer}>
+                      <View
+                        style={[
+                          styles.hBar,
+                          {
+                            width: `${(slot.count / maxTimeCount) * 100}%`,
+                            backgroundColor: slot.count === maxTimeCount ? COLORS.warning : COLORS.info,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <Text style={styles.hBarValue}>{slot.count}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
+            </View>
+          )}
+
+          {/* Déclencheurs */}
+          {topTriggers.length > 0 && (
+            <View style={styles.chartCard}>
+              <Text style={styles.sectionTitle}>
+                <Ionicons name="flash-outline" size={18} color={COLORS.danger} />
+                {'  '}{t('stats.topTriggers')}
+              </Text>
+              <View style={styles.horizontalBars}>
+                {topTriggers.map(([trigger, count], i) => (
+                  <View key={i} style={styles.hBarRow}>
+                    <Text style={[styles.hBarLabel, { width: 100 }]}>{trigger}</Text>
+                    <View style={styles.hBarContainer}>
+                      <View
+                        style={[
+                          styles.hBar,
+                          {
+                            width: `${(count / maxTriggerCount) * 100}%`,
+                            backgroundColor: i === 0 ? COLORS.danger : COLORS.warning,
+                          },
+                        ]}
+                      />
+                    </View>
+                    <Text style={styles.hBarValue}>{count}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+        </>
+      ) : (
+        <TouchableOpacity
+          style={styles.lockedCard}
+          onPress={() => router.push('/abonnement')}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="lock-closed" size={32} color={COLORS.warning} />
+          <Text style={styles.lockedTitle}>{t('stats.advancedLocked')}</Text>
+          <Text style={styles.lockedText}>{t('stats.advancedLockedText')}</Text>
+          <View style={styles.lockedBtn}>
+            <Ionicons name="diamond" size={14} color="#FFF" />
+            <Text style={styles.lockedBtnText}>{t('stats.unlockAdvanced')}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
       )}
 
       {/* Message si pas de données */}
@@ -429,5 +451,42 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
+  },
+  // Locked upsell
+  lockedCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.xl,
+    alignItems: 'center',
+    gap: SPACING.md,
+    borderWidth: 1,
+    borderColor: 'rgba(245,158,11,0.2)',
+    borderStyle: 'dashed',
+  },
+  lockedTitle: {
+    fontSize: FONT_SIZE.lg,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  lockedText: {
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  lockedBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.full,
+    marginTop: SPACING.sm,
+  },
+  lockedBtnText: {
+    fontSize: FONT_SIZE.sm,
+    fontWeight: '700',
+    color: '#FFF',
   },
 });

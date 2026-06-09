@@ -90,6 +90,9 @@ export default {
     nextStep: 'الخطوة التالية',
     waitExercise: 'خذ وقتك لأداء التمرين...',
     urgePassed: 'لقد زالت الرغبة',
+    lockedTitle: 'خطوات محدودة',
+    lockedText: 'لديك %{current} من %{total} خطوات.\nقم بالترقية لفتح جميع خطوات SOS.',
+    unlockAll: 'عرض الخطط',
   },
 
   journal: {
@@ -120,6 +123,11 @@ export default {
       ads: 'الإعلانات',
       other: 'أخرى',
     },
+    limitTitle: 'تم الوصول للحد',
+    limitText: 'استخدمت %{count} إدخالات هذا الشهر.\nقم بالترقية لكتابة المزيد.',
+    entriesLeft: '%{count}/%{total} إدخالات متبقية',
+    limitReached: 'تم الوصول لحد الشهر',
+    upgrade: 'ترقية لـ Pro',
   },
 
   aide: {
@@ -174,6 +182,9 @@ export default {
     noData: 'لا توجد بيانات بعد',
     noDataText: 'استخدم اليوميات لتسجيل رغباتك.\nستظهر الإحصائيات هنا تلقائيًا.',
     days: ['الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'],
+    advancedLocked: 'إحصائيات متقدمة',
+    advancedLockedText: 'رسوم بيانية وتحليل المحفزات واتجاهات بالساعة.\nمتاح من Pro.',
+    unlockAdvanced: 'فتح الإحصائيات',
   },
 
   games: {

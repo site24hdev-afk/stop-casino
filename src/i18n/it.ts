@@ -94,6 +94,9 @@ export default {
     nextStep: 'Passo successivo',
     waitExercise: 'Prenditi il tempo per fare l\'esercizio...',
     urgePassed: 'L\'impulso è passato',
+    lockedTitle: 'Passaggi limitati',
+    lockedText: 'Hai accesso a %{current} su %{total} passaggi.\nAggiorna per sbloccare tutti i passaggi SOS.',
+    unlockAll: 'Vedi le offerte',
   },
 
   // === DIARIO ===
@@ -125,6 +128,11 @@ export default {
       ads: 'Pubblicità',
       other: 'Altro',
     },
+    limitTitle: 'Limite raggiunto',
+    limitText: 'Hai usato le tue %{count} voci del mese.\nAggiorna per scrivere di più.',
+    entriesLeft: '%{count}/%{total} voci rimaste',
+    limitReached: 'Limite mensile raggiunto',
+    upgrade: 'Passa a Pro',
   },
 
   // === AIUTO ===
@@ -182,6 +190,9 @@ export default {
     noData: 'Ancora nessun dato',
     noDataText: 'Usa il diario per annotare i tuoi impulsi.\nLe statistiche appariranno qui automaticamente.',
     days: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+    advancedLocked: 'Statistiche avanzate',
+    advancedLockedText: 'Grafici, analisi dei fattori scatenanti e tendenze orarie.\nDisponibile da Pro.',
+    unlockAdvanced: 'Sblocca le stats',
   },
 
   // === GIOCHI ===

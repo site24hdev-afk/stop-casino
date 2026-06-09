@@ -94,6 +94,9 @@ export default {
     nextStep: '다음 단계',
     waitExercise: '연습을 천천히 해보세요...',
     urgePassed: '충동이 지나갔어요',
+    lockedTitle: '단계 제한',
+    lockedText: '%{current}/%{total} 단계를 사용할 수 있어요.\n업그레이드하면 모든 SOS 단계를 사용할 수 있어요.',
+    unlockAll: '요금제 보기',
   },
 
   // === 일지 ===
@@ -140,6 +143,11 @@ export default {
       ads: '광고 / 알림',
       other: '기타',
     },
+    limitTitle: '한도 도달',
+    limitText: '이번 달 %{count}개 기록을 모두 사용했어요.\n업그레이드하면 더 많이 기록할 수 있어요.',
+    entriesLeft: '이번 달 %{count}/%{total}개 남음',
+    limitReached: '월간 한도 도달',
+    upgrade: 'Pro로 업그레이드',
   },
 
   // === 도움 ===
@@ -197,6 +205,9 @@ export default {
     noData: '아직 데이터가 없어요',
     noDataText: '일지에 충동을 기록해 보세요.\n통계가 자동으로 나타나요.',
     days: ['월', '화', '수', '목', '금', '토', '일'],
+    advancedLocked: '고급 통계',
+    advancedLockedText: '차트, 트리거 분석, 시간대별 트렌드.\nPro부터 이용 가능.',
+    unlockAdvanced: '통계 잠금해제',
   },
 
   // === 게임 ===

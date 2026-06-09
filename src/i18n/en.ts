@@ -90,6 +90,9 @@ export default {
     nextStep: 'Next step',
     waitExercise: 'Take time to do the exercise...',
     urgePassed: 'The urge has passed',
+    lockedTitle: 'Steps limited',
+    lockedText: 'You have access to %{current} out of %{total} steps.\nUpgrade to unlock all SOS steps.',
+    unlockAll: 'See plans',
   },
 
   journal: {
@@ -120,6 +123,11 @@ export default {
       ads: 'Ads',
       other: 'Other',
     },
+    limitTitle: 'Limit reached',
+    limitText: 'You\'ve used your %{count} entries this month.\nUpgrade to write more.',
+    entriesLeft: '%{count}/%{total} entries left this month',
+    limitReached: 'Monthly limit reached',
+    upgrade: 'Go Pro',
   },
 
   aide: {
@@ -174,6 +182,9 @@ export default {
     noData: 'No data yet',
     noDataText: 'Use the journal to log your urges.\nStatistics will appear here automatically.',
     days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    advancedLocked: 'Advanced stats',
+    advancedLockedText: 'Charts, trigger analysis and hourly trends.\nAvailable from Pro.',
+    unlockAdvanced: 'Unlock stats',
   },
 
   games: {

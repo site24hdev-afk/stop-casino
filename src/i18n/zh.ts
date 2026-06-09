@@ -90,6 +90,9 @@ export default {
     nextStep: '下一步',
     waitExercise: '请花时间做这个练习...',
     urgePassed: '冲动已经过去了',
+    lockedTitle: '步骤受限',
+    lockedText: '你可以使用 %{current}/%{total} 个步骤。\n升级以解锁全部SOS步骤。',
+    unlockAll: '查看方案',
   },
 
   journal: {
@@ -120,6 +123,11 @@ export default {
       ads: '广告',
       other: '其他',
     },
+    limitTitle: '已达上限',
+    limitText: '你已用完本月 %{count} 条记录。\n升级以记录更多。',
+    entriesLeft: '本月剩余 %{count}/%{total} 条',
+    limitReached: '月度上限已达',
+    upgrade: '升级Pro',
   },
 
   aide: {
@@ -174,6 +182,9 @@ export default {
     noData: '暂无数据',
     noDataText: '使用日记记录你的冲动。\n统计数据会自动显示在这里。',
     days: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    advancedLocked: '高级统计',
+    advancedLockedText: '图表、触发因素分析和时段趋势。\nPro版可用。',
+    unlockAdvanced: '解锁统计',
   },
 
   games: {
