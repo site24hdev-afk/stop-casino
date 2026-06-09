@@ -11,10 +11,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
-import i18n, { t, setLanguage, AVAILABLE_LANGUAGES } from '../src/i18n';
+import { COLORS, SPACING, FONT_SIZE, SHADOWS } from '../../src/constants/theme';
+import i18n, { t, setLanguage, AVAILABLE_LANGUAGES } from '../../src/i18n';
 
 export default function ParametresScreen() {
   const router = useRouter();
@@ -34,18 +33,13 @@ export default function ParametresScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={22} color={COLORS.text} />
-          </TouchableOpacity>
           <Text style={styles.headerTitle}>{t('settings.title')}</Text>
-          <View style={{ width: 40 }} />
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 60 }}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
           {/* Language */}
           <Text style={styles.sectionLabel}>{t('settings.language')}</Text>
           <TouchableOpacity style={styles.card} onPress={() => setShowLangModal(true)} activeOpacity={0.7}>
@@ -82,6 +76,19 @@ export default function ParametresScreen() {
               <Text style={styles.cardValue}>{t('settings.dataLocal')}</Text>
             </View>
           </View>
+
+          {/* Subscription */}
+          <Text style={styles.sectionLabel}>{t('sub.mySubscription')}</Text>
+          <TouchableOpacity style={styles.card} onPress={() => router.push('/abonnement')} activeOpacity={0.7}>
+            <View style={[styles.cardIcon, { backgroundColor: 'rgba(245,158,11,0.08)' }]}>
+              <Ionicons name="diamond" size={22} color="#F59E0B" />
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>{t('sub.mySubscription')}</Text>
+              <Text style={styles.cardValue}>Gérer votre offre</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
+          </TouchableOpacity>
         </ScrollView>
 
         {/* Language Modal */}
@@ -126,8 +133,7 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, paddingHorizontal: SPACING.lg },
 
   // Header
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.xl },
-  backBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: COLORS.surfaceGlass, borderWidth: 1, borderColor: COLORS.borderLight, justifyContent: 'center', alignItems: 'center' },
+  header: { marginBottom: SPACING.xl },
   headerTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text },
 
   // Section
@@ -140,7 +146,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
     backgroundColor: COLORS.surfaceGlass, borderRadius: 18, padding: 16,
-    borderWidth: 1, borderColor: COLORS.borderGlass,
+    ...SHADOWS.sm,
   },
   cardIcon: { width: 44, height: 44, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
   cardContent: { flex: 1 },
@@ -148,12 +154,12 @@ const styles = StyleSheet.create({
   cardValue: { fontSize: FONT_SIZE.sm, color: COLORS.textSecondary, marginTop: 2 },
 
   // Modal
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: COLORS.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: SPACING.lg, paddingTop: SPACING.md, paddingBottom: 40, maxHeight: '75%' },
+  modalOverlay: { flex: 1, backgroundColor: COLORS.overlay, justifyContent: 'flex-end' },
+  modalContent: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingHorizontal: SPACING.lg, paddingTop: SPACING.md, paddingBottom: 40, maxHeight: '75%' },
   modalHandle: { width: 40, height: 4, borderRadius: 2, backgroundColor: COLORS.surfaceLight, alignSelf: 'center', marginBottom: SPACING.md },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
   modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text },
-  modalClose: { width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.surfaceGlass, borderWidth: 1, borderColor: COLORS.borderLight, justifyContent: 'center', alignItems: 'center' },
+  modalClose: { width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center' },
   langOption: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14, borderRadius: 14, marginBottom: SPACING.xs, gap: 14 },
   langOptionActive: { backgroundColor: 'rgba(16,185,129,0.08)', borderWidth: 1, borderColor: 'rgba(16,185,129,0.20)' },
   langFlag: { fontSize: 28 },

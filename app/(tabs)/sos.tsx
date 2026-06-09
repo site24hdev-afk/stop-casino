@@ -12,11 +12,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
-import { SOS_STEPS } from '../src/constants/messages';
-import { useUserData } from '../src/hooks/useUserData';
-import { useSubscription } from '../src/hooks/useSubscription';
-import { t } from '../src/i18n';
+import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
+import { SOS_STEPS } from '../../src/constants/messages';
+import { useUserData } from '../../src/hooks/useUserData';
+import { useSubscription } from '../../src/hooks/useSubscription';
+import { t } from '../../src/i18n';
 
 export default function SOSScreen() {
   const router = useRouter();
@@ -95,6 +95,16 @@ export default function SOSScreen() {
     setCompleted(true);
   };
 
+  const goHome = () => {
+    setCompleted(false);
+    setShowGameOption(false);
+    setCurrentStep(0);
+    setTimer(SOS_STEPS[0].durationSeconds);
+    setTimerActive(true);
+    progressAnim.setValue(0);
+    router.navigate('/');
+  };
+
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
@@ -105,12 +115,11 @@ export default function SOSScreen() {
   if (showGameOption && !completed) {
     return (
       <View style={styles.root}>
-        <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
-        <SafeAreaView style={styles.centeredContainer}>
+        <SafeAreaView style={styles.centeredContainer} edges={['top']}>
           <View style={styles.resultCircle}>
-            <LinearGradient colors={['rgba(245,158,11,0.20)', 'rgba(245,158,11,0.05)']} style={styles.resultCircleGrad}>
+            <View style={[styles.resultCircleInner, { backgroundColor: 'rgba(245,158,11,0.10)' }]}>
               <Ionicons name="game-controller" size={56} color={COLORS.warning} />
-            </LinearGradient>
+            </View>
           </View>
           <Text style={styles.resultTitle}>{t('sos.urgePersists')}</Text>
           <Text style={styles.resultText}>{t('sos.urgePersistsText')}</Text>
@@ -119,7 +128,7 @@ export default function SOSScreen() {
               <Text style={styles.primaryBtnText}>{t('sos.iHeldStrong')}</Text>
             </LinearGradient>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryBtn} onPress={() => router.replace('/jeux')}>
+          <TouchableOpacity style={styles.secondaryBtn} onPress={() => router.push('/jeux')}>
             <Text style={styles.secondaryBtnText}>{t('sos.simulatedGame')}</Text>
           </TouchableOpacity>
         </SafeAreaView>
@@ -131,12 +140,11 @@ export default function SOSScreen() {
   if (completed) {
     return (
       <View style={styles.root}>
-        <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
-        <SafeAreaView style={styles.centeredContainer}>
+        <SafeAreaView style={styles.centeredContainer} edges={['top']}>
           <View style={styles.resultCircle}>
-            <LinearGradient colors={['rgba(16,185,129,0.20)', 'rgba(16,185,129,0.05)']} style={styles.resultCircleGrad}>
+            <View style={[styles.resultCircleInner, { backgroundColor: 'rgba(16,185,129,0.10)' }]}>
               <Ionicons name="checkmark-circle" size={72} color={COLORS.primary} />
-            </LinearGradient>
+            </View>
           </View>
           <Text style={[styles.resultTitle, { color: COLORS.primary }]}>{t('sos.bravo')}</Text>
           <Text style={styles.resultText}>{t('sos.bravoText')}</Text>
@@ -145,7 +153,7 @@ export default function SOSScreen() {
               ? t('sos.cravingsCountPlural', { count: userData.cravingsOvercome + 1 })
               : t('sos.cravingsCount', { count: 1 })}
           </Text>
-          <TouchableOpacity style={styles.primaryBtn} onPress={() => router.back()}>
+          <TouchableOpacity style={styles.primaryBtn} onPress={goHome}>
             <LinearGradient colors={GRADIENTS.menuGreen} style={styles.primaryBtnGrad}>
               <Text style={styles.primaryBtnText}>{t('sos.backHome')}</Text>
             </LinearGradient>
@@ -159,10 +167,10 @@ export default function SOSScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient colors={GRADIENTS.screenSOS} style={StyleSheet.absoluteFill} />
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+          <TouchableOpacity onPress={goHome} style={styles.headerBtn}>
             <Ionicons name="close" size={24} color={COLORS.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{t('sos.sosUrge')}</Text>
@@ -181,9 +189,9 @@ export default function SOSScreen() {
         {/* Main content */}
         <View style={styles.mainContent}>
           <Animated.View style={[styles.iconCircle, { transform: [{ scale: pulseAnim }] }]}>
-            <LinearGradient colors={['rgba(239,68,68,0.20)', 'rgba(239,68,68,0.05)']} style={styles.iconCircleGrad}>
-              <Ionicons name={step.icon as any} size={52} color={COLORS.text} />
-            </LinearGradient>
+            <View style={styles.iconCircleInner}>
+              <Ionicons name={step.icon as any} size={52} color={COLORS.danger} />
+            </View>
           </Animated.View>
           <Text style={styles.stepTitle}>{t(step.titleKey)}</Text>
           <Text style={styles.stepDesc}>{t(step.descKey)}</Text>
@@ -233,9 +241,9 @@ const styles = StyleSheet.create({
 
   // Header
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
-  headerBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: COLORS.surfaceGlass, borderWidth: 1, borderColor: COLORS.borderLight, justifyContent: 'center', alignItems: 'center' },
+  headerBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: COLORS.surfaceGlass, justifyContent: 'center', alignItems: 'center', ...SHADOWS.sm },
   headerTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: COLORS.danger },
-  stepBadge: { backgroundColor: COLORS.surfaceGlass, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, borderWidth: 1, borderColor: COLORS.borderLight },
+  stepBadge: { backgroundColor: COLORS.surfaceGlass, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 14, ...SHADOWS.sm },
   stepBadgeText: { fontSize: FONT_SIZE.sm, color: COLORS.textSecondary, fontWeight: '600' },
 
   // Steps
@@ -247,7 +255,7 @@ const styles = StyleSheet.create({
   // Main
   mainContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   iconCircle: { width: 120, height: 120, borderRadius: 60, marginBottom: SPACING.xl, overflow: 'hidden' },
-  iconCircleGrad: { width: '100%', height: '100%', borderRadius: 60, justifyContent: 'center', alignItems: 'center' },
+  iconCircleInner: { width: '100%', height: '100%', borderRadius: 60, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(239,68,68,0.08)' },
   stepTitle: { fontSize: FONT_SIZE.xxl, fontWeight: '800', color: COLORS.text, marginBottom: SPACING.md, textAlign: 'center' },
   stepDesc: { fontSize: FONT_SIZE.md, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 26, paddingHorizontal: SPACING.lg },
 
@@ -258,24 +266,24 @@ const styles = StyleSheet.create({
   progressFill: { height: '100%', backgroundColor: COLORS.primary, borderRadius: 3 },
 
   // Actions
-  actions: { paddingBottom: 40, gap: SPACING.md },
-  nextBtn: { borderRadius: BORDER_RADIUS.lg, overflow: 'hidden', ...SHADOWS.sm },
+  actions: { paddingBottom: 20, gap: SPACING.md },
+  nextBtn: { borderRadius: BORDER_RADIUS.lg, overflow: 'hidden', ...SHADOWS.md },
   nextBtnGrad: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: SPACING.sm, paddingVertical: 16 },
   nextBtnText: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: '#FFF' },
   waitRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: SPACING.sm, paddingVertical: SPACING.md },
   waitText: { fontSize: FONT_SIZE.sm, color: COLORS.textMuted, fontStyle: 'italic' },
   overcomeBtn: { alignSelf: 'center', paddingVertical: SPACING.sm },
-  overcomeText: { fontSize: FONT_SIZE.md, color: COLORS.primaryLight, fontWeight: '600' },
+  overcomeText: { fontSize: FONT_SIZE.md, color: COLORS.primary, fontWeight: '600' },
 
   // Result screens
   resultCircle: { width: 140, height: 140, borderRadius: 70, marginBottom: SPACING.xl, overflow: 'hidden' },
-  resultCircleGrad: { width: '100%', height: '100%', borderRadius: 70, justifyContent: 'center', alignItems: 'center' },
+  resultCircleInner: { width: '100%', height: '100%', borderRadius: 70, justifyContent: 'center', alignItems: 'center' },
   resultTitle: { fontSize: 32, fontWeight: '900', color: COLORS.text, marginBottom: SPACING.md },
   resultText: { fontSize: FONT_SIZE.lg, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 28, marginBottom: SPACING.lg },
   resultCount: { fontSize: FONT_SIZE.md, color: COLORS.textMuted, marginBottom: SPACING.xxl },
-  primaryBtn: { borderRadius: BORDER_RADIUS.lg, overflow: 'hidden', width: '100%', marginBottom: SPACING.md, ...SHADOWS.sm },
+  primaryBtn: { borderRadius: BORDER_RADIUS.lg, overflow: 'hidden', width: '100%', marginBottom: SPACING.md, ...SHADOWS.md },
   primaryBtnGrad: { paddingVertical: 16, alignItems: 'center' },
   primaryBtnText: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: '#FFF' },
-  secondaryBtn: { backgroundColor: COLORS.surfaceGlass, borderRadius: BORDER_RADIUS.lg, paddingVertical: 14, paddingHorizontal: SPACING.xl, borderWidth: 1, borderColor: COLORS.borderLight },
+  secondaryBtn: { backgroundColor: COLORS.surfaceGlass, borderRadius: BORDER_RADIUS.lg, paddingVertical: 14, paddingHorizontal: SPACING.xl, ...SHADOWS.sm },
   secondaryBtnText: { fontSize: FONT_SIZE.md, fontWeight: '600', color: COLORS.text },
 });

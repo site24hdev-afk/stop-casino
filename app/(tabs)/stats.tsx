@@ -11,11 +11,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
-import { useUserData } from '../src/hooks/useUserData';
-import { useCravingLog } from '../src/hooks/useCravingLog';
-import { useSubscription } from '../src/hooks/useSubscription';
-import i18n, { t } from '../src/i18n';
+import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
+import { useUserData } from '../../src/hooks/useUserData';
+import { useCravingLog } from '../../src/hooks/useCravingLog';
+import { useSubscription } from '../../src/hooks/useSubscription';
+import i18n, { t } from '../../src/i18n';
 
 const { width } = Dimensions.get('window');
 const BAR_WIDTH = (width - 80) / 7;
@@ -73,16 +73,11 @@ export default function StatsScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-              <Ionicons name="arrow-back" size={22} color={COLORS.text} />
-            </TouchableOpacity>
             <Text style={styles.headerTitle}>{t('stats.title')}</Text>
-            <View style={{ width: 40 }} />
           </View>
 
           {/* Summary */}
@@ -93,14 +88,14 @@ export default function StatsScreen() {
             </View>
             <View style={styles.summaryDivider} />
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryNum, { color: COLORS.primaryLight }]}>
+              <Text style={[styles.summaryNum, { color: COLORS.primary }]}>
                 {moneySaved.toLocaleString('fr-FR')} €
               </Text>
               <Text style={styles.summaryLabel}>{t('stats.saved')}</Text>
             </View>
             <View style={styles.summaryDivider} />
             <View style={styles.summaryItem}>
-              <Text style={[styles.summaryNum, { color: COLORS.infoLight }]}>
+              <Text style={[styles.summaryNum, { color: COLORS.info }]}>
                 {successRate}%
               </Text>
               <Text style={styles.summaryLabel}>{t('stats.resistance')}</Text>
@@ -121,7 +116,7 @@ export default function StatsScreen() {
                 <Text style={styles.projLabel}>{t('stats.inOneMonth')}</Text>
               </View>
               <View style={styles.projItem}>
-                <Text style={[styles.projValue, { color: COLORS.primaryLight }]}>
+                <Text style={[styles.projValue, { color: COLORS.primary }]}>
                   {yearProjection.toLocaleString('fr-FR')} €
                 </Text>
                 <Text style={styles.projLabel}>{t('stats.inOneYear')}</Text>
@@ -232,7 +227,7 @@ export default function StatsScreen() {
             </View>
           )}
 
-          <View style={{ height: SPACING.xxl }} />
+          <View style={{ height: 20 }} />
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -244,15 +239,14 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: SPACING.lg },
 
   // Header
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
-  backBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: COLORS.surfaceGlass, borderWidth: 1, borderColor: COLORS.borderLight, justifyContent: 'center', alignItems: 'center' },
+  header: { marginBottom: SPACING.lg },
   headerTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text },
 
   // Summary
   summaryCard: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.lg,
-    marginBottom: SPACING.md, borderWidth: 1, borderColor: COLORS.borderGlass,
+    marginBottom: SPACING.md, ...SHADOWS.sm,
   },
   summaryItem: { flex: 1, alignItems: 'center' },
   summaryDivider: { width: 1, height: 40, backgroundColor: COLORS.borderLight },
@@ -261,8 +255,8 @@ const styles = StyleSheet.create({
 
   // Projections
   projCard: {
-    backgroundColor: 'rgba(16,185,129,0.06)', borderRadius: 20, padding: SPACING.lg,
-    marginBottom: SPACING.md, borderWidth: 1, borderColor: 'rgba(16,185,129,0.12)',
+    backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.lg,
+    marginBottom: SPACING.md, ...SHADOWS.sm,
   },
   projHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SPACING.md },
   projIconWrap: { width: 32, height: 32, borderRadius: 10, backgroundColor: COLORS.primaryBg, justifyContent: 'center', alignItems: 'center' },
@@ -277,7 +271,7 @@ const styles = StyleSheet.create({
   // Chart cards
   chartCard: {
     backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.lg,
-    marginBottom: SPACING.md, borderWidth: 1, borderColor: COLORS.borderGlass,
+    marginBottom: SPACING.md, ...SHADOWS.sm,
   },
   chartHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SPACING.md },
   chartIconWrap: { width: 32, height: 32, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
@@ -286,7 +280,7 @@ const styles = StyleSheet.create({
   // Vertical bars
   barChart: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 140, marginTop: SPACING.sm },
   barCol: { alignItems: 'center', flex: 1 },
-  barContainer: { height: 100, width: BAR_WIDTH - 8, justifyContent: 'flex-end', borderRadius: 6, overflow: 'hidden' },
+  barContainer: { height: 100, width: BAR_WIDTH - 8, justifyContent: 'flex-end', borderRadius: 6, overflow: 'hidden', backgroundColor: COLORS.surface },
   bar: { width: '100%', borderRadius: 6 },
   barLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 6 },
   barValue: { fontSize: 10, color: COLORS.textSecondary, fontWeight: '600', marginTop: 2 },
@@ -302,7 +296,7 @@ const styles = StyleSheet.create({
   // Empty
   emptyCard: {
     backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.xl,
-    alignItems: 'center', gap: SPACING.md, borderWidth: 1, borderColor: COLORS.borderGlass,
+    alignItems: 'center', gap: SPACING.md, ...SHADOWS.sm,
   },
   emptyTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: COLORS.text },
   emptyText: { fontSize: FONT_SIZE.sm, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 22 },
@@ -311,7 +305,7 @@ const styles = StyleSheet.create({
   lockedCard: {
     backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.xl,
     alignItems: 'center', gap: SPACING.md, borderWidth: 1, borderColor: 'rgba(245,158,11,0.15)',
-    borderStyle: 'dashed',
+    borderStyle: 'dashed', ...SHADOWS.sm,
   },
   lockedTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: COLORS.text },
   lockedText: { fontSize: FONT_SIZE.sm, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 22 },

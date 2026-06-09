@@ -15,11 +15,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
-import { useCravingLog } from '../src/hooks/useCravingLog';
-import { useSubscription } from '../src/hooks/useSubscription';
+import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
+import { useCravingLog } from '../../src/hooks/useCravingLog';
+import { useSubscription } from '../../src/hooks/useSubscription';
 import * as Haptics from 'expo-haptics';
-import i18n, { t } from '../src/i18n';
+import i18n, { t } from '../../src/i18n';
 
 const TRIGGER_KEYS = ['boredom', 'stress', 'sadness', 'money', 'ads', 'friends', 'alcohol', 'other'] as const;
 const LOCATION_KEYS = ['home', 'work', 'transport', 'outside', 'restaurant', 'other'] as const;
@@ -68,13 +68,9 @@ export default function JournalScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={22} color={COLORS.text} />
-          </TouchableOpacity>
           <Text style={styles.headerTitle}>{t('journal.headerTitle')}</Text>
           <TouchableOpacity
             style={[styles.addBtn, !canAddEntry && { backgroundColor: COLORS.textMuted }]}
@@ -116,12 +112,12 @@ export default function JournalScreen() {
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
-              <Text style={[styles.statNum, { color: COLORS.primaryLight }]}>{overcameCount}</Text>
+              <Text style={[styles.statNum, { color: COLORS.primary }]}>{overcameCount}</Text>
               <Text style={styles.statLabel}>{t('journal.overcome')}</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.statItem}>
-              <Text style={[styles.statNum, { color: COLORS.warningLight }]}>{peakHour || '—'}</Text>
+              <Text style={[styles.statNum, { color: COLORS.warning }]}>{peakHour || '—'}</Text>
               <Text style={styles.statLabel}>{t('journal.peak')}</Text>
             </View>
           </View>
@@ -167,7 +163,7 @@ export default function JournalScreen() {
               </View>
             ))
           )}
-          <View style={{ height: 100 }} />
+          <View style={{ height: 20 }} />
         </ScrollView>
 
         {/* Add Modal */}
@@ -262,7 +258,6 @@ const styles = StyleSheet.create({
 
   // Header
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
-  backBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: COLORS.surfaceGlass, borderWidth: 1, borderColor: COLORS.borderLight, justifyContent: 'center', alignItems: 'center' },
   headerTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text },
   addBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center' },
 
@@ -270,7 +265,7 @@ const styles = StyleSheet.create({
   limitBanner: {
     flexDirection: 'row', alignItems: 'center', gap: SPACING.sm,
     backgroundColor: COLORS.surfaceGlass, borderRadius: 14, padding: 12, paddingHorizontal: 14,
-    marginBottom: SPACING.md, borderWidth: 1, borderColor: COLORS.borderLight,
+    marginBottom: SPACING.md, ...SHADOWS.sm,
   },
   limitText: { flex: 1, fontSize: FONT_SIZE.xs, color: COLORS.textSecondary },
   upgradeLink: { fontSize: FONT_SIZE.xs, color: COLORS.info, fontWeight: '700' },
@@ -278,7 +273,7 @@ const styles = StyleSheet.create({
   // Stats
   statsCard: {
     flexDirection: 'row', backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.lg,
-    marginBottom: SPACING.lg, borderWidth: 1, borderColor: COLORS.borderGlass,
+    marginBottom: SPACING.lg, ...SHADOWS.sm,
   },
   statItem: { flex: 1, alignItems: 'center' },
   statDivider: { width: 1, backgroundColor: COLORS.borderLight },
@@ -289,7 +284,7 @@ const styles = StyleSheet.create({
   list: { flex: 1 },
   entryCard: {
     backgroundColor: COLORS.surfaceGlass, borderRadius: 16, padding: SPACING.lg,
-    marginBottom: 8, borderWidth: 1, borderColor: COLORS.borderGlass,
+    marginBottom: 8, ...SHADOWS.sm,
   },
   entryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.md },
   entryDate: { fontSize: FONT_SIZE.sm, color: COLORS.textSecondary },
@@ -312,11 +307,11 @@ const styles = StyleSheet.create({
 
   // Modal
   modalOverlay: { flex: 1, backgroundColor: COLORS.overlay, justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: COLORS.background, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: SPACING.lg, maxHeight: '90%' },
+  modalContent: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: SPACING.lg, maxHeight: '90%' },
   modalHandle: { width: 40, height: 4, borderRadius: 2, backgroundColor: COLORS.surfaceLight, alignSelf: 'center', marginBottom: SPACING.md },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
   modalTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text },
-  modalClose: { width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.surfaceGlass, borderWidth: 1, borderColor: COLORS.borderLight, justifyContent: 'center', alignItems: 'center' },
+  modalClose: { width: 36, height: 36, borderRadius: 12, backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center' },
   fieldLabel: { fontSize: FONT_SIZE.sm, fontWeight: '600', color: COLORS.textSecondary, marginBottom: SPACING.sm, marginTop: SPACING.lg },
   intensityRow: { flexDirection: 'row', gap: SPACING.sm },
   intensityBtn: { flex: 1, height: 48, borderRadius: 14, backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center' },

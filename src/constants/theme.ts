@@ -1,52 +1,52 @@
 export const COLORS = {
-  // Fond profond
-  background: '#06080F',
-  surface: '#0E1420',
-  surfaceLight: '#1A2233',
-  surfaceGlass: 'rgba(255,255,255,0.04)',
+  // Fond clair (Apple Health style)
+  background: '#F2F4F7',
+  surface: '#EAECF0',
+  surfaceLight: '#E5E7EB',
+  surfaceGlass: '#FFFFFF',
 
   // Accent vert (progrès, espoir)
   primary: '#10B981',
-  primaryLight: '#34D399',
-  primaryDark: '#059669',
-  primaryBg: 'rgba(16, 185, 129, 0.10)',
-  primaryGlow: 'rgba(16, 185, 129, 0.25)',
+  primaryLight: '#059669',
+  primaryDark: '#047857',
+  primaryBg: 'rgba(16, 185, 129, 0.08)',
+  primaryGlow: 'rgba(16, 185, 129, 0.15)',
 
   // SOS rouge (urgence)
   danger: '#EF4444',
-  dangerLight: '#FCA5A5',
-  dangerBg: 'rgba(239, 68, 68, 0.12)',
+  dangerLight: '#DC2626',
+  dangerBg: 'rgba(239, 68, 68, 0.08)',
 
   // Orange (attention)
   warning: '#F59E0B',
-  warningLight: '#FCD34D',
-  warningBg: 'rgba(245, 158, 11, 0.10)',
+  warningLight: '#D97706',
+  warningBg: 'rgba(245, 158, 11, 0.08)',
 
   // Bleu (aide, information)
   info: '#3B82F6',
-  infoLight: '#60A5FA',
-  infoBg: 'rgba(59, 130, 246, 0.10)',
+  infoLight: '#2563EB',
+  infoBg: 'rgba(59, 130, 246, 0.08)',
 
   // Violet (premium)
   purple: '#8B5CF6',
-  purpleBg: 'rgba(139, 92, 246, 0.10)',
+  purpleBg: 'rgba(139, 92, 246, 0.08)',
 
   // Cyan
   cyan: '#06B6D4',
-  cyanBg: 'rgba(6, 182, 212, 0.10)',
+  cyanBg: 'rgba(6, 182, 212, 0.08)',
 
-  // Texte
-  text: '#F1F5F9',
-  textSecondary: '#94A3B8',
-  textMuted: '#64748B',
+  // Texte — foncé sur fond clair
+  text: '#1A1D26',
+  textSecondary: '#6B7280',
+  textMuted: '#9CA3AF',
 
   // Bordures
-  border: '#1E293B',
-  borderLight: 'rgba(255,255,255,0.06)',
-  borderGlass: 'rgba(255,255,255,0.08)',
+  border: '#D1D5DB',
+  borderLight: '#E5E7EB',
+  borderGlass: '#E5E7EB',
 
   // Overlay
-  overlay: 'rgba(0, 0, 0, 0.75)',
+  overlay: 'rgba(0, 0, 0, 0.4)',
 
   // Fond de carte avec accent subtil
   cardGreen: 'rgba(16, 185, 129, 0.06)',
@@ -58,19 +58,19 @@ export const COLORS = {
 
 // Gradients pour LinearGradient
 export const GRADIENTS = {
-  // Fond écran (subtil)
-  screenBg: ['#06080F', '#0A0F1A', '#06080F'] as const,
+  // Fond écran (subtil, clair)
+  screenBg: ['#F2F4F7', '#EEF0F4', '#F2F4F7'] as const,
   // Hero card
-  heroCard: ['rgba(16,185,129,0.14)', 'rgba(16,185,129,0.04)', 'rgba(59,130,246,0.08)'] as const,
+  heroCard: ['rgba(16,185,129,0.08)', 'rgba(16,185,129,0.03)', 'rgba(59,130,246,0.05)'] as const,
   // SOS button
   sos: ['#EF4444', '#DC2626', '#B91C1C'] as const,
-  sosSoft: ['rgba(239,68,68,0.15)', 'rgba(239,68,68,0.05)'] as const,
+  sosSoft: ['rgba(239,68,68,0.08)', 'rgba(239,68,68,0.02)'] as const,
   // Accent cards
-  green: ['rgba(16,185,129,0.15)', 'rgba(16,185,129,0.03)'] as const,
-  blue: ['rgba(59,130,246,0.15)', 'rgba(59,130,246,0.03)'] as const,
-  purple: ['rgba(139,92,246,0.15)', 'rgba(139,92,246,0.03)'] as const,
-  amber: ['rgba(245,158,11,0.15)', 'rgba(245,158,11,0.03)'] as const,
-  // Menu icons
+  green: ['rgba(16,185,129,0.08)', 'rgba(16,185,129,0.02)'] as const,
+  blue: ['rgba(59,130,246,0.08)', 'rgba(59,130,246,0.02)'] as const,
+  purple: ['rgba(139,92,246,0.08)', 'rgba(139,92,246,0.02)'] as const,
+  amber: ['rgba(245,158,11,0.08)', 'rgba(245,158,11,0.02)'] as const,
+  // Menu icons — gardent couleurs vibrantes
   menuGreen: ['#10B981', '#059669'] as const,
   menuBlue: ['#3B82F6', '#2563EB'] as const,
   menuPurple: ['#8B5CF6', '#7C3AED'] as const,
@@ -80,9 +80,9 @@ export const GRADIENTS = {
   // Paywall
   premium: ['#8B5CF6', '#6D28D9'] as const,
   elite: ['#F59E0B', '#D97706'] as const,
-  // Screens
-  screenSOS: ['#1A0505', '#0F0808', '#06080F'] as const,
-  screenStats: ['#060B14', '#080E1A', '#06080F'] as const,
+  // Screens spécifiques (teintes subtiles)
+  screenSOS: ['#FEF2F2', '#FFF5F5', '#F2F4F7'] as const,
+  screenStats: ['#EFF6FF', '#F0F9FF', '#F2F4F7'] as const,
 } as const;
 
 export const SPACING = {
@@ -114,33 +114,33 @@ export const BORDER_RADIUS = {
   full: 9999,
 } as const;
 
-// Shadows modernes
+// Shadows pour fond clair
 export const SHADOWS = {
   sm: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
   md: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
   lg: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
     shadowRadius: 16,
-    elevation: 8,
+    elevation: 6,
   },
   glow: (color: string) => ({
     shadowColor: color,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.25,
     shadowRadius: 12,
     elevation: 6,
   }),
