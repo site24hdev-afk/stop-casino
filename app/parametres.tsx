@@ -170,6 +170,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.lg,
     gap: SPACING.md,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
   },
   cardIconBg: {
     width: 44,

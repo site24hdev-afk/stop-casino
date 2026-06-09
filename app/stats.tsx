@@ -290,6 +290,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.xl,
     padding: SPACING.lg,
     marginBottom: SPACING.lg,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -354,6 +356,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg,
     padding: SPACING.lg,
     marginBottom: SPACING.lg,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
   },
   insightText: {
     fontSize: FONT_SIZE.sm,

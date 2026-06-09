@@ -285,6 +285,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.lg,
     marginBottom: SPACING.md,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
   },
   articleImageWrap: {
     height: 120,
