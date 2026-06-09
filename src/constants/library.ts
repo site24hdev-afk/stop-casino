@@ -12,11 +12,11 @@ export interface Article {
 import { IMAGES } from './images';
 
 export const CATEGORIES = [
-  { key: 'all', label: 'Tout', icon: 'grid-outline' },
-  { key: 'mecanisme', label: 'Comprendre', icon: 'brain-outline' },
-  { key: 'piege', label: 'Pièges mentaux', icon: 'warning-outline' },
-  { key: 'temoignage', label: 'Témoignages', icon: 'people-outline' },
-  { key: 'exercice', label: 'Exercices', icon: 'barbell-outline' },
+  { key: 'all', labelKey: 'library.all', icon: 'grid-outline' },
+  { key: 'mecanisme', labelKey: 'library.understand', icon: 'brain-outline' },
+  { key: 'piege', labelKey: 'library.traps', icon: 'warning-outline' },
+  { key: 'temoignage', labelKey: 'library.stories', icon: 'people-outline' },
+  { key: 'exercice', labelKey: 'library.exercises', icon: 'barbell-outline' },
 ];
 
 export const ARTICLES: Article[] = [

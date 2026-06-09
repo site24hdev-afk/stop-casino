@@ -76,10 +76,10 @@ export default function AbonnementScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
             <Ionicons name="arrow-back" size={24} color={COLORS.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('sub.mySubscription')}</Text>
+          <Text style={styles.headerTitle} accessibilityRole="header">{t('sub.mySubscription')}</Text>
           <View style={{ width: 24 }} />
         </View>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACING.lg }}>
@@ -119,6 +119,8 @@ export default function AbonnementScreen() {
           {tier !== 'elite' && (
             <TouchableOpacity
               style={[styles.upgradeButton, { backgroundColor: PLANS.pro.color }]}
+              accessibilityRole="button"
+              accessibilityLabel="Change subscription offer"
               onPress={() => {
                 // Reset pour montrer le paywall
                 cancelSubscription().then(() => {
@@ -131,7 +133,7 @@ export default function AbonnementScreen() {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity style={styles.cancelBtn} onPress={() => {
+          <TouchableOpacity style={styles.cancelBtn} accessibilityRole="button" accessibilityLabel="Cancel subscription" onPress={() => {
             Alert.alert(t('cancel'), t('sub.cancelConfirm'), [
               { text: t('no'), style: 'cancel' },
               { text: t('yes'), style: 'destructive', onPress: cancelSubscription },
@@ -150,7 +152,7 @@ export default function AbonnementScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Close */}
-        <TouchableOpacity style={styles.closeBtn} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.closeBtn} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('close')}>
           <Ionicons name="close" size={28} color={COLORS.text} />
         </TouchableOpacity>
 
@@ -172,6 +174,8 @@ export default function AbonnementScreen() {
             ]}
             onPress={() => setSelected({ tier: 'essentiel', cycle: 'yearly' })}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Select Essentiel plan"
           >
             <View style={styles.planHeaderTop}>
               <View style={[styles.planIcon, { backgroundColor: `${PLANS.essentiel.color}20` }]}>
@@ -241,6 +245,8 @@ export default function AbonnementScreen() {
             ]}
             onPress={() => setSelected({ tier: 'pro', cycle: 'yearly' })}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Select Pro plan"
           >
             <View style={styles.planHeaderTop}>
               <View style={[styles.planIcon, { backgroundColor: `${PLANS.pro.color}20` }]}>
@@ -299,6 +305,8 @@ export default function AbonnementScreen() {
             ]}
             onPress={() => setSelected({ tier: 'elite' })}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Select Elite plan"
           >
             <View style={styles.planHeaderTop}>
               <View style={[styles.planIcon, { backgroundColor: `${PLANS.elite.color}20` }]}>
@@ -335,6 +343,8 @@ export default function AbonnementScreen() {
           onPress={handleSubscribe}
           disabled={processing}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="Subscribe now"
         >
           {processing ? (
             <ActivityIndicator color="#FFF" />
@@ -350,7 +360,7 @@ export default function AbonnementScreen() {
 
         {/* Footer */}
         <View style={styles.footer}>
-          <TouchableOpacity onPress={handleRestore}>
+          <TouchableOpacity onPress={handleRestore} accessibilityRole="button" accessibilityLabel="Restore purchase">
             <Text style={styles.footerLink}>{t('sub.restore')}</Text>
           </TouchableOpacity>
           <Text style={styles.footerText}>{t('sub.securePayment')}</Text>

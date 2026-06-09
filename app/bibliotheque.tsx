@@ -38,10 +38,10 @@ export default function BibliothequeScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('library.title')}</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('library.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -62,6 +62,8 @@ export default function BibliothequeScreen() {
               activeCategory === cat.key && styles.filterChipActive,
             ]}
             onPress={() => setActiveCategory(cat.key)}
+            accessibilityRole="button"
+            accessibilityLabel={`Filter by ${cat.key}`}
           >
             <Ionicons
               name={cat.icon as any}
@@ -72,7 +74,7 @@ export default function BibliothequeScreen() {
               styles.filterText,
               activeCategory === cat.key && styles.filterTextActive,
             ]}>
-              {cat.label}
+              {t(cat.labelKey)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -86,6 +88,8 @@ export default function BibliothequeScreen() {
             style={styles.articleCard}
             onPress={() => setSelectedArticle(article)}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`Read article: ${article.title}`}
           >
             {article.image && (
               <View style={styles.articleImageWrap}>
@@ -138,6 +142,8 @@ export default function BibliothequeScreen() {
                   <TouchableOpacity
                     style={styles.modalClose}
                     onPress={() => setSelectedArticle(null)}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('close')}
                   >
                     <Ionicons name="close" size={24} color={COLORS.text} />
                   </TouchableOpacity>

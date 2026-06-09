@@ -82,10 +82,10 @@ export default function StatsScreen() {
     >
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('stats.title')}</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('stats.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 

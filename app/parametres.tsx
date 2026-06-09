@@ -38,10 +38,10 @@ export default function ParametresScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('settings.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -51,6 +51,8 @@ export default function ParametresScreen() {
         <TouchableOpacity
           style={styles.card}
           onPress={() => setShowLangModal(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Change language"
         >
           <View style={[styles.cardIconBg, { backgroundColor: 'rgba(59, 130, 246, 0.12)' }]}>
             <Ionicons name="language" size={24} color={COLORS.info} />
@@ -98,7 +100,7 @@ export default function ParametresScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{t('settings.selectLanguage')}</Text>
-              <TouchableOpacity onPress={() => setShowLangModal(false)}>
+              <TouchableOpacity onPress={() => setShowLangModal(false)} accessibilityRole="button" accessibilityLabel={t('close')}>
                 <Ionicons name="close" size={24} color={COLORS.text} />
               </TouchableOpacity>
             </View>
@@ -112,6 +114,8 @@ export default function ParametresScreen() {
                     currentLang === lang.code && styles.langOptionActive,
                   ]}
                   onPress={() => handleLanguageChange(lang.code)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Select language: ${lang.label}`}
                 >
                   <Text style={styles.langFlag}>{lang.flag}</Text>
                   <Text style={[

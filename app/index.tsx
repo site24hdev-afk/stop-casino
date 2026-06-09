@@ -57,13 +57,15 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>{t('home.greeting')} 💪</Text>
-            <Text style={styles.appName}>{t('appName')}</Text>
+            <Text style={styles.appName} accessibilityRole="header">{t('appName')}</Text>
           </View>
           <View style={styles.headerRight}>
             {isPaid ? (
               <TouchableOpacity
                 style={[styles.tierBadge, { borderColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color}40`, backgroundColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color}15` }]}
                 onPress={() => router.push('/abonnement')}
+                accessibilityRole="button"
+                accessibilityLabel="View subscription tier"
               >
                 <Ionicons name={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].icon} size={14} color={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color} />
                 <Text style={[styles.tierBadgeText, { color: PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'elite'].color }]}>{tier.toUpperCase()}</Text>
@@ -72,6 +74,8 @@ export default function HomeScreen() {
               <TouchableOpacity
                 style={styles.proButton}
                 onPress={() => router.push('/abonnement')}
+                accessibilityRole="button"
+                accessibilityLabel="Upgrade to Pro"
               >
                 <Ionicons name="diamond" size={14} color="#F59E0B" />
                 <Text style={styles.proButtonText}>PRO</Text>
@@ -80,6 +84,8 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={styles.settingsButton}
               onPress={() => router.push('/parametres')}
+              accessibilityRole="button"
+              accessibilityLabel={t('settings.title')}
             >
               <Ionicons name="settings-outline" size={20} color={COLORS.textSecondary} />
             </TouchableOpacity>
@@ -143,6 +149,8 @@ export default function HomeScreen() {
           style={styles.sosButton}
           onPress={() => router.push('/sos')}
           activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel="SOS - Urge to gamble"
         >
           <View style={styles.sosGlow} />
           <View style={styles.sosIconCircle}>
@@ -160,6 +168,8 @@ export default function HomeScreen() {
             style={[styles.navCard, !canAccess('journal') && styles.navCardLocked]}
             onPress={() => canAccess('journal') ? router.push('/journal') : router.push('/abonnement')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.journal')}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
               <Ionicons name="book-outline" size={26} color={canAccess('journal') ? COLORS.primary : COLORS.textMuted} />
@@ -180,6 +190,8 @@ export default function HomeScreen() {
             style={styles.navCard}
             onPress={() => router.push('/aide')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.aide')}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
               <Ionicons name="call-outline" size={26} color={COLORS.info} />
@@ -193,6 +205,8 @@ export default function HomeScreen() {
             style={[styles.navCard, !canAccess('library') && styles.navCardLocked]}
             onPress={() => canAccess('library') ? router.push('/bibliotheque') : router.push('/abonnement')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.library')}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(167, 139, 250, 0.15)' }]}>
               <Ionicons name="library-outline" size={26} color={canAccess('library') ? '#A78BFA' : COLORS.textMuted} />
@@ -213,6 +227,8 @@ export default function HomeScreen() {
             style={[styles.navCard, !canAccess('stats') && styles.navCardLocked]}
             onPress={() => canAccess('stats') ? router.push('/stats') : router.push('/abonnement')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.stats')}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
               <Ionicons name="stats-chart-outline" size={26} color={canAccess('stats') ? COLORS.warning : COLORS.textMuted} />
@@ -233,6 +249,8 @@ export default function HomeScreen() {
             style={[styles.navCard, !canAccess('games') && styles.navCardLocked]}
             onPress={() => canAccess('games') ? router.push('/jeux') : router.push('/abonnement')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.games')}
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
               <Ionicons name="game-controller-outline" size={26} color={canAccess('games') ? COLORS.danger : COLORS.textMuted} />
@@ -253,6 +271,8 @@ export default function HomeScreen() {
             style={[styles.navCard, styles.navCardPro]}
             onPress={() => router.push('/abonnement')}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Subscription plans"
           >
             <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
               <Ionicons name="diamond" size={26} color="#F59E0B" />

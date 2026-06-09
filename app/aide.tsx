@@ -34,10 +34,10 @@ export default function AideScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('aide.title')}</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('aide.title')}</Text>
         <View style={{ width: 24 }} />
       </View>
 
@@ -46,6 +46,8 @@ export default function AideScreen() {
       <TouchableOpacity
         style={styles.mainCard}
         onPress={() => handleCall(t('aide.emergencyNumber').replace(/\s/g, ''), t('aide.emergencyName'))}
+        accessibilityRole="button"
+        accessibilityLabel="Call emergency helpline"
       >
         <View style={styles.mainIcon}>
           <Ionicons name="headset" size={36} color={COLORS.info} />
@@ -67,6 +69,8 @@ export default function AideScreen() {
             userData.trustedContactPhone,
             userData.trustedContactName
           )}
+          accessibilityRole="button"
+          accessibilityLabel={`Call trusted contact ${userData.trustedContactName}`}
         >
           <View style={[styles.contactIcon, { backgroundColor: COLORS.primaryBg }]}>
             <Ionicons name="person-circle" size={32} color={COLORS.primary} />
@@ -102,6 +106,8 @@ export default function AideScreen() {
         <TouchableOpacity
           style={styles.resourceCard}
           onPress={() => Linking.openURL(t('aide.resource1Url'))}
+          accessibilityRole="button"
+          accessibilityLabel="Open resource website"
         >
           <Ionicons name="globe-outline" size={20} color={COLORS.info} />
           <Text style={styles.resourceText}>{t('aide.resource1Name')}</Text>
@@ -111,6 +117,8 @@ export default function AideScreen() {
         <TouchableOpacity
           style={styles.resourceCard}
           onPress={() => Linking.openURL(t('aide.resource2Url'))}
+          accessibilityRole="button"
+          accessibilityLabel="Open resource website"
         >
           <Ionicons name="globe-outline" size={20} color={COLORS.info} />
           <Text style={styles.resourceText}>{t('aide.resource2Name')}</Text>
@@ -120,6 +128,8 @@ export default function AideScreen() {
         <TouchableOpacity
           style={styles.resourceCard}
           onPress={() => handleCall(t('aide.resource3Number'), t('aide.resource3FullName'))}
+          accessibilityRole="button"
+          accessibilityLabel="Call support helpline"
         >
           <Ionicons name="heart-outline" size={20} color={COLORS.danger} />
           <Text style={styles.resourceText}>{t('aide.resource3Name')}</Text>

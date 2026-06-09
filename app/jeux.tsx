@@ -50,12 +50,16 @@ export default function JeuxScreen() {
           <TouchableOpacity
             style={styles.reminderButton}
             onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel="Stop playing"
           >
             <Text style={styles.reminderButtonText}>{t('games.stopPlaying')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.continueButton}
             onPress={() => setShowReminder(false)}
+            accessibilityRole="button"
+            accessibilityLabel="Continue playing"
           >
             <Text style={styles.continueText}>{t('games.continuePlay')}</Text>
           </TouchableOpacity>
@@ -68,10 +72,10 @@ export default function JeuxScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
             <Ionicons name="arrow-back" size={24} color={COLORS.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('games.title')}</Text>
+          <Text style={styles.headerTitle} accessibilityRole="header">{t('games.title')}</Text>
           <View style={{ width: 24 }} />
         </View>
 
@@ -83,6 +87,8 @@ export default function JeuxScreen() {
         <TouchableOpacity
           style={styles.gameCard}
           onPress={() => setSelectedGame('blackjack')}
+          accessibilityRole="button"
+          accessibilityLabel="Play Blackjack"
         >
           <View style={styles.gameIcon}>
             <Text style={styles.gameEmoji}>🃏</Text>
@@ -97,6 +103,8 @@ export default function JeuxScreen() {
         <TouchableOpacity
           style={styles.gameCard}
           onPress={() => setSelectedGame('roulette')}
+          accessibilityRole="button"
+          accessibilityLabel="Play Roulette"
         >
           <View style={styles.gameIcon}>
             <Text style={styles.gameEmoji}>🎰</Text>
@@ -123,13 +131,13 @@ export default function JeuxScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => setSelectedGame(null)}>
+        <TouchableOpacity onPress={() => setSelectedGame(null)} accessibilityRole="button" accessibilityLabel={t('back')}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>
+        <Text style={styles.headerTitle} accessibilityRole="header">
           {selectedGame === 'blackjack' ? t('games.blackjack') : t('games.roulette')}
         </Text>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('close')}>
           <Ionicons name="close" size={24} color={COLORS.text} />
         </TouchableOpacity>
       </View>

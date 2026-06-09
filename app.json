@@ -14,7 +14,13 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.stopcasino.app"
+      "bundleIdentifier": "com.stopcasino.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "Stop Casino ne te piste pas. Cette autorisation n'est jamais demandée.",
+        "CFBundleDevelopmentRegion": "fr",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

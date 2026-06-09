@@ -112,12 +112,16 @@ export default function SOSScreen() {
         <TouchableOpacity
           style={[styles.backButton, { backgroundColor: COLORS.primary, marginBottom: SPACING.md }]}
           onPress={handleOvercome}
+          accessibilityRole="button"
+          accessibilityLabel="I held strong"
         >
           <Text style={[styles.backButtonText, { color: '#FFF' }]}>{t('sos.iHeldStrong')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.backButton, { backgroundColor: COLORS.surface }]}
           onPress={() => router.replace('/jeux')}
+          accessibilityRole="button"
+          accessibilityLabel="Play simulated game"
         >
           <Text style={styles.backButtonText}>{t('sos.simulatedGame')}</Text>
         </TouchableOpacity>
@@ -141,6 +145,8 @@ export default function SOSScreen() {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
+          accessibilityRole="button"
+          accessibilityLabel={t('back')}
         >
           <Text style={styles.backButtonText}>{t('sos.backHome')}</Text>
         </TouchableOpacity>
@@ -152,10 +158,10 @@ export default function SOSScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('close')}>
           <Ionicons name="close" size={28} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('sos.sosUrge')}</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('sos.sosUrge')}</Text>
         <View style={styles.stepIndicator}>
           <Text style={styles.stepText}>{currentStep + 1}/{SOS_STEPS.length}</Text>
         </View>
@@ -210,7 +216,7 @@ export default function SOSScreen() {
       {/* Actions */}
       <View style={styles.actions}>
         {timer === 0 || step.durationSeconds === 0 ? (
-          <TouchableOpacity style={styles.primaryButton} onPress={handleNext}>
+          <TouchableOpacity style={styles.primaryButton} onPress={handleNext} accessibilityRole="button" accessibilityLabel={currentStep < SOS_STEPS.length - 1 ? "Next step" : "I resisted"}>
             <Text style={styles.primaryButtonText}>
               {currentStep < SOS_STEPS.length - 1 ? t('sos.nextStep') : t('sos.iResisted')}
             </Text>
@@ -226,6 +232,8 @@ export default function SOSScreen() {
         <TouchableOpacity
           style={styles.overcomeButton}
           onPress={handleOvercome}
+          accessibilityRole="button"
+          accessibilityLabel="Urge has passed"
         >
           <Text style={styles.overcomeText}>{t('sos.urgePassed')}</Text>
         </TouchableOpacity>

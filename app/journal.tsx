@@ -72,13 +72,15 @@ export default function JournalScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
           <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('journal.headerTitle')}</Text>
+        <Text style={styles.headerTitle} accessibilityRole="header">{t('journal.headerTitle')}</Text>
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => setShowModal(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Add new journal entry"
         >
           <Ionicons name="add" size={24} color="#FFF" />
         </TouchableOpacity>
@@ -172,7 +174,7 @@ export default function JournalScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{t('journal.newCraving')}</Text>
-              <TouchableOpacity onPress={() => setShowModal(false)}>
+              <TouchableOpacity onPress={() => setShowModal(false)} accessibilityRole="button" accessibilityLabel={t('close')}>
                 <Ionicons name="close" size={24} color={COLORS.text} />
               </TouchableOpacity>
             </View>
@@ -298,7 +300,7 @@ export default function JournalScreen() {
                 </Text>
               )}
 
-              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit} accessibilityRole="button" accessibilityLabel={t('save')}>
                 <Text style={styles.submitText}>{t('save')}</Text>
               </TouchableOpacity>
 
