@@ -10,7 +10,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
 import { useUserData } from '../src/hooks/useUserData';
 import { useCravingLog } from '../src/hooks/useCravingLog';
 import { useSubscription } from '../src/hooks/useSubscription';

@@ -22,7 +22,7 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: COLORS.background },
-          animation: 'slide_from_right',
+          animation: 'ios_from_right',
         }}
       />
     </SafeAreaProvider>

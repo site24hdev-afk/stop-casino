@@ -9,15 +9,17 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
+import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
 import { useUserData } from '../src/hooks/useUserData';
 import { useSubscription, PLANS } from '../src/hooks/useSubscription';
 import i18n, { t } from '../src/i18n';
 import Onboarding from '../src/components/Onboarding';
 
 const { width } = Dimensions.get('window');
+const CARD_W = (width - 56) / 2;
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -46,252 +48,287 @@ export default function HomeScreen() {
     return <Onboarding onComplete={saveData} />;
   }
 
+  const tierKey = tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite';
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>{t('home.greeting')} 💪</Text>
-            <Text style={styles.appName} accessibilityRole="header">{t('appName')}</Text>
+    <View style={styles.root}>
+      <LinearGradient
+        colors={GRADIENTS.screenBg}
+        style={StyleSheet.absoluteFill}
+      />
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* ═══ Header ═══ */}
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.greeting}>{t('home.greeting')} 💪</Text>
+              <Text style={styles.appName} accessibilityRole="header">{t('appName')}</Text>
+            </View>
+            <View style={styles.headerRight}>
+              {isPaid ? (
+                <TouchableOpacity
+                  style={[styles.tierBadge, { borderColor: `${PLANS[tierKey].color}50`, backgroundColor: `${PLANS[tierKey].color}18` }]}
+                  onPress={() => router.push('/abonnement')}
+                  accessibilityRole="button"
+                  accessibilityLabel="View subscription tier"
+                >
+                  <Ionicons name={PLANS[tierKey].icon} size={13} color={PLANS[tierKey].color} />
+                  <Text style={[styles.tierBadgeText, { color: PLANS[tierKey].color }]}>{tier.toUpperCase()}</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.proButton}
+                  onPress={() => router.push('/abonnement')}
+                  accessibilityRole="button"
+                  accessibilityLabel="Upgrade to Pro"
+                >
+                  <Ionicons name="diamond" size={13} color="#F59E0B" />
+                  <Text style={styles.proButtonText}>PRO</Text>
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity
+                style={styles.settingsButton}
+                onPress={() => router.push('/parametres')}
+                accessibilityRole="button"
+                accessibilityLabel={t('settings.title')}
+              >
+                <Ionicons name="settings-outline" size={20} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.headerRight}>
-            {isPaid ? (
-              <TouchableOpacity
-                style={[styles.tierBadge, { borderColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].color}40`, backgroundColor: `${PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].color}15` }]}
-                onPress={() => router.push('/abonnement')}
-                accessibilityRole="button"
-                accessibilityLabel="View subscription tier"
-              >
-                <Ionicons name={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].icon} size={14} color={PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].color} />
-                <Text style={[styles.tierBadgeText, { color: PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].color }]}>{tier.toUpperCase()}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={styles.proButton}
-                onPress={() => router.push('/abonnement')}
-                accessibilityRole="button"
-                accessibilityLabel="Upgrade to Pro"
-              >
-                <Ionicons name="diamond" size={14} color="#F59E0B" />
-                <Text style={styles.proButtonText}>PRO</Text>
-              </TouchableOpacity>
+
+          {/* ═══ Hero Counter ═══ */}
+          <LinearGradient
+            colors={GRADIENTS.heroCard}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.heroCard}
+          >
+            {/* Decorative glow circles */}
+            <View style={styles.heroGlow1} />
+            <View style={styles.heroGlow2} />
+
+            <View style={styles.heroTrophy}>
+              <Ionicons name="trophy" size={28} color="#F59E0B" />
+            </View>
+            <Text style={styles.heroNumber}>{daysSinceQuit}</Text>
+            <Text style={styles.heroLabel}>
+              {daysSinceQuit <= 1 ? t('home.daySingle') : t('home.dayPlural')}
+            </Text>
+            {daysSinceQuit >= 7 && (
+              <View style={styles.heroBadge}>
+                <Ionicons name="flame" size={13} color={COLORS.warning} />
+                <Text style={styles.heroBadgeText}>
+                  {daysSinceQuit >= 365 ? t('home.yearCount') :
+                   daysSinceQuit >= 30 ? t('home.monthCount', { count: Math.floor(daysSinceQuit / 30) }) :
+                   Math.floor(daysSinceQuit / 7) > 1 ? t('home.weeksCount', { count: Math.floor(daysSinceQuit / 7) }) : t('home.weekCount', { count: Math.floor(daysSinceQuit / 7) })}
+                </Text>
+              </View>
             )}
-            <TouchableOpacity
-              style={styles.settingsButton}
-              onPress={() => router.push('/parametres')}
-              accessibilityRole="button"
-              accessibilityLabel={t('settings.title')}
+          </LinearGradient>
+
+          {/* ═══ Stats compactes ═══ */}
+          <View style={styles.statsRow}>
+            <LinearGradient
+              colors={GRADIENTS.green}
+              style={styles.statCard}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
             >
-              <Ionicons name="settings-outline" size={20} color={COLORS.textSecondary} />
+              <View style={styles.statIconBg}>
+                <Ionicons name="wallet" size={18} color={COLORS.primary} />
+              </View>
+              <Text style={styles.statValue}>{moneySaved.toLocaleString('fr-FR')} €</Text>
+              <Text style={styles.statLabel}>{t('home.saved')}</Text>
+            </LinearGradient>
+
+            <LinearGradient
+              colors={GRADIENTS.blue}
+              style={styles.statCard}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <View style={[styles.statIconBg, { backgroundColor: 'rgba(59,130,246,0.15)' }]}>
+                <Ionicons name="shield-checkmark" size={18} color={COLORS.info} />
+              </View>
+              <Text style={[styles.statValue, { color: COLORS.infoLight }]}>
+                {userData.cravingsOvercome}
+              </Text>
+              <Text style={styles.statLabel}>{t('home.cravingsWon')}</Text>
+            </LinearGradient>
+          </View>
+
+          {/* ═══ Citation ═══ */}
+          <View style={styles.quoteCard}>
+            <View style={styles.quoteAccent} />
+            <Text style={styles.quoteText}>{encouragement}</Text>
+          </View>
+
+          {/* ═══ SOS Button ═══ */}
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => router.push('/sos')}
+            accessibilityRole="button"
+            accessibilityLabel="SOS - Urge to gamble"
+          >
+            <LinearGradient
+              colors={GRADIENTS.sos}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.sosButton}
+            >
+              <View style={styles.sosGlow} />
+              <View style={styles.sosContent}>
+                <View style={styles.sosIconCircle}>
+                  <Ionicons name="warning" size={24} color="#FFF" />
+                </View>
+                <View style={styles.sosTextWrap}>
+                  <Text style={styles.sosTitle}>{t('home.sosTitle')}</Text>
+                  <Text style={styles.sosSubtitle}>{t('home.sosSub')}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={22} color="rgba(255,255,255,0.6)" />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          {/* ═══ Navigation Grid ═══ */}
+          <Text style={styles.sectionTitle}>{t('home.explore')}</Text>
+          <View style={styles.navGrid}>
+            {/* Journal */}
+            <NavCard
+              icon="book"
+              iconColor={COLORS.primary}
+              gradient={GRADIENTS.green}
+              title={t('home.journal')}
+              desc={t('home.journalDesc')}
+              locked={!canAccess('journal')}
+              onPress={() => canAccess('journal') ? router.push('/journal') : router.push('/abonnement')}
+            />
+            {/* Aide */}
+            <NavCard
+              icon="call"
+              iconColor={COLORS.info}
+              gradient={GRADIENTS.blue}
+              title={t('home.aide')}
+              desc={canAccess('fullAide') ? t('home.aideDesc') : t('home.aideDescFree')}
+              onPress={() => router.push('/aide')}
+            />
+            {/* Bibliothèque */}
+            <NavCard
+              icon="library"
+              iconColor={COLORS.purple}
+              gradient={GRADIENTS.purple}
+              title={t('home.library')}
+              desc={t('home.libraryDesc')}
+              locked={!canAccess('library')}
+              onPress={() => canAccess('library') ? router.push('/bibliotheque') : router.push('/abonnement')}
+            />
+            {/* Statistiques */}
+            <NavCard
+              icon="stats-chart"
+              iconColor={COLORS.warning}
+              gradient={GRADIENTS.amber}
+              title={t('home.stats')}
+              desc={t('home.statsDesc')}
+              locked={!canAccess('stats')}
+              onPress={() => canAccess('stats') ? router.push('/stats') : router.push('/abonnement')}
+            />
+            {/* Jeux */}
+            <NavCard
+              icon="game-controller"
+              iconColor={COLORS.danger}
+              gradient={GRADIENTS.sosSoft}
+              title={t('home.games')}
+              desc={t('home.gamesDesc')}
+              locked={!canAccess('games')}
+              onPress={() => canAccess('games') ? router.push('/jeux') : router.push('/abonnement')}
+            />
+            {/* Abonnement */}
+            <TouchableOpacity
+              style={[styles.navCard]}
+              onPress={() => router.push('/abonnement')}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Subscription plans"
+            >
+              <LinearGradient
+                colors={['rgba(245,158,11,0.18)', 'rgba(245,158,11,0.04)']}
+                style={styles.navCardInner}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <View style={[styles.navIconBg, { backgroundColor: 'rgba(245,158,11,0.18)' }]}>
+                  <Ionicons name="diamond" size={24} color="#F59E0B" />
+                </View>
+                <Text style={styles.navTitle}>
+                  {isPaid ? PLANS[tierKey].name : t('home.unlock')}
+                </Text>
+                <Text style={styles.navDesc}>
+                  {isPaid ? t('home.manageOffer') : t('home.unlockDesc')}
+                </Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
-        </View>
 
-        {/* Compteur principal — héro */}
-        <View style={styles.heroCard}>
-          <View style={styles.heroGlow1} />
-          <View style={styles.heroGlow2} />
-          <View style={styles.heroTrophy}>
-            <Ionicons name="trophy" size={32} color="#F59E0B" />
-          </View>
-          <Text style={styles.heroNumber}>{daysSinceQuit}</Text>
-          <Text style={styles.heroLabel}>
-            {daysSinceQuit <= 1 ? t('home.daySingle') : t('home.dayPlural')}
-          </Text>
-          {daysSinceQuit >= 7 && (
-            <View style={styles.heroBadge}>
-              <Ionicons name="flame" size={14} color={COLORS.warning} />
-              <Text style={styles.heroBadgeText}>
-                {daysSinceQuit >= 365 ? t('home.yearCount') :
-                 daysSinceQuit >= 30 ? t('home.monthCount', { count: Math.floor(daysSinceQuit / 30) }) :
-                 Math.floor(daysSinceQuit / 7) > 1 ? t('home.weeksCount', { count: Math.floor(daysSinceQuit / 7) }) : t('home.weekCount', { count: Math.floor(daysSinceQuit / 7) })}
-              </Text>
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
+}
+
+/* ═══ Composant NavCard ═══ */
+function NavCard({ icon, iconColor, gradient, title, desc, locked, onPress }: {
+  icon: string;
+  iconColor: string;
+  gradient: readonly [string, string];
+  title: string;
+  desc: string;
+  locked?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <TouchableOpacity
+      style={[styles.navCard, locked && { opacity: 0.5 }]}
+      onPress={onPress}
+      activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+    >
+      <LinearGradient
+        colors={gradient as any}
+        style={styles.navCardInner}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      >
+        <View style={[styles.navIconBg, { backgroundColor: `${iconColor}20` }]}>
+          <Ionicons name={icon as any} size={24} color={locked ? COLORS.textMuted : iconColor} />
+        </View>
+        <View style={styles.navTitleRow}>
+          <Text style={[styles.navTitle, locked && { color: COLORS.textMuted }]}>{title}</Text>
+          {locked && (
+            <View style={styles.lockBadge}>
+              <Ionicons name="lock-closed" size={9} color="#F59E0B" />
             </View>
           )}
         </View>
-
-        {/* Stats compactes */}
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <View style={[styles.statIconBg, { backgroundColor: 'rgba(16, 185, 129, 0.12)' }]}>
-              <Ionicons name="wallet-outline" size={20} color={COLORS.primary} />
-            </View>
-            <Text style={styles.statValue}>{moneySaved.toLocaleString('fr-FR')} €</Text>
-            <Text style={styles.statLabel}>{t('home.saved')}</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statCard}>
-            <View style={[styles.statIconBg, { backgroundColor: 'rgba(59, 130, 246, 0.12)' }]}>
-              <Ionicons name="shield-checkmark-outline" size={20} color={COLORS.info} />
-            </View>
-            <Text style={[styles.statValue, { color: COLORS.info }]}>
-              {userData.cravingsOvercome}
-            </Text>
-            <Text style={styles.statLabel}>{t('home.cravingsWon')}</Text>
-          </View>
-        </View>
-
-        {/* Citation */}
-        <View style={styles.quoteCard}>
-          <View style={styles.quoteIconBg}>
-            <Ionicons name="heart" size={16} color={COLORS.primary} />
-          </View>
-          <Text style={styles.quoteText}>{encouragement}</Text>
-        </View>
-
-        {/* Gros bouton SOS */}
-        <TouchableOpacity
-          style={styles.sosButton}
-          onPress={() => router.push('/sos')}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel="SOS - Urge to gamble"
-        >
-          <View style={styles.sosGlow} />
-          <View style={styles.sosIconCircle}>
-            <Ionicons name="warning" size={28} color="#FFF" />
-          </View>
-          <Text style={styles.sosTitle}>{t('home.sosTitle')}</Text>
-          <Text style={styles.sosSubtitle}>{t('home.sosSub')}</Text>
-        </TouchableOpacity>
-
-        {/* Navigation — 2x2 grid */}
-        <Text style={styles.sectionTitle}>{t('home.explore')}</Text>
-        <View style={styles.navGrid}>
-          {/* Journal — verrouillé en gratuit */}
-          <TouchableOpacity
-            style={[styles.navCard, !canAccess('journal') && styles.navCardLocked]}
-            onPress={() => canAccess('journal') ? router.push('/journal') : router.push('/abonnement')}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={t('home.journal')}
-          >
-            <View style={[styles.navIconBg, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
-              <Ionicons name="book-outline" size={26} color={canAccess('journal') ? COLORS.primary : COLORS.textMuted} />
-            </View>
-            <View style={styles.navTitleRow}>
-              <Text style={[styles.navTitle, !canAccess('journal') && styles.navTitleLocked]}>{t('home.journal')}</Text>
-              {!canAccess('journal') && (
-                <View style={styles.lockBadge}>
-                  <Ionicons name="lock-closed" size={10} color="#F59E0B" />
-                </View>
-              )}
-            </View>
-            <Text style={styles.navDesc}>{t('home.journalDesc')}</Text>
-          </TouchableOpacity>
-
-          {/* Aide — toujours accessible (basique en gratuit) */}
-          <TouchableOpacity
-            style={styles.navCard}
-            onPress={() => router.push('/aide')}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={t('home.aide')}
-          >
-            <View style={[styles.navIconBg, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-              <Ionicons name="call-outline" size={26} color={COLORS.info} />
-            </View>
-            <Text style={styles.navTitle}>{t('home.aide')}</Text>
-            <Text style={styles.navDesc}>{canAccess('fullAide') ? t('home.aideDesc') : t('home.aideDescFree')}</Text>
-          </TouchableOpacity>
-
-          {/* Bibliothèque — verrouillé en gratuit */}
-          <TouchableOpacity
-            style={[styles.navCard, !canAccess('library') && styles.navCardLocked]}
-            onPress={() => canAccess('library') ? router.push('/bibliotheque') : router.push('/abonnement')}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={t('home.library')}
-          >
-            <View style={[styles.navIconBg, { backgroundColor: 'rgba(167, 139, 250, 0.15)' }]}>
-              <Ionicons name="library-outline" size={26} color={canAccess('library') ? '#A78BFA' : COLORS.textMuted} />
-            </View>
-            <View style={styles.navTitleRow}>
-              <Text style={[styles.navTitle, !canAccess('library') && styles.navTitleLocked]}>{t('home.library')}</Text>
-              {!canAccess('library') && (
-                <View style={styles.lockBadge}>
-                  <Ionicons name="lock-closed" size={10} color="#F59E0B" />
-                </View>
-              )}
-            </View>
-            <Text style={styles.navDesc}>{t('home.libraryDesc')}</Text>
-          </TouchableOpacity>
-
-          {/* Stats — verrouillé en gratuit */}
-          <TouchableOpacity
-            style={[styles.navCard, !canAccess('stats') && styles.navCardLocked]}
-            onPress={() => canAccess('stats') ? router.push('/stats') : router.push('/abonnement')}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={t('home.stats')}
-          >
-            <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-              <Ionicons name="stats-chart-outline" size={26} color={canAccess('stats') ? COLORS.warning : COLORS.textMuted} />
-            </View>
-            <View style={styles.navTitleRow}>
-              <Text style={[styles.navTitle, !canAccess('stats') && styles.navTitleLocked]}>{t('home.stats')}</Text>
-              {!canAccess('stats') && (
-                <View style={styles.lockBadge}>
-                  <Ionicons name="lock-closed" size={10} color="#F59E0B" />
-                </View>
-              )}
-            </View>
-            <Text style={styles.navDesc}>{t('home.statsDesc')}</Text>
-          </TouchableOpacity>
-
-          {/* Jeux — Pro+ seulement */}
-          <TouchableOpacity
-            style={[styles.navCard, !canAccess('games') && styles.navCardLocked]}
-            onPress={() => canAccess('games') ? router.push('/jeux') : router.push('/abonnement')}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel={t('home.games')}
-          >
-            <View style={[styles.navIconBg, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
-              <Ionicons name="game-controller-outline" size={26} color={canAccess('games') ? COLORS.danger : COLORS.textMuted} />
-            </View>
-            <View style={styles.navTitleRow}>
-              <Text style={[styles.navTitle, !canAccess('games') && styles.navTitleLocked]}>{t('home.games')}</Text>
-              {!canAccess('games') && (
-                <View style={styles.lockBadge}>
-                  <Ionicons name="lock-closed" size={10} color="#F59E0B" />
-                </View>
-              )}
-            </View>
-            <Text style={styles.navDesc}>{t('home.gamesDesc')}</Text>
-          </TouchableOpacity>
-
-          {/* Abonnement */}
-          <TouchableOpacity
-            style={[styles.navCard, styles.navCardPro]}
-            onPress={() => router.push('/abonnement')}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityLabel="Subscription plans"
-          >
-            <View style={[styles.navIconBg, { backgroundColor: 'rgba(245, 158, 11, 0.15)' }]}>
-              <Ionicons name="diamond" size={26} color="#F59E0B" />
-            </View>
-            <Text style={styles.navTitle}>{isPaid ? PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'].name : t('home.unlock')}</Text>
-            <Text style={styles.navDesc}>{isPaid ? t('home.manageOffer') : t('home.unlockDesc')}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={{ height: 40 }} />
-      </ScrollView>
-    </SafeAreaView>
+        <Text style={styles.navDesc}>{desc}</Text>
+      </LinearGradient>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  root: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  safeArea: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -315,25 +352,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'ios' ? 8 : 20,
+    paddingHorizontal: 18,
+    paddingTop: Platform.OS === 'ios' ? 4 : 16,
     paddingBottom: 40,
   },
 
-  // Header
+  // ═══ Header ═══
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 18,
   },
   greeting: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textMuted,
     marginBottom: 2,
+    letterSpacing: 0.3,
   },
   appName: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: '800',
     color: COLORS.text,
     letterSpacing: -0.5,
@@ -349,230 +387,251 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(245, 158, 11, 0.12)',
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 14,
+    borderRadius: 12,
     gap: 4,
     borderWidth: 1,
     borderColor: 'rgba(245, 158, 11, 0.25)',
   },
   proButtonText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '800',
     color: '#F59E0B',
     letterSpacing: 0.5,
   },
   settingsButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: COLORS.surface,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: COLORS.surfaceGlass,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  tierBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 4,
+    borderWidth: 1,
+  },
+  tierBadgeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
 
-  // Hero counter
+  // ═══ Hero Counter ═══
   heroCard: {
-    backgroundColor: COLORS.surface,
     borderRadius: 28,
-    paddingVertical: 32,
+    paddingVertical: 28,
     paddingHorizontal: 24,
     alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 1.5,
-    borderColor: 'rgba(16, 185, 129, 0.3)',
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.15)',
     overflow: 'hidden',
+    ...SHADOWS.md,
   },
   heroGlow1: {
     position: 'absolute',
-    top: -60,
-    left: -30,
-    width: 180,
-    height: 180,
-    borderRadius: 90,
+    top: -50,
+    left: -20,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
     backgroundColor: 'rgba(16, 185, 129, 0.08)',
   },
   heroGlow2: {
     position: 'absolute',
-    bottom: -40,
-    right: -20,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    bottom: -30,
+    right: -10,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     backgroundColor: 'rgba(59, 130, 246, 0.06)',
   },
   heroTrophy: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: 'rgba(245, 158, 11, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   heroNumber: {
-    fontSize: 80,
+    fontSize: FONT_SIZE.giant,
     fontWeight: '900',
-    color: COLORS.primary,
-    lineHeight: 88,
+    color: COLORS.primaryLight,
+    lineHeight: 80,
+    letterSpacing: -2,
   },
   heroLabel: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.md,
     color: COLORS.textSecondary,
-    marginTop: 4,
+    marginTop: 2,
     letterSpacing: 0.5,
   },
   heroBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.warningBg,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
+    backgroundColor: 'rgba(245,158,11,0.12)',
+    paddingHorizontal: 14,
+    paddingVertical: 5,
     borderRadius: 20,
-    marginTop: 12,
+    marginTop: 10,
     gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(245,158,11,0.2)',
   },
   heroBadgeText: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.sm,
     fontWeight: '700',
     color: COLORS.warning,
   },
 
-  // Stats row
+  // ═══ Stats Row ═══
   statsRow: {
     flexDirection: 'row',
-    backgroundColor: COLORS.surface,
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    alignItems: 'center',
+    gap: 10,
+    marginBottom: 14,
   },
   statCard: {
     flex: 1,
+    borderRadius: 20,
+    padding: 16,
     alignItems: 'center',
     gap: 4,
-  },
-  statDivider: {
-    width: 1,
-    height: 44,
-    backgroundColor: COLORS.border,
-    marginHorizontal: 8,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
   },
   statIconBg: {
-    width: 38,
-    height: 38,
+    width: 36,
+    height: 36,
     borderRadius: 12,
+    backgroundColor: 'rgba(16,185,129,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   statValue: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
-    color: COLORS.primary,
+    color: COLORS.primaryLight,
+    letterSpacing: -0.5,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
   },
 
-  // Quote
+  // ═══ Quote ═══
   quoteCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderRadius: 16,
+    backgroundColor: COLORS.surfaceGlass,
+    borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    marginBottom: 20,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
     gap: 12,
   },
-  quoteIconBg: {
-    width: 32,
+  quoteAccent: {
+    width: 3,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(16, 185, 129, 0.12)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    borderRadius: 2,
+    backgroundColor: COLORS.primary,
   },
   quoteText: {
     flex: 1,
-    fontSize: 15,
-    color: COLORS.text,
+    fontSize: FONT_SIZE.sm,
+    color: COLORS.textSecondary,
     fontStyle: 'italic',
-    lineHeight: 22,
+    lineHeight: 20,
   },
 
-  // SOS Button
+  // ═══ SOS Button ═══
   sosButton: {
-    backgroundColor: '#DC2626',
-    borderRadius: 24,
-    paddingVertical: 28,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    marginBottom: 28,
+    borderRadius: 22,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    marginBottom: 24,
     overflow: 'hidden',
-    shadowColor: '#DC2626',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 8,
+    ...SHADOWS.lg,
+    shadowColor: '#EF4444',
   },
   sosGlow: {
     position: 'absolute',
-    top: -30,
-    right: -30,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    top: -40,
+    right: -40,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  sosContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
   },
   sosIconCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+  },
+  sosTextWrap: {
+    flex: 1,
   },
   sosTitle: {
-    fontSize: 22,
-    fontWeight: '900',
+    fontSize: FONT_SIZE.lg,
+    fontWeight: '800',
     color: '#FFF',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
   sosSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.75)',
-    marginTop: 4,
+    fontSize: FONT_SIZE.xs,
+    color: 'rgba(255,255,255,0.7)',
+    marginTop: 2,
   },
 
-  // Nav section
+  // ═══ Nav Section ═══
   sectionTitle: {
-    fontSize: 18,
+    fontSize: FONT_SIZE.lg,
     fontWeight: '700',
     color: COLORS.text,
     marginBottom: 12,
+    letterSpacing: -0.3,
   },
   navGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 10,
   },
   navCard: {
-    width: (width - 52) / 2,
-    backgroundColor: COLORS.surface,
+    width: CARD_W,
     borderRadius: 20,
-    padding: 18,
-    gap: 6,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.04)',
+    borderColor: COLORS.borderLight,
+  },
+  navCardInner: {
+    padding: 16,
+    gap: 6,
   },
   navIconBg: {
-    width: 50,
-    height: 50,
-    borderRadius: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   navTitleRow: {
     flexDirection: 'row',
@@ -580,45 +639,21 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   navTitle: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.md,
     fontWeight: '700',
     color: COLORS.text,
   },
   lockBadge: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'rgba(245, 158, 11, 0.18)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  navCardPro: {
-    borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.2)',
-  },
-  navCardLocked: {
-    opacity: 0.6,
-  },
-  navTitleLocked: {
-    color: COLORS.textMuted,
-  },
   navDesc: {
-    fontSize: 12,
+    fontSize: FONT_SIZE.xs,
     color: COLORS.textMuted,
-    lineHeight: 16,
-  },
-  tierBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 14,
-    gap: 4,
-    borderWidth: 1,
-  },
-  tierBadgeText: {
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.5,
+    lineHeight: 15,
   },
 });
