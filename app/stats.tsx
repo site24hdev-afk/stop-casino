@@ -27,12 +27,10 @@ export default function StatsScreen() {
   const { limits } = useSubscription();
   const hasAdvanced = limits.hasAdvancedStats;
 
-  // Stats par jour de la semaine
   const dayNames = i18n.t('stats.days') as unknown as string[];
   const dayStats = dayNames.map((name, i) => {
     const dayEntries = entries.filter(e => {
       const d = new Date(e.date).getDay();
-      // JS: 0=dim, 1=lun... on convertit
       const adjusted = d === 0 ? 6 : d - 1;
       return adjusted === i;
     });
@@ -40,7 +38,6 @@ export default function StatsScreen() {
   });
   const maxDayCount = Math.max(...dayStats.map(d => d.count), 1);
 
-  // Stats par heure (tranches de 4h)
   const timeSlots = [
     { label: '0h-6h', range: [0, 6] },
     { label: '6h-12h', range: [6, 12] },
@@ -56,7 +53,6 @@ export default function StatsScreen() {
   });
   const maxTimeCount = Math.max(...timeStats.map(t => t.count), 1);
 
-  // Déclencheurs fréquents
   const triggerCounts: Record<string, number> = {};
   entries.forEach(e => {
     if (e.trigger && e.trigger !== 'Non précisé') {
@@ -68,430 +64,260 @@ export default function StatsScreen() {
     .slice(0, 5);
   const maxTriggerCount = topTriggers.length > 0 ? topTriggers[0][1] : 1;
 
-  // Streak actuel (jours consécutifs sans rechute)
   const successRate = totalCravings > 0
     ? Math.round((overcameCount / totalCravings) * 100)
     : 100;
 
-  // Argent projeté
   const monthProjection = userData.averageDailySpend * 30;
   const yearProjection = userData.averageDailySpend * 365;
 
   return (
-    <SafeAreaView style={styles.container}>
-    <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
-          <Ionicons name="arrow-back" size={24} color={COLORS.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle} accessibilityRole="header">{t('stats.title')}</Text>
-        <View style={{ width: 24 }} />
-      </View>
+    <View style={styles.root}>
+      <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+              <Ionicons name="arrow-back" size={22} color={COLORS.text} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{t('stats.title')}</Text>
+            <View style={{ width: 40 }} />
+          </View>
 
-      {/* Grande carte résumé */}
-      <View style={styles.summaryCard}>
-        <View style={styles.summaryRow}>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryNumber}>{daysSinceQuit}</Text>
-            <Text style={styles.summaryLabel}>{t('days')}</Text>
-          </View>
-          <View style={styles.summaryDivider} />
-          <View style={styles.summaryItem}>
-            <Text style={[styles.summaryNumber, { color: COLORS.primary }]}>
-              {moneySaved.toLocaleString('fr-FR')} €
-            </Text>
-            <Text style={styles.summaryLabel}>{t('stats.saved')}</Text>
-          </View>
-          <View style={styles.summaryDivider} />
-          <View style={styles.summaryItem}>
-            <Text style={[styles.summaryNumber, { color: COLORS.info }]}>
-              {successRate}%
-            </Text>
-            <Text style={styles.summaryLabel}>{t('stats.resistance')}</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Projections */}
-      <View style={styles.projectionCard}>
-        <Text style={styles.sectionTitle}>
-          <Ionicons name="trending-up" size={18} color={COLORS.primary} />
-          {'  '}{t('stats.projections')}
-        </Text>
-        <View style={styles.projectionRow}>
-          <View style={styles.projectionItem}>
-            <Text style={styles.projectionValue}>
-              {monthProjection.toLocaleString('fr-FR')} €
-            </Text>
-            <Text style={styles.projectionLabel}>{t('stats.inOneMonth')}</Text>
-          </View>
-          <View style={styles.projectionItem}>
-            <Text style={[styles.projectionValue, { color: COLORS.primaryLight }]}>
-              {yearProjection.toLocaleString('fr-FR')} €
-            </Text>
-            <Text style={styles.projectionLabel}>{t('stats.inOneYear')}</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* === STATS AVANCÉES (Pro+) === */}
-      {hasAdvanced ? (
-        <>
-          {/* Envies par jour */}
-          {totalCravings > 0 && (
-            <View style={styles.chartCard}>
-              <Text style={styles.sectionTitle}>
-                <Ionicons name="calendar-outline" size={18} color={COLORS.warning} />
-                {'  '}{t('stats.cravingsByDay')}
-              </Text>
-              <View style={styles.barChart}>
-                {dayStats.map((day, i) => (
-                  <View key={i} style={styles.barColumn}>
-                    <View style={styles.barContainer}>
-                      <View
-                        style={[
-                          styles.bar,
-                          {
-                            height: `${(day.count / maxDayCount) * 100}%`,
-                            backgroundColor: day.count === maxDayCount ? COLORS.danger : COLORS.primary,
-                          },
-                        ]}
-                      />
-                    </View>
-                    <Text style={styles.barLabel}>{day.name}</Text>
-                    <Text style={styles.barValue}>{day.count}</Text>
-                  </View>
-                ))}
-              </View>
+          {/* Summary */}
+          <View style={styles.summaryCard}>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryNum}>{daysSinceQuit}</Text>
+              <Text style={styles.summaryLabel}>{t('days')}</Text>
             </View>
-          )}
-
-          {/* Envies par tranche horaire */}
-          {totalCravings > 0 && (
-            <View style={styles.chartCard}>
-              <Text style={styles.sectionTitle}>
-                <Ionicons name="time-outline" size={18} color={COLORS.info} />
-                {'  '}{t('stats.cravingsByTime')}
+            <View style={styles.summaryDivider} />
+            <View style={styles.summaryItem}>
+              <Text style={[styles.summaryNum, { color: COLORS.primaryLight }]}>
+                {moneySaved.toLocaleString('fr-FR')} €
               </Text>
-              {peakHour && (
-                <Text style={styles.insightText}>
-                  {t('stats.peakTime', { time: peakHour })}
+              <Text style={styles.summaryLabel}>{t('stats.saved')}</Text>
+            </View>
+            <View style={styles.summaryDivider} />
+            <View style={styles.summaryItem}>
+              <Text style={[styles.summaryNum, { color: COLORS.infoLight }]}>
+                {successRate}%
+              </Text>
+              <Text style={styles.summaryLabel}>{t('stats.resistance')}</Text>
+            </View>
+          </View>
+
+          {/* Projections */}
+          <View style={styles.projCard}>
+            <View style={styles.projHeader}>
+              <View style={styles.projIconWrap}>
+                <Ionicons name="trending-up" size={18} color={COLORS.primary} />
+              </View>
+              <Text style={styles.sectionTitle}>{t('stats.projections')}</Text>
+            </View>
+            <View style={styles.projRow}>
+              <View style={styles.projItem}>
+                <Text style={styles.projValue}>{monthProjection.toLocaleString('fr-FR')} €</Text>
+                <Text style={styles.projLabel}>{t('stats.inOneMonth')}</Text>
+              </View>
+              <View style={styles.projItem}>
+                <Text style={[styles.projValue, { color: COLORS.primaryLight }]}>
+                  {yearProjection.toLocaleString('fr-FR')} €
                 </Text>
-              )}
-              <View style={styles.horizontalBars}>
-                {timeStats.map((slot, i) => (
-                  <View key={i} style={styles.hBarRow}>
-                    <Text style={styles.hBarLabel}>{slot.label}</Text>
-                    <View style={styles.hBarContainer}>
-                      <View
-                        style={[
-                          styles.hBar,
-                          {
-                            width: `${(slot.count / maxTimeCount) * 100}%`,
-                            backgroundColor: slot.count === maxTimeCount ? COLORS.warning : COLORS.info,
-                          },
-                        ]}
-                      />
-                    </View>
-                    <Text style={styles.hBarValue}>{slot.count}</Text>
-                  </View>
-                ))}
+                <Text style={styles.projLabel}>{t('stats.inOneYear')}</Text>
               </View>
             </View>
-          )}
-
-          {/* Déclencheurs */}
-          {topTriggers.length > 0 && (
-            <View style={styles.chartCard}>
-              <Text style={styles.sectionTitle}>
-                <Ionicons name="flash-outline" size={18} color={COLORS.danger} />
-                {'  '}{t('stats.topTriggers')}
-              </Text>
-              <View style={styles.horizontalBars}>
-                {topTriggers.map(([trigger, count], i) => (
-                  <View key={i} style={styles.hBarRow}>
-                    <Text style={[styles.hBarLabel, { width: 100 }]}>{trigger}</Text>
-                    <View style={styles.hBarContainer}>
-                      <View
-                        style={[
-                          styles.hBar,
-                          {
-                            width: `${(count / maxTriggerCount) * 100}%`,
-                            backgroundColor: i === 0 ? COLORS.danger : COLORS.warning,
-                          },
-                        ]}
-                      />
-                    </View>
-                    <Text style={styles.hBarValue}>{count}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-        </>
-      ) : (
-        <TouchableOpacity
-          style={styles.lockedCard}
-          onPress={() => router.push('/abonnement')}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="lock-closed" size={32} color={COLORS.warning} />
-          <Text style={styles.lockedTitle}>{t('stats.advancedLocked')}</Text>
-          <Text style={styles.lockedText}>{t('stats.advancedLockedText')}</Text>
-          <View style={styles.lockedBtn}>
-            <Ionicons name="diamond" size={14} color="#FFF" />
-            <Text style={styles.lockedBtnText}>{t('stats.unlockAdvanced')}</Text>
           </View>
-        </TouchableOpacity>
-      )}
 
-      {/* Message si pas de données */}
-      {totalCravings === 0 && (
-        <View style={styles.emptyCard}>
-          <Ionicons name="analytics-outline" size={48} color={COLORS.textMuted} />
-          <Text style={styles.emptyTitle}>{t('stats.noData')}</Text>
-          <Text style={styles.emptyText}>{t('stats.noDataText')}</Text>
-        </View>
-      )}
+          {/* Advanced Stats */}
+          {hasAdvanced ? (
+            <>
+              {totalCravings > 0 && (
+                <View style={styles.chartCard}>
+                  <View style={styles.chartHeader}>
+                    <View style={[styles.chartIconWrap, { backgroundColor: COLORS.warningBg }]}>
+                      <Ionicons name="calendar" size={16} color={COLORS.warning} />
+                    </View>
+                    <Text style={styles.sectionTitle}>{t('stats.cravingsByDay')}</Text>
+                  </View>
+                  <View style={styles.barChart}>
+                    {dayStats.map((day, i) => (
+                      <View key={i} style={styles.barCol}>
+                        <View style={styles.barContainer}>
+                          <LinearGradient
+                            colors={day.count === maxDayCount ? [COLORS.danger, '#B91C1C'] : [COLORS.primary, COLORS.primaryDark]}
+                            style={[styles.bar, { height: `${Math.max((day.count / maxDayCount) * 100, 4)}%` }]}
+                          />
+                        </View>
+                        <Text style={styles.barLabel}>{day.name}</Text>
+                        <Text style={styles.barValue}>{day.count}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
 
-      <View style={{ height: SPACING.xxl }} />
-    </ScrollView>
-    </SafeAreaView>
+              {totalCravings > 0 && (
+                <View style={styles.chartCard}>
+                  <View style={styles.chartHeader}>
+                    <View style={[styles.chartIconWrap, { backgroundColor: COLORS.infoBg }]}>
+                      <Ionicons name="time" size={16} color={COLORS.info} />
+                    </View>
+                    <Text style={styles.sectionTitle}>{t('stats.cravingsByTime')}</Text>
+                  </View>
+                  {peakHour && (
+                    <Text style={styles.insightText}>{t('stats.peakTime', { time: peakHour })}</Text>
+                  )}
+                  <View style={styles.hBars}>
+                    {timeStats.map((slot, i) => (
+                      <View key={i} style={styles.hBarRow}>
+                        <Text style={styles.hBarLabel}>{slot.label}</Text>
+                        <View style={styles.hBarBg}>
+                          <LinearGradient
+                            colors={slot.count === maxTimeCount ? [COLORS.warning, '#D97706'] : [COLORS.info, '#2563EB']}
+                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                            style={[styles.hBar, { width: `${Math.max((slot.count / maxTimeCount) * 100, 4)}%` }]}
+                          />
+                        </View>
+                        <Text style={styles.hBarValue}>{slot.count}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {topTriggers.length > 0 && (
+                <View style={styles.chartCard}>
+                  <View style={styles.chartHeader}>
+                    <View style={[styles.chartIconWrap, { backgroundColor: COLORS.dangerBg }]}>
+                      <Ionicons name="flash" size={16} color={COLORS.danger} />
+                    </View>
+                    <Text style={styles.sectionTitle}>{t('stats.topTriggers')}</Text>
+                  </View>
+                  <View style={styles.hBars}>
+                    {topTriggers.map(([trigger, count], i) => (
+                      <View key={i} style={styles.hBarRow}>
+                        <Text style={[styles.hBarLabel, { width: 100 }]}>{trigger}</Text>
+                        <View style={styles.hBarBg}>
+                          <LinearGradient
+                            colors={i === 0 ? [COLORS.danger, '#B91C1C'] : [COLORS.warning, '#D97706']}
+                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                            style={[styles.hBar, { width: `${Math.max((count / maxTriggerCount) * 100, 4)}%` }]}
+                          />
+                        </View>
+                        <Text style={styles.hBarValue}>{count}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+            </>
+          ) : (
+            <TouchableOpacity style={styles.lockedCard} onPress={() => router.push('/abonnement')} activeOpacity={0.8}>
+              <Ionicons name="lock-closed" size={32} color={COLORS.warning} />
+              <Text style={styles.lockedTitle}>{t('stats.advancedLocked')}</Text>
+              <Text style={styles.lockedText}>{t('stats.advancedLockedText')}</Text>
+              <LinearGradient colors={GRADIENTS.menuGreen} style={styles.lockedBtn}>
+                <Ionicons name="diamond" size={14} color="#FFF" />
+                <Text style={styles.lockedBtnText}>{t('stats.unlockAdvanced')}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
+
+          {totalCravings === 0 && (
+            <View style={styles.emptyCard}>
+              <Ionicons name="analytics-outline" size={48} color={COLORS.textMuted} />
+              <Text style={styles.emptyTitle}>{t('stats.noData')}</Text>
+              <Text style={styles.emptyText}>{t('stats.noDataText')}</Text>
+            </View>
+          )}
+
+          <View style={{ height: SPACING.xxl }} />
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    paddingHorizontal: SPACING.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.lg,
-  },
-  headerTitle: {
-    fontSize: FONT_SIZE.xl,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
+  root: { flex: 1, backgroundColor: COLORS.background },
+  content: { paddingHorizontal: SPACING.lg },
+
+  // Header
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.lg },
+  backBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: COLORS.surfaceGlass, borderWidth: 1, borderColor: COLORS.borderLight, justifyContent: 'center', alignItems: 'center' },
+  headerTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text },
+
   // Summary
   summaryCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg,
-    marginBottom: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.lg,
+    marginBottom: SPACING.md, borderWidth: 1, borderColor: COLORS.borderGlass,
   },
-  summaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  summaryItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  summaryDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: COLORS.border,
-  },
-  summaryNumber: {
-    fontSize: FONT_SIZE.xxl,
-    fontWeight: '900',
-    color: COLORS.text,
-  },
-  summaryLabel: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
+  summaryItem: { flex: 1, alignItems: 'center' },
+  summaryDivider: { width: 1, height: 40, backgroundColor: COLORS.borderLight },
+  summaryNum: { fontSize: FONT_SIZE.xxl, fontWeight: '900', color: COLORS.text },
+  summaryLabel: { fontSize: FONT_SIZE.xs, color: COLORS.textMuted, marginTop: 4 },
+
   // Projections
-  projectionCard: {
-    backgroundColor: COLORS.primaryBg,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.lg,
-    marginBottom: SPACING.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(16, 185, 129, 0.2)',
+  projCard: {
+    backgroundColor: 'rgba(16,185,129,0.06)', borderRadius: 20, padding: SPACING.lg,
+    marginBottom: SPACING.md, borderWidth: 1, borderColor: 'rgba(16,185,129,0.12)',
   },
-  projectionRow: {
-    flexDirection: 'row',
-    marginTop: SPACING.md,
-    gap: SPACING.lg,
-  },
-  projectionItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  projectionValue: {
-    fontSize: FONT_SIZE.xl,
-    fontWeight: '800',
-    color: COLORS.primary,
-  },
-  projectionLabel: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
-  // Charts
-  sectionTitle: {
-    fontSize: FONT_SIZE.md,
-    fontWeight: '700',
-    color: COLORS.text,
-    marginBottom: SPACING.md,
-  },
+  projHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SPACING.md },
+  projIconWrap: { width: 32, height: 32, borderRadius: 10, backgroundColor: COLORS.primaryBg, justifyContent: 'center', alignItems: 'center' },
+  projRow: { flexDirection: 'row', gap: SPACING.lg },
+  projItem: { flex: 1, alignItems: 'center' },
+  projValue: { fontSize: FONT_SIZE.xl, fontWeight: '800', color: COLORS.primary },
+  projLabel: { fontSize: FONT_SIZE.xs, color: COLORS.textMuted, marginTop: 4 },
+
+  // Section
+  sectionTitle: { fontSize: FONT_SIZE.md, fontWeight: '700', color: COLORS.text },
+
+  // Chart cards
   chartCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.lg,
-    marginBottom: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
+    backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.lg,
+    marginBottom: SPACING.md, borderWidth: 1, borderColor: COLORS.borderGlass,
   },
-  insightText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.md,
-    fontStyle: 'italic',
-  },
-  insightHighlight: {
-    color: COLORS.warning,
-    fontWeight: '700',
-    fontStyle: 'normal',
-  },
+  chartHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: SPACING.md },
+  chartIconWrap: { width: 32, height: 32, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
+  insightText: { fontSize: FONT_SIZE.sm, color: COLORS.textSecondary, marginBottom: SPACING.md, fontStyle: 'italic' },
+
   // Vertical bars
-  barChart: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    height: 140,
-    marginTop: SPACING.sm,
-  },
-  barColumn: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  barContainer: {
-    height: 100,
-    width: BAR_WIDTH - 8,
-    justifyContent: 'flex-end',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  bar: {
-    width: '100%',
-    borderRadius: 4,
-    minHeight: 4,
-  },
-  barLabel: {
-    fontSize: 10,
-    color: COLORS.textMuted,
-    marginTop: 6,
-  },
-  barValue: {
-    fontSize: 10,
-    color: COLORS.textSecondary,
-    fontWeight: '600',
-    marginTop: 2,
-  },
+  barChart: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 140, marginTop: SPACING.sm },
+  barCol: { alignItems: 'center', flex: 1 },
+  barContainer: { height: 100, width: BAR_WIDTH - 8, justifyContent: 'flex-end', borderRadius: 6, overflow: 'hidden' },
+  bar: { width: '100%', borderRadius: 6 },
+  barLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 6 },
+  barValue: { fontSize: 10, color: COLORS.textSecondary, fontWeight: '600', marginTop: 2 },
+
   // Horizontal bars
-  horizontalBars: {
-    gap: SPACING.sm,
-  },
-  hBarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-  },
-  hBarLabel: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
-    width: 60,
-    textAlign: 'right',
-  },
-  hBarContainer: {
-    flex: 1,
-    height: 24,
-    backgroundColor: COLORS.surfaceLight,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  hBar: {
-    height: '100%',
-    borderRadius: 4,
-    minWidth: 4,
-  },
-  hBarValue: {
-    fontSize: FONT_SIZE.xs,
-    color: COLORS.textSecondary,
-    fontWeight: '600',
-    width: 24,
-  },
+  hBars: { gap: SPACING.sm },
+  hBarRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
+  hBarLabel: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary, width: 60, textAlign: 'right' },
+  hBarBg: { flex: 1, height: 24, backgroundColor: COLORS.surface, borderRadius: 6, overflow: 'hidden' },
+  hBar: { height: '100%', borderRadius: 6 },
+  hBarValue: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary, fontWeight: '600', width: 24 },
+
   // Empty
   emptyCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.xl,
-    alignItems: 'center',
-    gap: SPACING.md,
+    backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.xl,
+    alignItems: 'center', gap: SPACING.md, borderWidth: 1, borderColor: COLORS.borderGlass,
   },
-  emptyTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  emptyText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  // Locked upsell
+  emptyTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: COLORS.text },
+  emptyText: { fontSize: FONT_SIZE.sm, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 22 },
+
+  // Locked
   lockedCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: BORDER_RADIUS.lg,
-    padding: SPACING.xl,
-    alignItems: 'center',
-    gap: SPACING.md,
-    borderWidth: 1,
-    borderColor: 'rgba(245,158,11,0.2)',
+    backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.xl,
+    alignItems: 'center', gap: SPACING.md, borderWidth: 1, borderColor: 'rgba(245,158,11,0.15)',
     borderStyle: 'dashed',
   },
-  lockedTitle: {
-    fontSize: FONT_SIZE.lg,
-    fontWeight: '700',
-    color: COLORS.text,
-  },
-  lockedText: {
-    fontSize: FONT_SIZE.sm,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
+  lockedTitle: { fontSize: FONT_SIZE.lg, fontWeight: '700', color: COLORS.text },
+  lockedText: { fontSize: FONT_SIZE.sm, color: COLORS.textSecondary, textAlign: 'center', lineHeight: 22 },
   lockedBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.full,
-    marginTop: SPACING.sm,
+    flexDirection: 'row', alignItems: 'center', gap: SPACING.sm,
+    paddingHorizontal: SPACING.lg, paddingVertical: 10, borderRadius: BORDER_RADIUS.full, marginTop: SPACING.sm,
   },
-  lockedBtnText: {
-    fontSize: FONT_SIZE.sm,
-    fontWeight: '700',
-    color: '#FFF',
-  },
+  lockedBtnText: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: '#FFF' },
 });

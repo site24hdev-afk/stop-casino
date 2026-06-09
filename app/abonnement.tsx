@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
 import {
   useSubscription,
   PLANS,
@@ -71,13 +72,15 @@ export default function AbonnementScreen() {
     const tierInfo = PLANS[tier === 'free' ? 'essentiel' : tier as 'essentiel' | 'pro' | 'premium' | 'elite'];
     const features = TIER_FEATURES[tier];
     return (
+      <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+      <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
-            <Ionicons name="arrow-back" size={24} color={COLORS.text} />
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={22} color={COLORS.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle} accessibilityRole="header">{t('sub.mySubscription')}</Text>
-          <View style={{ width: 24 }} />
+          <View style={{ width: 40 }} />
         </View>
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: SPACING.lg }}>
           <View style={[styles.activeCard, { borderColor: `${tierInfo.color}40` }]}>
@@ -141,11 +144,14 @@ export default function AbonnementScreen() {
           <View style={{ height: 40 }} />
         </ScrollView>
       </SafeAreaView>
+      </View>
     );
   }
 
   // PAYWALL — 3 paliers
   return (
+    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+    <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Close */}
@@ -465,16 +471,18 @@ export default function AbonnementScreen() {
         <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: SPACING.lg, marginBottom: SPACING.lg,
   },
   headerTitle: { fontSize: FONT_SIZE.xl, fontWeight: '700', color: COLORS.text },
+  backBtn: { width: 40, height: 40, borderRadius: 14, backgroundColor: COLORS.surfaceGlass, borderWidth: 1, borderColor: COLORS.borderLight, justifyContent: 'center', alignItems: 'center' },
   closeBtn: { alignSelf: 'flex-end', padding: SPACING.lg },
 
   // Hero
@@ -497,8 +505,8 @@ const styles = StyleSheet.create({
   recommendText: { fontSize: 10, fontWeight: '800', color: '#FFF', letterSpacing: 0.5 },
 
   planHeader: {
-    backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.xl,
-    padding: SPACING.lg, borderWidth: 2, borderColor: 'transparent',
+    backgroundColor: COLORS.surfaceGlass, borderRadius: 22,
+    padding: SPACING.lg, borderWidth: 1.5, borderColor: COLORS.borderGlass,
   },
   planHeaderPro: { borderColor: 'rgba(16,185,129,0.15)' },
   planHeaderTop: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.sm },
@@ -557,7 +565,7 @@ const styles = StyleSheet.create({
 
   // Active subscription
   activeCard: {
-    backgroundColor: COLORS.surface, borderRadius: BORDER_RADIUS.xl,
+    backgroundColor: COLORS.surfaceGlass, borderRadius: 22,
     padding: SPACING.xl, alignItems: 'center', borderWidth: 1.5, marginBottom: SPACING.xl,
   },
   activeBadge: {
