@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
 import { useCravingLog } from '../../src/hooks/useCravingLog';
 import { useSubscription } from '../../src/hooks/useSubscription';
+import { useColors, useTheme } from '../../src/context/ThemeContext';
 import * as Haptics from 'expo-haptics';
 import i18n, { t } from '../../src/i18n';
 
@@ -28,6 +29,8 @@ export default function JournalScreen() {
   const router = useRouter();
   const { entries, addEntry, overcameCount, peakHour, totalCravings } = useCravingLog();
   const { limits } = useSubscription();
+  const c = useColors();
+  const { isDark } = useTheme();
   const [showModal, setShowModal] = useState(false);
 
   const now = new Date();
@@ -67,11 +70,11 @@ export default function JournalScreen() {
   };
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.background }]}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>{t('journal.headerTitle')}</Text>
+          <Text style={[styles.headerTitle, { color: c.text }]}>{t('journal.headerTitle')}</Text>
           <TouchableOpacity
             style={[styles.addBtn, !canAddEntry && { backgroundColor: COLORS.textMuted }]}
             onPress={() => {
@@ -105,7 +108,7 @@ export default function JournalScreen() {
 
         {/* Stats */}
         {totalCravings > 0 && (
-          <View style={styles.statsCard}>
+          <View style={[styles.statsCard, { backgroundColor: c.surfaceGlass }]}>
             <View style={styles.statItem}>
               <Text style={styles.statNum}>{totalCravings}</Text>
               <Text style={styles.statLabel}>{t('journal.logged')}</Text>
@@ -133,7 +136,7 @@ export default function JournalScreen() {
             </View>
           ) : (
             entries.map((entry) => (
-              <View key={entry.id} style={styles.entryCard}>
+              <View key={entry.id} style={[styles.entryCard, { backgroundColor: c.surfaceGlass }]}>
                 <View style={styles.entryHeader}>
                   <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
                   <View style={[styles.entryBadge, entry.overcame ? styles.overcomeBadge : styles.failBadge]}>
@@ -169,7 +172,7 @@ export default function JournalScreen() {
         {/* Add Modal */}
         <Modal visible={showModal} animationType="slide" transparent>
           <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
+            <View style={[styles.modalContent, { backgroundColor: isDark ? c.surfaceGlass : '#FFFFFF' }]}>
               <View style={styles.modalHandle} />
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{t('journal.newCraving')}</Text>

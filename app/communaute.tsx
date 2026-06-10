@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, SHADOWS } from '../src/constants/theme';
+import { useColors } from '../src/context/ThemeContext';
 
 const RESOURCES = [
   {
@@ -108,13 +109,14 @@ const FORUMS = [
 
 export default function CommunauteScreen() {
   const router = useRouter();
+  const c = useColors();
 
   const openURL = (url: string) => {
     Linking.openURL(url).catch(() => {});
   };
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.background }]}>
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>

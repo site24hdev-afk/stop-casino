@@ -14,10 +14,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
 import { useUserData } from '../src/hooks/useUserData';
+import { useColors, useTheme } from '../src/context/ThemeContext';
 import { t } from '../src/i18n';
 
 export default function AideScreen() {
   const router = useRouter();
+  const c = useColors();
+  const { isDark } = useTheme();
   const { userData } = useUserData();
 
   const handleCall = (number: string, name: string) => {
@@ -32,8 +35,8 @@ export default function AideScreen() {
   };
 
   return (
-    <View style={styles.root}>
-      <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
+    <View style={[styles.root, { backgroundColor: c.background }]}>
+      {!isDark && <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />}
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>

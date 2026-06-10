@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { COLORS, SPACING, FONT_SIZE, SHADOWS } from '../../src/constants/theme';
 import { useNotifications } from '../../src/hooks/useNotifications';
-import { useTheme } from '../../src/context/ThemeContext';
+import { useTheme, useColors } from '../../src/context/ThemeContext';
 import i18n, { t, setLanguage, AVAILABLE_LANGUAGES } from '../../src/i18n';
 
 const HOUR_OPTIONS = [6, 7, 8, 9, 10, 11, 12];
@@ -26,6 +26,7 @@ export default function ParametresScreen() {
   const [currentLang, setCurrentLang] = useState(i18n.locale);
   const { enabled: notifEnabled, hour: notifHour, toggleNotifications, changeHour } = useNotifications();
   const { isDark, toggleTheme } = useTheme();
+  const c = useColors();
 
   const currentLanguageLabel = AVAILABLE_LANGUAGES.find(l => l.code === currentLang)?.label ?? currentLang;
   const currentFlag = AVAILABLE_LANGUAGES.find(l => l.code === currentLang)?.flag ?? '🌐';
@@ -39,36 +40,36 @@ export default function ParametresScreen() {
   };
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.background }]}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>{t('settings.title')}</Text>
+          <Text style={[styles.headerTitle, { color: c.text }]}>{t('settings.title')}</Text>
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
           {/* Language */}
-          <Text style={styles.sectionLabel}>{t('settings.language')}</Text>
-          <TouchableOpacity style={styles.card} onPress={() => setShowLangModal(true)} activeOpacity={0.7}>
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>{t('settings.language')}</Text>
+          <TouchableOpacity style={[styles.card, { backgroundColor: c.surfaceGlass }]} onPress={() => setShowLangModal(true)} activeOpacity={0.7}>
             <View style={[styles.cardIcon, { backgroundColor: COLORS.infoBg }]}>
               <Ionicons name="language" size={22} color={COLORS.info} />
             </View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{t('settings.languageDesc')}</Text>
-              <Text style={styles.cardValue}>{currentFlag} {currentLanguageLabel}</Text>
+              <Text style={[styles.cardTitle, { color: c.text }]}>{t('settings.languageDesc')}</Text>
+              <Text style={[styles.cardValue, { color: c.textSecondary }]}>{currentFlag} {currentLanguageLabel}</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
           </TouchableOpacity>
 
           {/* Notifications */}
-          <Text style={styles.sectionLabel}>Notifications</Text>
-          <View style={styles.card}>
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>Notifications</Text>
+          <View style={[styles.card, { backgroundColor: c.surfaceGlass }]}>
             <View style={[styles.cardIcon, { backgroundColor: COLORS.dangerBg }]}>
               <Ionicons name="notifications" size={22} color={COLORS.danger} />
             </View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>Rappels quotidiens</Text>
-              <Text style={styles.cardValue}>
+              <Text style={[styles.cardTitle, { color: c.text }]}>Rappels quotidiens</Text>
+              <Text style={[styles.cardValue, { color: c.textSecondary }]}>
                 {notifEnabled ? `Chaque jour à ${notifHour}h` : 'Désactivés'}
               </Text>
             </View>
@@ -97,14 +98,21 @@ export default function ParametresScreen() {
           )}
 
           {/* Apparence */}
-          <Text style={styles.sectionLabel}>Apparence</Text>
-          <View style={styles.card}>
-            <View style={[styles.cardIcon, { backgroundColor: isDark ? 'rgba(139,92,246,0.12)' : COLORS.purpleBg }]}>
-              <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={COLORS.purple} />
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>Apparence</Text>
+          <TouchableOpacity
+            style={[styles.card, { backgroundColor: c.surfaceGlass }]}
+            activeOpacity={0.7}
+            onPress={() => {
+              toggleTheme();
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+          >
+            <View style={[styles.cardIcon, { backgroundColor: isDark ? 'rgba(139,92,246,0.12)' : c.purpleBg }]}>
+              <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={c.purple} />
             </View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>Mode sombre</Text>
-              <Text style={styles.cardValue}>
+              <Text style={[styles.cardTitle, { color: c.text }]}>Mode sombre</Text>
+              <Text style={[styles.cardValue, { color: c.textSecondary }]}>
                 {isDark ? 'Activé' : 'Désactivé'}
               </Text>
             </View>
@@ -114,44 +122,44 @@ export default function ParametresScreen() {
                 toggleTheme();
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }}
-              trackColor={{ false: COLORS.surfaceLight, true: COLORS.purple }}
+              trackColor={{ false: c.surfaceLight, true: c.purple }}
               thumbColor="#FFF"
             />
-          </View>
+          </TouchableOpacity>
 
           {/* App Info */}
-          <Text style={styles.sectionLabel}>{t('settings.appInfo')}</Text>
-          <View style={styles.card}>
-            <View style={[styles.cardIcon, { backgroundColor: COLORS.primaryBg }]}>
-              <Ionicons name="shield-checkmark" size={22} color={COLORS.primary} />
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>{t('settings.appInfo')}</Text>
+          <View style={[styles.card, { backgroundColor: c.surfaceGlass }]}>
+            <View style={[styles.cardIcon, { backgroundColor: c.primaryBg }]}>
+              <Ionicons name="shield-checkmark" size={22} color={c.primary} />
             </View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>Stop Casino</Text>
-              <Text style={styles.cardValue}>{t('settings.version')} 1.0.0</Text>
+              <Text style={[styles.cardTitle, { color: c.text }]}>Stop Casino</Text>
+              <Text style={[styles.cardValue, { color: c.textSecondary }]}>{t('settings.version')} 1.0.0</Text>
             </View>
           </View>
 
           {/* Privacy */}
-          <Text style={styles.sectionLabel}>{t('settings.dataPrivacy')}</Text>
-          <View style={styles.card}>
-            <View style={[styles.cardIcon, { backgroundColor: COLORS.warningBg }]}>
-              <Ionicons name="lock-closed" size={22} color={COLORS.warning} />
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>{t('settings.dataPrivacy')}</Text>
+          <View style={[styles.card, { backgroundColor: c.surfaceGlass }]}>
+            <View style={[styles.cardIcon, { backgroundColor: c.warningBg }]}>
+              <Ionicons name="lock-closed" size={22} color={c.warning} />
             </View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{t('settings.dataPrivacy')}</Text>
-              <Text style={styles.cardValue}>{t('settings.dataLocal')}</Text>
+              <Text style={[styles.cardTitle, { color: c.text }]}>{t('settings.dataPrivacy')}</Text>
+              <Text style={[styles.cardValue, { color: c.textSecondary }]}>{t('settings.dataLocal')}</Text>
             </View>
           </View>
 
           {/* Subscription */}
-          <Text style={styles.sectionLabel}>{t('sub.mySubscription')}</Text>
-          <TouchableOpacity style={styles.card} onPress={() => router.push('/abonnement')} activeOpacity={0.7}>
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>{t('sub.mySubscription')}</Text>
+          <TouchableOpacity style={[styles.card, { backgroundColor: c.surfaceGlass }]} onPress={() => router.push('/abonnement')} activeOpacity={0.7}>
             <View style={[styles.cardIcon, { backgroundColor: 'rgba(245,158,11,0.08)' }]}>
               <Ionicons name="diamond" size={22} color="#F59E0B" />
             </View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{t('sub.mySubscription')}</Text>
-              <Text style={styles.cardValue}>Gérer votre offre</Text>
+              <Text style={[styles.cardTitle, { color: c.text }]}>{t('sub.mySubscription')}</Text>
+              <Text style={[styles.cardValue, { color: c.textSecondary }]}>Gérer votre offre</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
           </TouchableOpacity>
@@ -160,7 +168,7 @@ export default function ParametresScreen() {
         {/* Language Modal */}
         <Modal visible={showLangModal} transparent animationType="slide" onRequestClose={() => setShowLangModal(false)}>
           <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
+            <View style={[styles.modalContent, { backgroundColor: isDark ? c.surfaceGlass : '#FFFFFF' }]}>
               <View style={styles.modalHandle} />
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>{t('settings.selectLanguage')}</Text>

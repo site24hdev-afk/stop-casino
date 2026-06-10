@@ -23,6 +23,7 @@ import { useSubscription, PLANS } from '../../src/hooks/useSubscription';
 import { useBadges } from '../../src/hooks/useBadges';
 import { useReasons } from '../../src/hooks/useReasons';
 import { useShareProgress } from '../../src/hooks/useShareProgress';
+import { useColors, useTheme } from '../../src/context/ThemeContext';
 import i18n, { t } from '../../src/i18n';
 import Onboarding from '../../src/components/Onboarding';
 import ShareCard from '../../src/components/ShareCard';
@@ -50,6 +51,8 @@ export default function HomeScreen() {
   );
   const { reasons, addReason, removeReason, emojiOptions } = useReasons();
   const { shareCardRef, shareProgress } = useShareProgress();
+  const c = useColors();
+  const { isDark } = useTheme();
   const [encouragement, setEncouragement] = useState('');
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [showRelapseModal, setShowRelapseModal] = useState(false);
@@ -143,7 +146,7 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.background }]}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView
           style={styles.scroll}
@@ -153,8 +156,8 @@ export default function HomeScreen() {
           {/* ═══ Header ═══ */}
           <View style={styles.header}>
             <View>
-              <Text style={styles.appName} accessibilityRole="header">Stop Casino</Text>
-              <Text style={styles.greeting}>{t('home.greeting')} 💪</Text>
+              <Text style={[styles.appName, { color: c.text }]} accessibilityRole="header">Stop Casino</Text>
+              <Text style={[styles.greeting, { color: c.textMuted }]}>{t('home.greeting')} 💪</Text>
             </View>
             {isPaid ? (
               <TouchableOpacity
@@ -173,12 +176,12 @@ export default function HomeScreen() {
           </View>
 
           {/* ═══ Hero Counter ═══ */}
-          <View style={styles.heroCard}>
+          <View style={[styles.heroCard, { backgroundColor: c.surfaceGlass }]}>
             <View style={styles.heroTrophy}>
               <Ionicons name="trophy" size={24} color="#F59E0B" />
             </View>
             <Text style={styles.heroNumber}>{daysSinceQuit}</Text>
-            <Text style={styles.heroLabel}>
+            <Text style={[styles.heroLabel, { color: c.textSecondary }]}>
               {daysSinceQuit <= 1 ? t('home.daySingle') : t('home.dayPlural')}
             </Text>
             {daysSinceQuit >= 7 && (
@@ -214,28 +217,28 @@ export default function HomeScreen() {
           </View>
 
           {/* ═══ Quick Stats ═══ */}
-          <View style={styles.statsRow}>
+          <View style={[styles.statsRow, { backgroundColor: c.surfaceGlass }]}>
             <View style={styles.statCard}>
               <View style={[styles.statDot, { backgroundColor: COLORS.primary }]} />
               <Text style={[styles.statValue, { color: COLORS.primary }]}>
                 {moneySaved.toLocaleString('fr-FR')} €
               </Text>
-              <Text style={styles.statLabel}>{t('home.saved')}</Text>
+              <Text style={[styles.statLabel, { color: c.textMuted }]}>{t('home.saved')}</Text>
             </View>
-            <View style={styles.statDivider} />
+            <View style={[styles.statDivider, { backgroundColor: c.borderLight }]} />
             <View style={styles.statCard}>
-              <View style={[styles.statDot, { backgroundColor: COLORS.info }]} />
-              <Text style={[styles.statValue, { color: COLORS.info }]}>
+              <View style={[styles.statDot, { backgroundColor: c.info }]} />
+              <Text style={[styles.statValue, { color: c.info }]}>
                 {userData.cravingsOvercome}
               </Text>
-              <Text style={styles.statLabel}>{t('home.cravingsWon')}</Text>
+              <Text style={[styles.statLabel, { color: c.textMuted }]}>{t('home.cravingsWon')}</Text>
             </View>
           </View>
 
           {/* ═══ Badges ═══ */}
           <View style={styles.badgesSection}>
             <View style={styles.badgesHeader}>
-              <Text style={styles.badgesTitle}>Récompenses</Text>
+              <Text style={[styles.badgesTitle, { color: c.text }]}>Récompenses</Text>
               <Text style={styles.badgesCount}>{unlockedCount}/{totalCount}</Text>
             </View>
             <ScrollView
@@ -268,7 +271,7 @@ export default function HomeScreen() {
           </View>
 
           {/* ═══ Quote ═══ */}
-          <View style={styles.quoteCard}>
+          <View style={[styles.quoteCard, { backgroundColor: c.surfaceGlass }]}>
             <View style={styles.quoteBar} />
             <Text style={styles.quoteText}>{encouragement}</Text>
           </View>
@@ -276,7 +279,7 @@ export default function HomeScreen() {
           {/* ═══ Mes raisons ═══ */}
           <View style={styles.reasonsSection}>
             <View style={styles.reasonsHeader}>
-              <Text style={styles.reasonsTitle}>Mes raisons d'arrêter</Text>
+              <Text style={[styles.reasonsTitle, { color: c.text }]}>Mes raisons d'arrêter</Text>
               <TouchableOpacity
                 style={styles.reasonsAddBtn}
                 onPress={() => { setReasonText(''); setReasonEmoji('💪'); setShowReasonModal(true); }}
@@ -322,12 +325,12 @@ export default function HomeScreen() {
           </View>
 
           {/* ═══ Menu ═══ */}
-          <Text style={styles.sectionTitle}>{t('home.explore')}</Text>
+          <Text style={[styles.sectionTitle, { color: c.text }]}>{t('home.explore')}</Text>
           <View style={styles.menuList}>
             {menuItems.map((item, i) => (
               <TouchableOpacity
                 key={i}
-                style={[styles.menuItem, item.locked && { opacity: 0.45 }]}
+                style={[styles.menuItem, { backgroundColor: c.surfaceGlass }, item.locked && { opacity: 0.45 }]}
                 onPress={item.onPress}
                 activeOpacity={0.7}
               >
@@ -335,8 +338,8 @@ export default function HomeScreen() {
                   <Ionicons name={item.icon} size={22} color="#FFF" />
                 </LinearGradient>
                 <View style={styles.menuTextWrap}>
-                  <Text style={styles.menuTitle}>{item.title}</Text>
-                  <Text style={styles.menuDesc} numberOfLines={1}>{item.desc}</Text>
+                  <Text style={[styles.menuTitle, { color: c.text }]}>{item.title}</Text>
+                  <Text style={[styles.menuDesc, { color: c.textMuted }]} numberOfLines={1}>{item.desc}</Text>
                 </View>
                 {item.locked ? (
                   <View style={styles.menuLock}>
@@ -385,15 +388,15 @@ export default function HomeScreen() {
           onRequestClose={closeRelapseModal}
         >
           <View style={styles.relapseOverlay}>
-            <View style={styles.relapseModal}>
+            <View style={[styles.relapseModal, { backgroundColor: isDark ? c.surfaceGlass : '#FFFFFF' }]}>
               {!relapseConfirmed ? (
                 <>
                   {/* Encouragement avant confirmation */}
                   <View style={styles.relapseEmojiWrap}>
                     <Text style={styles.relapseEmoji}>🤝</Text>
                   </View>
-                  <Text style={styles.relapseTitle}>C'est pas grave</Text>
-                  <Text style={styles.relapseSubtitle}>
+                  <Text style={[styles.relapseTitle, { color: c.text }]}>C'est pas grave</Text>
+                  <Text style={[styles.relapseSubtitle, { color: c.textSecondary }]}>
                     La rechute fait partie du parcours. L'important, c'est que tu sois là, prêt à recommencer.
                   </Text>
                   <View style={styles.relapseQuoteCard}>

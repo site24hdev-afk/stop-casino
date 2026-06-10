@@ -15,6 +15,7 @@ import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '.
 import { useUserData } from '../../src/hooks/useUserData';
 import { useCravingLog } from '../../src/hooks/useCravingLog';
 import { useSubscription } from '../../src/hooks/useSubscription';
+import { useColors } from '../../src/context/ThemeContext';
 import i18n, { t } from '../../src/i18n';
 
 const { width } = Dimensions.get('window');
@@ -26,6 +27,7 @@ export default function StatsScreen() {
   const { entries, overcameCount, totalCravings, peakHour } = useCravingLog();
   const { limits } = useSubscription();
   const hasAdvanced = limits.hasAdvancedStats;
+  const c = useColors();
 
   // Données pour le graphique d'économies (derniers 7 jours)
   const savingsChartData = React.useMemo(() => {
@@ -87,19 +89,19 @@ export default function StatsScreen() {
   const yearProjection = userData.averageDailySpend * 365;
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.background }]}>
       <SafeAreaView style={{ flex: 1 }} edges={['top']}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>{t('stats.title')}</Text>
+            <Text style={[styles.headerTitle, { color: c.text }]}>{t('stats.title')}</Text>
           </View>
 
           {/* Summary */}
-          <View style={styles.summaryCard}>
+          <View style={[styles.summaryCard, { backgroundColor: c.surfaceGlass }]}>
             <View style={styles.summaryItem}>
-              <Text style={styles.summaryNum}>{daysSinceQuit}</Text>
-              <Text style={styles.summaryLabel}>{t('days')}</Text>
+              <Text style={[styles.summaryNum, { color: c.text }]}>{daysSinceQuit}</Text>
+              <Text style={[styles.summaryLabel, { color: c.textMuted }]}>{t('days')}</Text>
             </View>
             <View style={styles.summaryDivider} />
             <View style={styles.summaryItem}>
@@ -119,7 +121,7 @@ export default function StatsScreen() {
 
           {/* Graphique économies */}
           {daysSinceQuit > 0 && (
-            <View style={styles.chartCard}>
+            <View style={[styles.chartCard, { backgroundColor: c.surfaceGlass }]}>
               <View style={styles.chartHeader}>
                 <View style={[styles.chartIconWrap, { backgroundColor: COLORS.primaryBg }]}>
                   <Ionicons name="trending-up" size={16} color={COLORS.primary} />
@@ -147,7 +149,7 @@ export default function StatsScreen() {
           )}
 
           {/* Anneau de progression */}
-          <View style={styles.progressRingCard}>
+          <View style={[styles.progressRingCard, { backgroundColor: c.surfaceGlass }]}>
             <View style={styles.ringRow}>
               {/* Taux de résistance */}
               <View style={styles.ringItem}>
@@ -195,7 +197,7 @@ export default function StatsScreen() {
           </View>
 
           {/* Projections */}
-          <View style={styles.projCard}>
+          <View style={[styles.projCard, { backgroundColor: c.surfaceGlass }]}>
             <View style={styles.projHeader}>
               <View style={styles.projIconWrap}>
                 <Ionicons name="trending-up" size={18} color={COLORS.primary} />

@@ -16,6 +16,7 @@ import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '.
 import { SOS_STEPS } from '../../src/constants/messages';
 import { useUserData } from '../../src/hooks/useUserData';
 import { useSubscription } from '../../src/hooks/useSubscription';
+import { useColors } from '../../src/context/ThemeContext';
 import { t } from '../../src/i18n';
 
 export default function SOSScreen() {
@@ -23,6 +24,7 @@ export default function SOSScreen() {
   const { incrementCravingsOvercome, userData } = useUserData();
   const { limits } = useSubscription();
   const maxSteps = limits.sosSteps;
+  const c = useColors();
   const [currentStep, setCurrentStep] = useState(0);
   const [timer, setTimer] = useState(SOS_STEPS[0].durationSeconds);
   const [timerActive, setTimerActive] = useState(true);
@@ -114,7 +116,7 @@ export default function SOSScreen() {
   // Game option screen
   if (showGameOption && !completed) {
     return (
-      <View style={styles.root}>
+      <View style={[styles.root, { backgroundColor: c.background }]}>
         <SafeAreaView style={styles.centeredContainer} edges={['top']}>
           <View style={styles.resultCircle}>
             <View style={[styles.resultCircleInner, { backgroundColor: 'rgba(245,158,11,0.10)' }]}>
@@ -139,7 +141,7 @@ export default function SOSScreen() {
   // Completed screen
   if (completed) {
     return (
-      <View style={styles.root}>
+      <View style={[styles.root, { backgroundColor: c.background }]}>
         <SafeAreaView style={styles.centeredContainer} edges={['top']}>
           <View style={styles.resultCircle}>
             <View style={[styles.resultCircleInner, { backgroundColor: 'rgba(16,185,129,0.10)' }]}>
@@ -165,7 +167,7 @@ export default function SOSScreen() {
 
   // Main SOS screen
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.background }]}>
       <LinearGradient colors={GRADIENTS.screenSOS} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={styles.container} edges={['top']}>
         {/* Header */}

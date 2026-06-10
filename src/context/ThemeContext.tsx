@@ -50,6 +50,50 @@ export function useTheme() {
   return useContext(ThemeContext);
 }
 
+// Hook pratique : retourne la bonne palette de couleurs
+export function useColors() {
+  const { isDark } = useContext(ThemeContext);
+  return isDark ? DARK_COLORS : LIGHT_COLORS;
+}
+
+// Re-export des couleurs light (même objet que COLORS de theme.ts)
+const LIGHT_COLORS = {
+  background: '#F2F4F7',
+  surface: '#EAECF0',
+  surfaceLight: '#E5E7EB',
+  surfaceGlass: '#FFFFFF',
+  primary: '#10B981',
+  primaryLight: '#059669',
+  primaryDark: '#047857',
+  primaryBg: 'rgba(16, 185, 129, 0.08)',
+  primaryGlow: 'rgba(16, 185, 129, 0.15)',
+  danger: '#EF4444',
+  dangerLight: '#DC2626',
+  dangerBg: 'rgba(239, 68, 68, 0.08)',
+  warning: '#F59E0B',
+  warningLight: '#D97706',
+  warningBg: 'rgba(245, 158, 11, 0.08)',
+  info: '#3B82F6',
+  infoLight: '#2563EB',
+  infoBg: 'rgba(59, 130, 246, 0.08)',
+  purple: '#8B5CF6',
+  purpleBg: 'rgba(139, 92, 246, 0.08)',
+  cyan: '#06B6D4',
+  cyanBg: 'rgba(6, 182, 212, 0.08)',
+  text: '#1A1D26',
+  textSecondary: '#6B7280',
+  textMuted: '#9CA3AF',
+  border: '#D1D5DB',
+  borderLight: '#E5E7EB',
+  borderGlass: '#E5E7EB',
+  overlay: 'rgba(0, 0, 0, 0.4)',
+  cardGreen: 'rgba(16, 185, 129, 0.06)',
+  cardBlue: 'rgba(59, 130, 246, 0.06)',
+  cardPurple: 'rgba(139, 92, 246, 0.06)',
+  cardRed: 'rgba(239, 68, 68, 0.06)',
+  cardAmber: 'rgba(245, 158, 11, 0.06)',
+} as const;
+
 // Dark color palette
 export const DARK_COLORS = {
   background: '#0F1119',

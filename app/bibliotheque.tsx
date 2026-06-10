@@ -15,11 +15,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { ARTICLES, CATEGORIES, Article } from '../src/constants/library';
 import { useSubscription } from '../src/hooks/useSubscription';
+import { useColors, useTheme } from '../src/context/ThemeContext';
 import { t } from '../src/i18n';
 
 export default function BibliothequeScreen() {
   const router = useRouter();
   const { limits } = useSubscription();
+  const c = useColors();
+  const { isDark } = useTheme();
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
@@ -39,8 +42,8 @@ export default function BibliothequeScreen() {
   };
 
   return (
-    <View style={styles.root}>
-      <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
+    <View style={[styles.root, { backgroundColor: c.background }]}>
+      {!isDark && <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />}
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
