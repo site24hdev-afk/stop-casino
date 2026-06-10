@@ -19,7 +19,14 @@ import * as Haptics from 'expo-haptics';
 import ViewShot from 'react-native-view-shot';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
 import { useUserData } from '../../src/hooks/useUserData';
-import { useSubscription, PLANS } from '../../src/hooks/useSubscription';
+import { useSubscription } from '../../src/hooks/useSubscription';
+
+const PLAN_COLORS: Record<string, { color: string; icon: string }> = {
+  essentiel: { color: '#3B82F6', icon: 'star-outline' },
+  pro: { color: '#10B981', icon: 'diamond-outline' },
+  premium: { color: '#8B5CF6', icon: 'shield-checkmark-outline' },
+  elite: { color: '#F59E0B', icon: 'trophy-outline' },
+};
 import { useBadges } from '../../src/hooks/useBadges';
 import { useReasons } from '../../src/hooks/useReasons';
 import { useShareProgress } from '../../src/hooks/useShareProgress';
@@ -149,11 +156,11 @@ export default function HomeScreen() {
             </View>
             {isPaid ? (
               <TouchableOpacity
-                style={[styles.tierBadge, { borderColor: `${PLANS[tierKey].color}40`, backgroundColor: `${PLANS[tierKey].color}10` }]}
+                style={[styles.tierBadge, { borderColor: `${(PLAN_COLORS[tierKey]?.color || COLORS.primary)}40`, backgroundColor: `${(PLAN_COLORS[tierKey]?.color || COLORS.primary)}10` }]}
                 onPress={() => router.push('/abonnement')}
               >
-                <Ionicons name={PLANS[tierKey].icon} size={14} color={PLANS[tierKey].color} />
-                <Text style={[styles.tierText, { color: PLANS[tierKey].color }]}>{tier.toUpperCase()}</Text>
+                <Ionicons name={(PLAN_COLORS[tierKey]?.icon || 'star-outline') as any} size={14} color={(PLAN_COLORS[tierKey]?.color || COLORS.primary)} />
+                <Text style={[styles.tierText, { color: (PLAN_COLORS[tierKey]?.color || COLORS.primary) }]}>{tier.toUpperCase()}</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity style={styles.proBadge} onPress={() => router.push('/abonnement')}>
@@ -350,7 +357,7 @@ export default function HomeScreen() {
               </LinearGradient>
               <View style={styles.menuTextWrap}>
                 <Text style={styles.menuTitle}>
-                  {isPaid ? PLANS[tierKey].name : t('home.unlock')}
+                  {isPaid ? t(`plans.${tierKey}`) : t('home.unlock')}
                 </Text>
                 <Text style={styles.menuDesc} numberOfLines={1}>
                   {isPaid ? t('home.manageOffer') : t('home.unlockDesc')}

@@ -244,6 +244,7 @@ export default {
     changeOffer: 'Angebot wechseln',
     cancelSub: 'Abo kündigen',
     cancelConfirm: 'Willst du wirklich kündigen?',
+    manageInStore: 'Im App Store verwalten',
     welcomeTitle: 'Willkommen bei %{tier}!',
     welcomeElite: 'Willkommen bei Elite!',
     welcomeText: 'Dein Abo ist aktiv. Danke für dein Vertrauen.',
@@ -255,14 +256,15 @@ export default {
     errorText: 'Etwas ist schiefgelaufen. Versuche es erneut.',
   },
 
-  plans: { essentiel: 'Essentiell', essentielTag: 'Der erste Schritt', pro: 'Pro', proTag: 'Am beliebtesten', elite: 'Elite', eliteTag: 'Für immer' },
+  plans: { essentiel: 'Essentiell', essentielTag: 'Der erste Schritt', pro: 'Pro', proTag: 'Am beliebtesten', premium: 'Premium', premiumTag: 'Das volle Engagement', elite: 'Elite', eliteTag: 'Für immer' },
 
   features: {
     freePlus: 'Alles aus Free +', fullSos: 'Vollständiges SOS (4 Schritte)', fullAide: 'Vollständige Hilfe + Kontakt', journal5: 'Tagebuch (5 Einträge/Monat)',
     articles3: '3 Bibliothek-Artikel', basicStats: 'Basis-Statistiken', dailyQuotes: 'Tägliche Zitate', noAds: 'Keine Werbung',
     essentielPlus: 'Alles aus Essentiell +', unlimitedJournal: 'Unbegrenztes Tagebuch', fullLibrary: 'Vollständige Bibliothek',
     advancedStats: 'Erweiterte Statistiken + Diagramme', simulatedGames: 'Simulierte Spiele (Blackjack, Roulette)', triggerAnalysis: 'Auslöser-Analyse',
-    allProForever: 'Alles aus Pro, für immer', oneTimePayment: 'Einmalzahlung', priorityAccess: 'Prioritärer Zugang zu Updates', eliteBadge: 'Elite-Abzeichen',
+    proPlus: 'Alles aus Pro +', customReminders: 'Individuelle Erinnerungen', exportPdf: 'Datenexport (PDF)', iosWidget: 'iOS Widget', customThemes: 'Eigene Designs', prioritySupport: 'Prioritäts-Support',
+    allProForever: 'Alles aus Premium, für immer', oneTimePayment: 'Einmalzahlung', priorityAccess: 'Prioritärer Zugang zu Updates', eliteBadge: 'Elite-Abzeichen',
     counter: 'Tageszähler', sos1step: 'SOS: 1 von 4 Schritten', emergencyOnly: 'Hilfe: nur Notfallnummer', fixedQuote: '1 festes Zitat',
     noJournal: 'Tagebuch', noLibrary: 'Bibliothek', noStats: 'Statistiken', noGames: 'Simulierte Spiele',
   },

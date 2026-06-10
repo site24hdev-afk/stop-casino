@@ -1,10 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
+import Purchases, {
+  PurchasesOffering,
+  PurchasesPackage,
+  CustomerInfo,
+  LOG_LEVEL,
+} from 'react-native-purchases';
+import {
+  REVENUECAT_API_KEY,
+  ENTITLEMENT_IDS,
+  isRevenueCatConfigured,
+} from '../config/revenueCat';
 
 const SUBSCRIPTION_KEY = '@stop_casino_subscription';
 
-// 4 paliers + gratuit
 export type TierType = 'free' | 'essentiel' | 'pro' | 'premium' | 'elite';
 
 export interface SubscriptionData {
@@ -23,119 +34,17 @@ const DEFAULT_SUB: SubscriptionData = {
   isActive: false,
 };
 
-// Grille de prix
-export const PLANS = {
-  essentiel: {
-    name: 'Essentiel',
-    monthly: { amount: 4.99, label: '4,99 €/mois' },
-    yearly: { amount: 39.99, label: '39,99 €/an', perMonth: '3,33 €/mois', savings: '44%' },
-    color: '#3B82F6',
-    icon: 'star-outline' as const,
-    tagline: 'Le premier pas',
-  },
-  pro: {
-    name: 'Pro',
-    monthly: { amount: 9.99, label: '9,99 €/mois' },
-    yearly: { amount: 79.99, label: '79,99 €/an', perMonth: '6,67 €/mois', savings: '44%' },
-    color: '#10B981',
-    icon: 'diamond-outline' as const,
-    tagline: 'Le plus populaire',
-    recommended: true,
-  },
-  premium: {
-    name: 'Premium',
-    monthly: { amount: 14.99, label: '14,99 €/mois' },
-    yearly: { amount: 109.99, label: '109,99 €/an', perMonth: '9,17 €/mois', savings: '39%' },
-    color: '#8B5CF6',
-    icon: 'shield-checkmark-outline' as const,
-    tagline: 'L\'engagement total',
-  },
-  elite: {
-    name: 'Elite',
-    lifetime: { amount: 149.99, label: '149,99 € une fois' },
-    color: '#F59E0B',
-    icon: 'trophy-outline' as const,
-    tagline: 'Pour toujours',
-  },
-};
-
-// Ce que chaque palier débloque
-export const TIER_FEATURES = {
-  free: {
-    label: 'Gratuit',
-    features: [
-      { text: 'Compteur de jours', included: true },
-      { text: 'SOS (2 étapes sur 4)', included: true },
-      { text: 'Aide : numéro d\'urgence', included: true },
-      { text: 'Journal (2 entrées/mois)', included: true },
-      { text: '1 article bibliothèque', included: true },
-      { text: 'Stats basiques', included: true },
-      { text: '1 citation/jour', included: true },
-      { text: 'Jeux simulés', included: false },
-      { text: 'Stats avancées', included: false },
-      { text: 'Bibliothèque complète', included: false },
-    ],
-  },
-  essentiel: {
-    label: 'Essentiel',
-    features: [
-      { text: 'Tout le gratuit +', included: true },
-      { text: 'SOS complet (4 étapes)', included: true },
-      { text: 'Aide complète + contact', included: true },
-      { text: 'Journal (5 entrées/mois)', included: true },
-      { text: '3 articles bibliothèque', included: true },
-      { text: 'Stats basiques', included: true },
-      { text: 'Citations quotidiennes', included: true },
-      { text: 'Sans publicité', included: true },
-      { text: 'Jeux simulés', included: false },
-      { text: 'Stats avancées', included: false },
-    ],
-  },
-  pro: {
-    label: 'Pro',
-    features: [
-      { text: 'Tout Essentiel +', included: true },
-      { text: 'Journal illimité', included: true },
-      { text: 'Bibliothèque complète', included: true },
-      { text: 'Stats avancées + graphiques', included: true },
-      { text: 'Jeux simulés (Blackjack, Roulette)', included: true },
-      { text: 'Analyse des déclencheurs', included: true },
-    ],
-  },
-  premium: {
-    label: 'Premium',
-    features: [
-      { text: 'Tout Pro +', included: true },
-      { text: 'Rappels personnalisés', included: true },
-      { text: 'Export données (PDF)', included: true },
-      { text: 'Widget iOS', included: true },
-      { text: 'Thèmes personnalisés', included: true },
-      { text: 'Support prioritaire', included: true },
-    ],
-  },
-  elite: {
-    label: 'Elite',
-    features: [
-      { text: 'Tout Premium, pour toujours', included: true },
-      { text: 'Paiement unique', included: true },
-      { text: 'Accès prioritaire nouveautés', included: true },
-      { text: 'Badge Elite exclusif', included: true },
-    ],
-  },
-};
-
-// Limites par palier
 export const TIER_LIMITS = {
   free: {
-    sosSteps: 2,            // 2 étapes sur 4
-    journalEntries: 2,      // 2 par mois
-    libraryArticles: 1,     // 1 article
-    hasStats: true,          // stats basiques
+    sosSteps: 2,
+    journalEntries: 2,
+    libraryArticles: 1,
+    hasStats: true,
     hasAdvancedStats: false,
     hasGames: false,
-    hasCitations: true,      // 1 citation/jour
+    hasCitations: true,
     hasAds: true,
-    hasFullAide: false,      // numéro urgence uniquement (pas contact de confiance)
+    hasFullAide: false,
     hasCustomReminders: false,
     hasExport: false,
     hasWidget: false,
@@ -144,7 +53,7 @@ export const TIER_LIMITS = {
   },
   essentiel: {
     sosSteps: 4,
-    journalEntries: 5,      // 5 par mois
+    journalEntries: 5,
     libraryArticles: 3,
     hasStats: true,
     hasAdvancedStats: false,
@@ -160,8 +69,8 @@ export const TIER_LIMITS = {
   },
   pro: {
     sosSteps: 4,
-    journalEntries: -1,     // illimité
-    libraryArticles: -1,    // illimité
+    journalEntries: -1,
+    libraryArticles: -1,
     hasStats: true,
     hasAdvancedStats: true,
     hasGames: true,
@@ -208,53 +117,156 @@ export const TIER_LIMITS = {
   },
 };
 
+let rcInitialized = false;
+
+async function initRevenueCat() {
+  if (rcInitialized || !isRevenueCatConfigured()) return;
+  try {
+    if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+    Purchases.configure({ apiKey: REVENUECAT_API_KEY });
+    rcInitialized = true;
+  } catch (e) {
+    console.warn('RevenueCat init failed:', e);
+  }
+}
+
+function tierFromCustomerInfo(info: CustomerInfo): TierType {
+  if (info.entitlements.active[ENTITLEMENT_IDS.elite]) return 'elite';
+  if (info.entitlements.active[ENTITLEMENT_IDS.premium]) return 'premium';
+  if (info.entitlements.active[ENTITLEMENT_IDS.pro]) return 'pro';
+  if (info.entitlements.active[ENTITLEMENT_IDS.essentiel]) return 'essentiel';
+  return 'free';
+}
+
 export function useSubscription() {
   const [subscription, setSubscription] = useState<SubscriptionData>(DEFAULT_SUB);
   const [loading, setLoading] = useState(true);
+  const [offering, setOffering] = useState<PurchasesOffering | null>(null);
+  const useRC = isRevenueCatConfigured();
 
   useEffect(() => {
-    loadSubscription();
+    init();
   }, []);
 
-  // Recharger quand l'écran revient au premier plan
   useFocusEffect(
     useCallback(() => {
-      loadSubscription();
+      refreshStatus();
     }, [])
   );
 
-  const loadSubscription = async () => {
+  const init = async () => {
+    if (useRC) {
+      await initRevenueCat();
+      await refreshStatus();
+      await loadOfferings();
+    } else {
+      await loadFromStorage();
+    }
+    setLoading(false);
+  };
+
+  // --- RevenueCat mode ---
+
+  const refreshStatus = async () => {
+    if (!useRC || !rcInitialized) {
+      await loadFromStorage();
+      return;
+    }
+    try {
+      const info = await Purchases.getCustomerInfo();
+      const detectedTier = tierFromCustomerInfo(info);
+      const activeSub: SubscriptionData = {
+        tier: detectedTier,
+        billingCycle: detectedTier === 'elite' ? 'lifetime' : null,
+        startDate: info.originalPurchaseDate ?? null,
+        expiryDate: info.latestExpirationDate ?? null,
+        isActive: detectedTier !== 'free',
+      };
+      setSubscription(activeSub);
+    } catch (e) {
+      console.warn('RevenueCat refresh failed:', e);
+      await loadFromStorage();
+    }
+  };
+
+  const loadOfferings = async () => {
+    if (!rcInitialized) return;
+    try {
+      const offerings = await Purchases.getOfferings();
+      if (offerings.current) {
+        setOffering(offerings.current);
+      }
+    } catch (e) {
+      console.warn('Failed to load offerings:', e);
+    }
+  };
+
+  const purchasePackage = async (pkg: PurchasesPackage): Promise<boolean> => {
+    try {
+      const { customerInfo } = await Purchases.purchasePackage(pkg);
+      const detectedTier = tierFromCustomerInfo(customerInfo);
+      setSubscription({
+        tier: detectedTier,
+        billingCycle: detectedTier === 'elite' ? 'lifetime' : null,
+        startDate: customerInfo.originalPurchaseDate ?? null,
+        expiryDate: customerInfo.latestExpirationDate ?? null,
+        isActive: detectedTier !== 'free',
+      });
+      return true;
+    } catch (e: any) {
+      if (!e.userCancelled) throw e;
+      return false;
+    }
+  };
+
+  const restorePurchaseRC = async (): Promise<boolean> => {
+    try {
+      const info = await Purchases.restorePurchases();
+      const detectedTier = tierFromCustomerInfo(info);
+      setSubscription({
+        tier: detectedTier,
+        billingCycle: detectedTier === 'elite' ? 'lifetime' : null,
+        startDate: info.originalPurchaseDate ?? null,
+        expiryDate: info.latestExpirationDate ?? null,
+        isActive: detectedTier !== 'free',
+      });
+      return detectedTier !== 'free';
+    } catch (e) {
+      console.warn('Restore failed:', e);
+      return false;
+    }
+  };
+
+  // --- Mock mode (dev / pas de clé RC) ---
+
+  const loadFromStorage = async () => {
     try {
       const data = await AsyncStorage.getItem(SUBSCRIPTION_KEY);
       if (data) {
         const parsed: SubscriptionData = JSON.parse(data);
-        // Vérifier expiration (sauf lifetime)
         if (parsed.billingCycle === 'lifetime') {
           parsed.isActive = true;
         } else if (parsed.expiryDate) {
-          const expiry = new Date(parsed.expiryDate);
-          parsed.isActive = expiry > new Date();
+          parsed.isActive = new Date(parsed.expiryDate) > new Date();
         }
-        if (!parsed.isActive) {
-          parsed.tier = 'free';
-        }
+        if (!parsed.isActive) parsed.tier = 'free';
         setSubscription(parsed);
       }
     } catch (e) {
       console.error('Error loading subscription:', e);
     }
-    setLoading(false);
   };
 
-  const subscribe = async (tier: 'essentiel' | 'pro' | 'premium' | 'elite', cycle?: 'monthly' | 'yearly') => {
-    // En production : intégrer RevenueCat / StoreKit
+  const subscribeMock = async (
+    selectedTier: 'essentiel' | 'pro' | 'premium' | 'elite',
+    cycle?: 'monthly' | 'yearly',
+  ): Promise<boolean> => {
     const now = new Date();
     let expiryDate: string | null = null;
     let billingCycle: 'monthly' | 'yearly' | 'lifetime' = 'lifetime';
 
-    if (tier === 'elite') {
+    if (selectedTier === 'elite') {
       billingCycle = 'lifetime';
-      expiryDate = null; // jamais
     } else if (cycle === 'monthly') {
       billingCycle = 'monthly';
       const expiry = new Date(now);
@@ -268,7 +280,7 @@ export function useSubscription() {
     }
 
     const newSub: SubscriptionData = {
-      tier,
+      tier: selectedTier,
       billingCycle,
       startDate: now.toISOString(),
       expiryDate,
@@ -280,11 +292,31 @@ export function useSubscription() {
     return true;
   };
 
-  const restorePurchase = async () => {
-    await loadSubscription();
+  // --- API publique unifiée ---
+
+  const subscribe = async (
+    selectedTier: 'essentiel' | 'pro' | 'premium' | 'elite',
+    cycle?: 'monthly' | 'yearly',
+    pkg?: PurchasesPackage,
+  ): Promise<boolean> => {
+    if (useRC && pkg) {
+      return purchasePackage(pkg);
+    }
+    return subscribeMock(selectedTier, cycle);
+  };
+
+  const restorePurchase = async (): Promise<boolean> => {
+    if (useRC) return restorePurchaseRC();
+    await loadFromStorage();
+    return subscription.isActive;
   };
 
   const cancelSubscription = async () => {
+    if (useRC) {
+      // Sur iOS/Android, l'annulation se fait via les réglages du store
+      // On ne peut pas annuler programmatiquement
+      return;
+    }
     await AsyncStorage.setItem(SUBSCRIPTION_KEY, JSON.stringify(DEFAULT_SUB));
     setSubscription(DEFAULT_SUB);
   };
@@ -292,7 +324,6 @@ export function useSubscription() {
   const tier = subscription.isActive ? subscription.tier : 'free';
   const limits = TIER_LIMITS[tier];
 
-  // Helpers pratiques
   const isPaid = tier !== 'free';
   const isEssentiel = tier === 'essentiel' || tier === 'pro' || tier === 'premium' || tier === 'elite';
   const isPro = tier === 'pro' || tier === 'premium' || tier === 'elite';
@@ -335,5 +366,7 @@ export function useSubscription() {
     restorePurchase,
     cancelSubscription,
     daysRemaining,
+    offering,
+    useRevenueCat: useRC,
   };
 }
