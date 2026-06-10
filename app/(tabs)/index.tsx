@@ -8,6 +8,8 @@ import {
   Platform,
   Modal,
   Animated,
+  TextInput,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,6 +20,7 @@ import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '.
 import { useUserData } from '../../src/hooks/useUserData';
 import { useSubscription, PLANS } from '../../src/hooks/useSubscription';
 import { useBadges } from '../../src/hooks/useBadges';
+import { useReasons } from '../../src/hooks/useReasons';
 import i18n, { t } from '../../src/i18n';
 import Onboarding from '../../src/components/Onboarding';
 
@@ -42,11 +45,15 @@ export default function HomeScreen() {
   const { newBadge, dismissNewBadge, allBadges, unlockedCount, totalCount } = useBadges(
     daysSinceQuit, moneySaved, userData.cravingsOvercome
   );
+  const { reasons, addReason, removeReason, emojiOptions } = useReasons();
   const [encouragement, setEncouragement] = useState('');
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [showRelapseModal, setShowRelapseModal] = useState(false);
   const [relapseQuote, setRelapseQuote] = useState('');
   const [relapseConfirmed, setRelapseConfirmed] = useState(false);
+  const [showReasonModal, setShowReasonModal] = useState(false);
+  const [reasonText, setReasonText] = useState('');
+  const [reasonEmoji, setReasonEmoji] = useState('💪');
 
   useEffect(() => {
     const quotes = i18n.t('quotes') as unknown as string[];
@@ -244,6 +251,54 @@ export default function HomeScreen() {
             <Text style={styles.quoteText}>{encouragement}</Text>
           </View>
 
+          {/* ═══ Mes raisons ═══ */}
+          <View style={styles.reasonsSection}>
+            <View style={styles.reasonsHeader}>
+              <Text style={styles.reasonsTitle}>Mes raisons d'arrêter</Text>
+              <TouchableOpacity
+                style={styles.reasonsAddBtn}
+                onPress={() => { setReasonText(''); setReasonEmoji('💪'); setShowReasonModal(true); }}
+              >
+                <Ionicons name="add" size={18} color={COLORS.primary} />
+              </TouchableOpacity>
+            </View>
+            {reasons.length === 0 ? (
+              <TouchableOpacity
+                style={styles.reasonsEmpty}
+                onPress={() => { setReasonText(''); setReasonEmoji('💪'); setShowReasonModal(true); }}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="heart-outline" size={22} color={COLORS.textMuted} />
+                <Text style={styles.reasonsEmptyText}>
+                  Ajoute tes raisons d'arrêter pour te rappeler pourquoi tu fais ça
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.reasonsList}>
+                {reasons.map((reason) => (
+                  <TouchableOpacity
+                    key={reason.id}
+                    style={styles.reasonCard}
+                    onLongPress={() => {
+                      Alert.alert(
+                        'Supprimer ?',
+                        `Supprimer « ${reason.text} » ?`,
+                        [
+                          { text: 'Annuler', style: 'cancel' },
+                          { text: 'Supprimer', style: 'destructive', onPress: () => removeReason(reason.id) },
+                        ]
+                      );
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.reasonEmoji}>{reason.emoji}</Text>
+                    <Text style={styles.reasonText} numberOfLines={2}>{reason.text}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+
           {/* ═══ Menu ═══ */}
           <Text style={styles.sectionTitle}>{t('home.explore')}</Text>
           <View style={styles.menuList}>
@@ -351,6 +406,81 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 </>
               )}
+            </View>
+          </View>
+        </Modal>
+
+        {/* ═══ Modal Ajouter Raison ═══ */}
+        <Modal
+          visible={showReasonModal}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowReasonModal(false)}
+        >
+          <View style={styles.relapseOverlay}>
+            <View style={styles.relapseModal}>
+              <Text style={[styles.relapseTitle, { fontSize: 22 }]}>Nouvelle raison</Text>
+              <Text style={styles.relapseSubtitle}>
+                Pourquoi tu veux arrêter le casino ?
+              </Text>
+
+              {/* Emoji picker */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.emojiPickerRow}
+                style={{ marginBottom: 16 }}
+              >
+                {emojiOptions.map((em) => (
+                  <TouchableOpacity
+                    key={em}
+                    style={[
+                      styles.emojiPickerBtn,
+                      reasonEmoji === em && styles.emojiPickerBtnActive,
+                    ]}
+                    onPress={() => setReasonEmoji(em)}
+                  >
+                    <Text style={{ fontSize: 24 }}>{em}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Text input */}
+              <TextInput
+                style={styles.reasonInput}
+                placeholder="Ex : Pour ma famille, pour mon avenir..."
+                placeholderTextColor={COLORS.textMuted}
+                value={reasonText}
+                onChangeText={setReasonText}
+                multiline
+                maxLength={120}
+                autoFocus
+              />
+
+              <TouchableOpacity
+                style={[
+                  styles.relapseConfirmBtn,
+                  { backgroundColor: COLORS.primary },
+                  !reasonText.trim() && { opacity: 0.5 },
+                ]}
+                onPress={async () => {
+                  if (!reasonText.trim()) return;
+                  await addReason(reasonText, reasonEmoji);
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  setShowReasonModal(false);
+                }}
+                disabled={!reasonText.trim()}
+              >
+                <Text style={styles.relapseConfirmText}>Ajouter</Text>
+                <Ionicons name="heart" size={18} color="#FFF" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.relapseCancelBtn}
+                onPress={() => setShowReasonModal(false)}
+              >
+                <Text style={styles.relapseCancelText}>Annuler</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </Modal>
@@ -649,5 +779,99 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.textSecondary,
     marginBottom: 4,
+  },
+
+  // Reasons section
+  reasonsSection: {
+    marginBottom: 24,
+  },
+  reasonsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  reasonsTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  reasonsAddBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 12,
+    backgroundColor: COLORS.primaryBg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reasonsEmpty: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: COLORS.surfaceGlass,
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+    borderStyle: 'dashed' as any,
+  },
+  reasonsEmptyText: {
+    flex: 1,
+    fontSize: 13,
+    color: COLORS.textMuted,
+    lineHeight: 19,
+  },
+  reasonsList: {
+    gap: 8,
+  },
+  reasonCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: COLORS.surfaceGlass,
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    ...SHADOWS.sm,
+  },
+  reasonEmoji: {
+    fontSize: 22,
+  },
+  reasonText: {
+    flex: 1,
+    fontSize: 14,
+    color: COLORS.text,
+    fontWeight: '500',
+    lineHeight: 20,
+  },
+
+  // Reason modal extras
+  emojiPickerRow: {
+    gap: 8,
+    paddingHorizontal: 4,
+  },
+  emojiPickerBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: COLORS.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emojiPickerBtnActive: {
+    backgroundColor: COLORS.primaryBg,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  reasonInput: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    padding: 14,
+    fontSize: 15,
+    color: COLORS.text,
+    minHeight: 70,
+    textAlignVertical: 'top',
+    marginBottom: 20,
+    width: '100%',
   },
 });
