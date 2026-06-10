@@ -16,13 +16,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import ViewShot from 'react-native-view-shot';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
 import { useUserData } from '../../src/hooks/useUserData';
 import { useSubscription, PLANS } from '../../src/hooks/useSubscription';
 import { useBadges } from '../../src/hooks/useBadges';
 import { useReasons } from '../../src/hooks/useReasons';
+import { useShareProgress } from '../../src/hooks/useShareProgress';
 import i18n, { t } from '../../src/i18n';
 import Onboarding from '../../src/components/Onboarding';
+import ShareCard from '../../src/components/ShareCard';
 
 // Citations encourageantes pour la rechute
 const RELAPSE_QUOTES = [
@@ -46,6 +49,7 @@ export default function HomeScreen() {
     daysSinceQuit, moneySaved, userData.cravingsOvercome
   );
   const { reasons, addReason, removeReason, emojiOptions } = useReasons();
+  const { shareCardRef, shareProgress } = useShareProgress();
   const [encouragement, setEncouragement] = useState('');
   const [showBadgeModal, setShowBadgeModal] = useState(false);
   const [showRelapseModal, setShowRelapseModal] = useState(false);
@@ -128,6 +132,14 @@ export default function HomeScreen() {
       locked: !canAccess('games'),
       onPress: () => canAccess('games') ? router.push('/jeux') : router.push('/abonnement'),
     },
+    {
+      icon: 'people' as const,
+      title: 'Communauté',
+      desc: 'Aide, forums et ressources',
+      gradient: GRADIENTS.menuCyan,
+      locked: false,
+      onPress: () => router.push('/communaute'),
+    },
   ];
 
   return (
@@ -181,15 +193,25 @@ export default function HomeScreen() {
             )}
           </View>
 
-          {/* ═══ Bouton J'ai rejoué ═══ */}
-          <TouchableOpacity
-            style={styles.relapseBtn}
-            onPress={openRelapseModal}
-            activeOpacity={0.6}
-          >
-            <Ionicons name="refresh" size={14} color={COLORS.textMuted} />
-            <Text style={styles.relapseBtnText}>J'ai rejoué</Text>
-          </TouchableOpacity>
+          {/* ═══ Boutons sous le hero ═══ */}
+          <View style={styles.heroBtnRow}>
+            <TouchableOpacity
+              style={styles.relapseBtn}
+              onPress={openRelapseModal}
+              activeOpacity={0.6}
+            >
+              <Ionicons name="refresh" size={14} color={COLORS.textMuted} />
+              <Text style={styles.relapseBtnText}>J'ai rejoué</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.shareBtn}
+              onPress={() => { shareProgress(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+              activeOpacity={0.6}
+            >
+              <Ionicons name="share-outline" size={14} color={COLORS.primary} />
+              <Text style={styles.shareBtnText}>Partager</Text>
+            </TouchableOpacity>
+          </View>
 
           {/* ═══ Quick Stats ═══ */}
           <View style={styles.statsRow}>
@@ -349,6 +371,11 @@ export default function HomeScreen() {
 
           <View style={{ height: 20 }} />
         </ScrollView>
+
+        {/* ═══ Hidden ShareCard for capture ═══ */}
+        <ViewShot ref={shareCardRef} options={{ format: 'png', quality: 1 }} style={styles.hiddenCapture}>
+          <ShareCard days={daysSinceQuit} moneySaved={moneySaved} cravingsOvercome={userData.cravingsOvercome} />
+        </ViewShot>
 
         {/* ═══ Modal Rechute ═══ */}
         <Modal
@@ -605,16 +632,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(245,158,11,0.12)', justifyContent: 'center', alignItems: 'center',
   },
 
-  // Relapse button
+  // Hero buttons row
+  heroBtnRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 14,
+  },
   relapseBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    alignSelf: 'center',
     paddingVertical: 8,
     paddingHorizontal: 16,
-    marginBottom: 14,
     borderRadius: 20,
     backgroundColor: 'rgba(156,163,175,0.08)',
   },
@@ -622,6 +653,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.textMuted,
     fontWeight: '500',
+  },
+  shareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: COLORS.primaryBg,
+  },
+  shareBtnText: {
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: '600',
+  },
+  hiddenCapture: {
+    position: 'absolute',
+    top: -9999,
+    left: -9999,
   },
 
   // Relapse modal

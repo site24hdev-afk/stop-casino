@@ -1,10 +1,41 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from '../i18n';
 
+const NOTIF_KEY = '@stop_casino_notif_enabled';
+const NOTIF_HOUR_KEY = '@stop_casino_notif_hour';
 const NOTIF_SETUP_KEY = '@stop_casino_notif_setup';
+
+// Citations motivantes pour les notifications
+const MORNING_QUOTES = [
+  "Chaque jour sans casino est une victoire. Continue, guerrier ! 💪",
+  "Tu es plus fort que tu ne le crois. Bonne journée ! 🌟",
+  "L'argent que tu gardes aujourd'hui, c'est ta liberté de demain. 💰",
+  "Un jour de plus. Un pas de plus. Tu avances ! 🚀",
+  "Rappelle-toi pourquoi tu as commencé. Tu es sur la bonne voie. ❤️",
+  "La meilleure victoire, c'est celle contre soi-même. 🏆",
+  "Aujourd'hui encore, tu choisis ta vie. Bravo. 🌅",
+  "Chaque envie surmontée te rend plus fort. ⚡",
+  "Tu mérites mieux que le casino. Et tu le prouves chaque jour. 🎯",
+  "Personne ne peut te voler ce que tu construis jour après jour. 🛡️",
+  "Le courage, c'est avancer malgré la peur. 🦁",
+  "Ton futur toi te remerciera. Tiens bon ! 🙏",
+  "Les petites victoires font les grandes transformations. 🌱",
+  "Tu n'es pas seul dans ce combat. On est avec toi. 🤝",
+  "Le casino a perdu. Tu as gagné un jour de plus. 🎉",
+];
+
+function getRandomQuote(): string {
+  try {
+    const quotes = i18n.t('quotes') as unknown as string[];
+    if (Array.isArray(quotes) && quotes.length > 0) {
+      return quotes[Math.floor(Math.random() * quotes.length)];
+    }
+  } catch (e) {}
+  return MORNING_QUOTES[Math.floor(Math.random() * MORNING_QUOTES.length)];
+}
 
 // Configuration du handler de notifications
 Notifications.setNotificationHandler({
@@ -17,16 +48,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// Citations d'encouragement (on pioche dans la langue active)
-function getRandomQuote(): string {
-  const quotes = i18n.t('quotes') as unknown as string[];
-  if (Array.isArray(quotes) && quotes.length > 0) {
-    return quotes[Math.floor(Math.random() * quotes.length)];
-  }
-  return 'Un jour à la fois. Tu y arrives.';
-}
-
-// Demander la permission
 async function requestPermissions(): Promise<boolean> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('daily', {
@@ -35,24 +56,19 @@ async function requestPermissions(): Promise<boolean> {
       vibrationPattern: [0, 100, 100, 100],
     });
   }
-
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-
-  if (existingStatus !== 'granted') {
+  const { status: existing } = await Notifications.getPermissionsAsync();
+  let finalStatus = existing;
+  if (existing !== 'granted') {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
   }
-
   return finalStatus === 'granted';
 }
 
-// Programmer le rappel quotidien (9h du matin)
-async function scheduleDailyReminder() {
-  // Annuler les anciens rappels
+async function scheduleDailyReminder(hour: number) {
   await Notifications.cancelAllScheduledNotificationsAsync();
 
-  // Rappel matinal — 9h
+  // Rappel matinal
   await Notifications.scheduleNotificationAsync({
     content: {
       title: 'Stop Casino 🛡️',
@@ -60,12 +76,13 @@ async function scheduleDailyReminder() {
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
-      hour: 9,
+      hour,
       minute: 0,
     },
   });
 
-  // Rappel soir — 20h
+  // Rappel soir (matinal + 11h, max 21h)
+  const eveningHour = Math.min(hour + 11, 21);
   await Notifications.scheduleNotificationAsync({
     content: {
       title: 'Stop Casino 💪',
@@ -73,28 +90,73 @@ async function scheduleDailyReminder() {
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
-      hour: 20,
+      hour: eveningHour,
       minute: 0,
     },
   });
 }
 
-// Hook principal
 export function useNotifications() {
+  const [enabled, setEnabled] = useState(false);
+  const [hour, setHour] = useState(9);
+  const [loaded, setLoaded] = useState(false);
+
+  // Charger les preferences
   useEffect(() => {
     (async () => {
       try {
-        const alreadySetup = await AsyncStorage.getItem(NOTIF_SETUP_KEY);
-        if (alreadySetup) return;
+        const storedEnabled = await AsyncStorage.getItem(NOTIF_KEY);
+        const storedHour = await AsyncStorage.getItem(NOTIF_HOUR_KEY);
+        if (storedEnabled !== null) setEnabled(storedEnabled === 'true');
+        if (storedHour !== null) setHour(parseInt(storedHour, 10));
 
-        const granted = await requestPermissions();
-        if (granted) {
-          await scheduleDailyReminder();
-          await AsyncStorage.setItem(NOTIF_SETUP_KEY, 'true');
+        // Auto-setup au premier lancement
+        const alreadySetup = await AsyncStorage.getItem(NOTIF_SETUP_KEY);
+        if (!alreadySetup) {
+          const granted = await requestPermissions();
+          if (granted) {
+            const h = storedHour ? parseInt(storedHour, 10) : 9;
+            await scheduleDailyReminder(h);
+            setEnabled(true);
+            await AsyncStorage.setItem(NOTIF_KEY, 'true');
+            await AsyncStorage.setItem(NOTIF_SETUP_KEY, 'true');
+          }
         }
       } catch (e) {
-        // Silently fail — notifications are not critical
+        // silently fail
       }
+      setLoaded(true);
     })();
   }, []);
+
+  // Toggle on/off
+  const toggleNotifications = useCallback(async (newEnabled: boolean) => {
+    if (newEnabled) {
+      const granted = await requestPermissions();
+      if (!granted) return false;
+      await scheduleDailyReminder(hour);
+    } else {
+      await Notifications.cancelAllScheduledNotificationsAsync();
+    }
+    setEnabled(newEnabled);
+    await AsyncStorage.setItem(NOTIF_KEY, String(newEnabled));
+    return true;
+  }, [hour]);
+
+  // Changer l'heure
+  const changeHour = useCallback(async (newHour: number) => {
+    setHour(newHour);
+    await AsyncStorage.setItem(NOTIF_HOUR_KEY, String(newHour));
+    if (enabled) {
+      await scheduleDailyReminder(newHour);
+    }
+  }, [enabled]);
+
+  return {
+    enabled,
+    hour,
+    loaded,
+    toggleNotifications,
+    changeHour,
+  };
 }

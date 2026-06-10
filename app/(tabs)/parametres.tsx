@@ -7,18 +7,25 @@ import {
   ScrollView,
   Alert,
   Modal,
+  Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { COLORS, SPACING, FONT_SIZE, SHADOWS } from '../../src/constants/theme';
+import { useNotifications } from '../../src/hooks/useNotifications';
+import { useTheme } from '../../src/context/ThemeContext';
 import i18n, { t, setLanguage, AVAILABLE_LANGUAGES } from '../../src/i18n';
+
+const HOUR_OPTIONS = [6, 7, 8, 9, 10, 11, 12];
 
 export default function ParametresScreen() {
   const router = useRouter();
   const [showLangModal, setShowLangModal] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.locale);
+  const { enabled: notifEnabled, hour: notifHour, toggleNotifications, changeHour } = useNotifications();
+  const { isDark, toggleTheme } = useTheme();
 
   const currentLanguageLabel = AVAILABLE_LANGUAGES.find(l => l.code === currentLang)?.label ?? currentLang;
   const currentFlag = AVAILABLE_LANGUAGES.find(l => l.code === currentLang)?.flag ?? '🌐';
@@ -52,6 +59,65 @@ export default function ParametresScreen() {
             </View>
             <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
           </TouchableOpacity>
+
+          {/* Notifications */}
+          <Text style={styles.sectionLabel}>Notifications</Text>
+          <View style={styles.card}>
+            <View style={[styles.cardIcon, { backgroundColor: COLORS.dangerBg }]}>
+              <Ionicons name="notifications" size={22} color={COLORS.danger} />
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Rappels quotidiens</Text>
+              <Text style={styles.cardValue}>
+                {notifEnabled ? `Chaque jour à ${notifHour}h` : 'Désactivés'}
+              </Text>
+            </View>
+            <Switch
+              value={notifEnabled}
+              onValueChange={async (val) => {
+                const success = await toggleNotifications(val);
+                if (success) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              trackColor={{ false: COLORS.surfaceLight, true: COLORS.primary }}
+              thumbColor="#FFF"
+            />
+          </View>
+          {notifEnabled && (
+            <View style={styles.hourRow}>
+              {HOUR_OPTIONS.map((h) => (
+                <TouchableOpacity
+                  key={h}
+                  style={[styles.hourBtn, notifHour === h && styles.hourBtnActive]}
+                  onPress={() => { changeHour(h); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                >
+                  <Text style={[styles.hourText, notifHour === h && styles.hourTextActive]}>{h}h</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Apparence */}
+          <Text style={styles.sectionLabel}>Apparence</Text>
+          <View style={styles.card}>
+            <View style={[styles.cardIcon, { backgroundColor: isDark ? 'rgba(139,92,246,0.12)' : COLORS.purpleBg }]}>
+              <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={COLORS.purple} />
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>Mode sombre</Text>
+              <Text style={styles.cardValue}>
+                {isDark ? 'Activé' : 'Désactivé'}
+              </Text>
+            </View>
+            <Switch
+              value={isDark}
+              onValueChange={() => {
+                toggleTheme();
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              trackColor={{ false: COLORS.surfaceLight, true: COLORS.purple }}
+              thumbColor="#FFF"
+            />
+          </View>
 
           {/* App Info */}
           <Text style={styles.sectionLabel}>{t('settings.appInfo')}</Text>
@@ -165,4 +231,22 @@ const styles = StyleSheet.create({
   langFlag: { fontSize: 28 },
   langLabel: { flex: 1, fontSize: FONT_SIZE.lg, color: COLORS.text, fontWeight: '500' },
   langLabelActive: { fontWeight: '700', color: COLORS.primary },
+
+  // Hour picker
+  hourRow: {
+    flexDirection: 'row', gap: 8, marginTop: 8, flexWrap: 'wrap',
+  },
+  hourBtn: {
+    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12,
+    backgroundColor: COLORS.surfaceGlass, ...SHADOWS.sm,
+  },
+  hourBtnActive: {
+    backgroundColor: COLORS.primary,
+  },
+  hourText: {
+    fontSize: FONT_SIZE.sm, fontWeight: '600', color: COLORS.textMuted,
+  },
+  hourTextActive: {
+    color: '#FFF',
+  },
 });

@@ -27,6 +27,21 @@ export default function StatsScreen() {
   const { limits } = useSubscription();
   const hasAdvanced = limits.hasAdvancedStats;
 
+  // Données pour le graphique d'économies (derniers 7 jours)
+  const savingsChartData = React.useMemo(() => {
+    const days = Math.min(daysSinceQuit, 7);
+    const data: { label: string; value: number }[] = [];
+    for (let i = days; i >= 0; i--) {
+      const d = daysSinceQuit - i;
+      const savings = d * userData.averageDailySpend;
+      const dayLabel = i === 0 ? "Auj." : `J-${i}`;
+      data.push({ label: dayLabel, value: savings });
+    }
+    return data;
+  }, [daysSinceQuit, userData.averageDailySpend]);
+
+  const maxSavings = Math.max(...savingsChartData.map(d => d.value), 1);
+
   const dayNames = i18n.t('stats.days') as unknown as string[];
   const dayStats = dayNames.map((name, i) => {
     const dayEntries = entries.filter(e => {
@@ -99,6 +114,83 @@ export default function StatsScreen() {
                 {successRate}%
               </Text>
               <Text style={styles.summaryLabel}>{t('stats.resistance')}</Text>
+            </View>
+          </View>
+
+          {/* Graphique économies */}
+          {daysSinceQuit > 0 && (
+            <View style={styles.chartCard}>
+              <View style={styles.chartHeader}>
+                <View style={[styles.chartIconWrap, { backgroundColor: COLORS.primaryBg }]}>
+                  <Ionicons name="trending-up" size={16} color={COLORS.primary} />
+                </View>
+                <Text style={styles.sectionTitle}>Économies cumulées</Text>
+              </View>
+              <View style={styles.savingsChart}>
+                {savingsChartData.map((point, i) => (
+                  <View key={i} style={styles.savingsBarCol}>
+                    <View style={styles.savingsBarContainer}>
+                      <LinearGradient
+                        colors={[COLORS.primary, COLORS.primaryDark]}
+                        style={[
+                          styles.savingsBar,
+                          { height: `${Math.max((point.value / maxSavings) * 100, 4)}%` },
+                        ]}
+                      />
+                    </View>
+                    <Text style={styles.savingsBarLabel}>{point.label}</Text>
+                    <Text style={styles.savingsBarValue}>{point.value}€</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Anneau de progression */}
+          <View style={styles.progressRingCard}>
+            <View style={styles.ringRow}>
+              {/* Taux de résistance */}
+              <View style={styles.ringItem}>
+                <View style={styles.ringCircle}>
+                  <View style={[
+                    styles.ringFill,
+                    {
+                      backgroundColor: successRate >= 80 ? COLORS.primary : successRate >= 50 ? COLORS.warning : COLORS.danger,
+                    },
+                  ]}>
+                    <Text style={styles.ringPercent}>{successRate}%</Text>
+                  </View>
+                </View>
+                <Text style={styles.ringLabel}>Résistance</Text>
+              </View>
+              {/* Objectif 30 jours */}
+              <View style={styles.ringItem}>
+                <View style={styles.ringCircle}>
+                  <View style={[
+                    styles.ringFill,
+                    {
+                      backgroundColor: daysSinceQuit >= 30 ? COLORS.primary : COLORS.info,
+                    },
+                  ]}>
+                    <Text style={styles.ringPercent}>{Math.min(Math.round((daysSinceQuit / 30) * 100), 100)}%</Text>
+                  </View>
+                </View>
+                <Text style={styles.ringLabel}>Objectif 30j</Text>
+              </View>
+              {/* Objectif 365 jours */}
+              <View style={styles.ringItem}>
+                <View style={styles.ringCircle}>
+                  <View style={[
+                    styles.ringFill,
+                    {
+                      backgroundColor: daysSinceQuit >= 365 ? COLORS.primary : COLORS.purple,
+                    },
+                  ]}>
+                    <Text style={styles.ringPercent}>{Math.min(Math.round((daysSinceQuit / 365) * 100), 100)}%</Text>
+                  </View>
+                </View>
+                <Text style={styles.ringLabel}>Objectif 1 an</Text>
+              </View>
             </View>
           </View>
 
@@ -292,6 +384,38 @@ const styles = StyleSheet.create({
   hBarBg: { flex: 1, height: 24, backgroundColor: COLORS.surface, borderRadius: 6, overflow: 'hidden' },
   hBar: { height: '100%', borderRadius: 6 },
   hBarValue: { fontSize: FONT_SIZE.xs, color: COLORS.textSecondary, fontWeight: '600', width: 24 },
+
+  // Savings chart
+  savingsChart: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end',
+    height: 140, marginTop: SPACING.sm,
+  },
+  savingsBarCol: { alignItems: 'center', flex: 1 },
+  savingsBarContainer: {
+    height: 100, width: BAR_WIDTH - 8, justifyContent: 'flex-end',
+    borderRadius: 6, overflow: 'hidden', backgroundColor: COLORS.primaryBg,
+  },
+  savingsBar: { width: '100%', borderRadius: 6 },
+  savingsBarLabel: { fontSize: 10, color: COLORS.textMuted, marginTop: 6 },
+  savingsBarValue: { fontSize: 9, color: COLORS.textSecondary, fontWeight: '600', marginTop: 2 },
+
+  // Progress rings
+  progressRingCard: {
+    backgroundColor: COLORS.surfaceGlass, borderRadius: 20, padding: SPACING.lg,
+    marginBottom: SPACING.md, ...SHADOWS.sm,
+  },
+  ringRow: { flexDirection: 'row', justifyContent: 'space-around' },
+  ringItem: { alignItems: 'center', gap: 8 },
+  ringCircle: {
+    width: 80, height: 80, borderRadius: 40,
+    backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center',
+  },
+  ringFill: {
+    width: 68, height: 68, borderRadius: 34,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  ringPercent: { fontSize: 18, fontWeight: '900', color: '#FFF' },
+  ringLabel: { fontSize: FONT_SIZE.xs, color: COLORS.textMuted, fontWeight: '600' },
 
   // Empty
   emptyCard: {
