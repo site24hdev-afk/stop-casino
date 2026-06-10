@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CravingEntry } from '../types';
+import { t } from '../i18n';
 
 const STORAGE_KEY = '@stop_casino_cravings';
 
@@ -16,7 +17,10 @@ export function useCravingLog() {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
-        setEntries(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setEntries(parsed);
+        }
       }
     } catch (e) {
       console.error('Erreur chargement journal:', e);
@@ -28,14 +32,21 @@ export function useCravingLog() {
   const addEntry = useCallback(async (entry: Omit<CravingEntry, 'id' | 'date'>) => {
     const newEntry: CravingEntry = {
       ...entry,
-      id: Date.now().toString(),
+      id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       date: new Date().toISOString(),
     };
-    const updated = [newEntry, ...entries];
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    setEntries(updated);
+    let updated: CravingEntry[] = [];
+    setEntries(prev => {
+      updated = [newEntry, ...prev];
+      return updated;
+    });
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Erreur sauvegarde journal:', e);
+    }
     return newEntry;
-  }, [entries]);
+  }, []);
 
   // Stats
   const totalCravings = entries.length;
@@ -54,9 +65,9 @@ export function useCravingLog() {
     });
     const max = Math.max(...Object.values(hours));
     const hour = Number(Object.entries(hours).find(([, v]) => v === max)?.[0]);
-    if (hour < 12) return 'le matin';
-    if (hour < 18) return "l'après-midi";
-    return 'le soir';
+    if (hour < 12) return t('stats.morning') || 'le matin';
+    if (hour < 18) return t('stats.afternoon') || "l'après-midi";
+    return t('stats.evening') || 'le soir';
   })();
 
   return {

@@ -10,6 +10,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../src/constants/theme';
+import { useColors } from '../src/context/ThemeContext';
 import { useUserData } from '../src/hooks/useUserData';
 import { t } from '../src/i18n';
 import BlackjackGame from '../src/components/BlackjackGame';
@@ -17,6 +18,7 @@ import RouletteGame from '../src/components/RouletteGame';
 
 export default function JeuxScreen() {
   const router = useRouter();
+  const c = useColors();
   const { game } = useLocalSearchParams<{ game?: string }>();
   const { userData } = useUserData();
   const [selectedGame, setSelectedGame] = useState<string | null>(game || null);
@@ -38,15 +40,15 @@ export default function JeuxScreen() {
   // Reminder screen
   if (showReminder) {
     return (
-      <View style={styles.root}>
+      <View style={[styles.root, { backgroundColor: c.background }]}>
         <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
         <SafeAreaView style={styles.centeredContainer}>
-          <View style={styles.reminderCard}>
+          <View style={[styles.reminderCard, { backgroundColor: c.surfaceGlass }]}>
             <View style={styles.reminderIconWrap}>
               <Ionicons name="time" size={44} color={COLORS.warning} />
             </View>
-            <Text style={styles.reminderTitle}>{t('games.reminderTitle')}</Text>
-            <Text style={styles.reminderText}>
+            <Text style={[styles.reminderTitle, { color: c.text }]}>{t('games.reminderTitle')}</Text>
+            <Text style={[styles.reminderText, { color: c.textSecondary }]}>
               {t('games.reminderText', { mins: sessionMinutes })}{' '}
               <Text style={styles.reminderAmount}>{estimatedLoss} €</Text>.
             </Text>
@@ -56,7 +58,7 @@ export default function JeuxScreen() {
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity style={styles.continueBtn} onPress={() => setShowReminder(false)}>
-              <Text style={styles.continueText}>{t('games.continuePlay')}</Text>
+              <Text style={[styles.continueText, { color: c.textMuted }]}>{t('games.continuePlay')}</Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -67,14 +69,14 @@ export default function JeuxScreen() {
   // Game selection
   if (!selectedGame) {
     return (
-      <View style={styles.root}>
+      <View style={[styles.root, { backgroundColor: c.background }]}>
         <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-              <Ionicons name="arrow-back" size={22} color={COLORS.text} />
+            <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: c.surfaceGlass }]}>
+              <Ionicons name="arrow-back" size={22} color={c.text} />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>{t('games.title')}</Text>
+            <Text style={[styles.headerTitle, { color: c.text }]}>{t('games.title')}</Text>
             <View style={{ width: 40 }} />
           </View>
 
@@ -82,35 +84,35 @@ export default function JeuxScreen() {
             <View style={[styles.warningIcon, { backgroundColor: COLORS.warningBg }]}>
               <Ionicons name="information-circle" size={20} color={COLORS.warning} />
             </View>
-            <Text style={styles.warningText}>{t('games.warning')}</Text>
+            <Text style={[styles.warningText, { color: c.textSecondary }]}>{t('games.warning')}</Text>
           </View>
 
-          <TouchableOpacity style={styles.gameCard} onPress={() => setSelectedGame('blackjack')} activeOpacity={0.7}>
+          <TouchableOpacity style={[styles.gameCard, { backgroundColor: c.surfaceGlass }]} onPress={() => setSelectedGame('blackjack')} activeOpacity={0.7}>
             <View style={styles.gameIcon}>
               <Text style={styles.gameEmoji}>🃏</Text>
             </View>
             <View style={styles.gameInfo}>
-              <Text style={styles.gameTitle}>{t('games.blackjack')}</Text>
-              <Text style={styles.gameDesc}>{t('games.blackjackDesc')}</Text>
+              <Text style={[styles.gameTitle, { color: c.text }]}>{t('games.blackjack')}</Text>
+              <Text style={[styles.gameDesc, { color: c.textMuted }]}>{t('games.blackjackDesc')}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
+            <Ionicons name="chevron-forward" size={20} color={c.textMuted} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.gameCard} onPress={() => setSelectedGame('roulette')} activeOpacity={0.7}>
+          <TouchableOpacity style={[styles.gameCard, { backgroundColor: c.surfaceGlass }]} onPress={() => setSelectedGame('roulette')} activeOpacity={0.7}>
             <View style={styles.gameIcon}>
               <Text style={styles.gameEmoji}>🎰</Text>
             </View>
             <View style={styles.gameInfo}>
-              <Text style={styles.gameTitle}>{t('games.roulette')}</Text>
-              <Text style={styles.gameDesc}>{t('games.rouletteDesc')}</Text>
+              <Text style={[styles.gameTitle, { color: c.text }]}>{t('games.roulette')}</Text>
+              <Text style={[styles.gameDesc, { color: c.textMuted }]}>{t('games.rouletteDesc')}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
+            <Ionicons name="chevron-forward" size={20} color={c.textMuted} />
           </TouchableOpacity>
 
           {sessionMinutes > 0 && (
             <View style={styles.timerBadge}>
-              <Ionicons name="time-outline" size={14} color={COLORS.textMuted} />
-              <Text style={styles.timerText}>{t('games.session', { mins: sessionMinutes, cost: estimatedLoss })}</Text>
+              <Ionicons name="time-outline" size={14} color={c.textMuted} />
+              <Text style={[styles.timerText, { color: c.textMuted }]}>{t('games.session', { mins: sessionMinutes, cost: estimatedLoss })}</Text>
             </View>
           )}
         </SafeAreaView>
@@ -120,18 +122,18 @@ export default function JeuxScreen() {
 
   // In-game
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.background }]}>
       <LinearGradient colors={GRADIENTS.screenBg} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => setSelectedGame(null)} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={22} color={COLORS.text} />
+          <TouchableOpacity onPress={() => setSelectedGame(null)} style={[styles.backBtn, { backgroundColor: c.surfaceGlass }]}>
+            <Ionicons name="arrow-back" size={22} color={c.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>
+          <Text style={[styles.headerTitle, { color: c.text }]}>
             {selectedGame === 'blackjack' ? t('games.blackjack') : t('games.roulette')}
           </Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="close" size={22} color={COLORS.text} />
+          <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: c.surfaceGlass }]}>
+            <Ionicons name="close" size={22} color={c.text} />
           </TouchableOpacity>
         </View>
 
@@ -139,8 +141,8 @@ export default function JeuxScreen() {
 
         {sessionMinutes > 0 && (
           <View style={styles.timerBadge}>
-            <Ionicons name="time-outline" size={14} color={COLORS.textMuted} />
-            <Text style={styles.timerText}>{t('games.session', { mins: sessionMinutes, cost: estimatedLoss })}</Text>
+            <Ionicons name="time-outline" size={14} color={c.textMuted} />
+            <Text style={[styles.timerText, { color: c.textMuted }]}>{t('games.session', { mins: sessionMinutes, cost: estimatedLoss })}</Text>
           </View>
         )}
       </SafeAreaView>

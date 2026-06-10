@@ -108,7 +108,10 @@ export function useNotifications() {
         const storedEnabled = await AsyncStorage.getItem(NOTIF_KEY);
         const storedHour = await AsyncStorage.getItem(NOTIF_HOUR_KEY);
         if (storedEnabled !== null) setEnabled(storedEnabled === 'true');
-        if (storedHour !== null) setHour(parseInt(storedHour, 10));
+        if (storedHour !== null) {
+          const parsed = parseInt(storedHour, 10);
+          if (!isNaN(parsed) && parsed >= 0 && parsed <= 23) setHour(parsed);
+        }
 
         // Auto-setup au premier lancement
         const alreadySetup = await AsyncStorage.getItem(NOTIF_SETUP_KEY);

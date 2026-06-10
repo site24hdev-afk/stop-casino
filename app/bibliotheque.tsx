@@ -47,14 +47,14 @@ export default function BibliothequeScreen() {
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={22} color={COLORS.text} />
+          <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: c.surfaceGlass, borderColor: c.borderLight }]}>
+            <Ionicons name="arrow-back" size={22} color={c.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('library.title')}</Text>
+          <Text style={[styles.headerTitle, { color: c.text }]}>{t('library.title')}</Text>
           <View style={{ width: 40 }} />
         </View>
 
-        <Text style={styles.subtitle}>{t('library.subtitle')}</Text>
+        <Text style={[styles.subtitle, { color: c.textSecondary }]}>{t('library.subtitle')}</Text>
 
         {/* Filters */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersWrap} contentContainerStyle={styles.filters}>
@@ -79,7 +79,7 @@ export default function BibliothequeScreen() {
             return (
               <TouchableOpacity
                 key={article.id}
-                style={[styles.articleCard, isLocked && { opacity: 0.45 }]}
+                style={[styles.articleCard, { backgroundColor: c.surfaceGlass, borderColor: c.borderGlass }, isLocked && { opacity: 0.45 }]}
                 onPress={() => isLocked ? router.push('/abonnement') : setSelectedArticle(article)}
                 activeOpacity={0.7}
               >
@@ -108,8 +108,8 @@ export default function BibliothequeScreen() {
                       </Text>
                     )}
                   </View>
-                  <Text style={[styles.articleTitle, isLocked && { color: COLORS.textMuted }]}>{article.title}</Text>
-                  <Text style={styles.articlePreview} numberOfLines={2}>{article.content[0]}</Text>
+                  <Text style={[styles.articleTitle, { color: c.text }, isLocked && { color: COLORS.textMuted }]}>{article.title}</Text>
+                  <Text style={[styles.articlePreview, { color: c.textSecondary }]} numberOfLines={2}>{article.content[0]}</Text>
                 </View>
               </TouchableOpacity>
             );
@@ -120,13 +120,13 @@ export default function BibliothequeScreen() {
         {/* Read Modal */}
         <Modal visible={!!selectedArticle} animationType="slide" transparent>
           <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
+            <View style={[styles.modalContent, { backgroundColor: isDark ? c.surfaceGlass : '#FFFFFF' }]}>
               {selectedArticle && (
                 <>
                   <View style={styles.modalHeader}>
                     <View style={styles.modalDrag} />
-                    <TouchableOpacity style={styles.modalClose} onPress={() => setSelectedArticle(null)}>
-                      <Ionicons name="close" size={22} color={COLORS.text} />
+                    <TouchableOpacity style={[styles.modalClose, { backgroundColor: c.surfaceGlass, borderColor: c.borderLight }]} onPress={() => setSelectedArticle(null)}>
+                      <Ionicons name="close" size={22} color={c.text} />
                     </TouchableOpacity>
                   </View>
 
@@ -145,15 +145,15 @@ export default function BibliothequeScreen() {
                       </Text>
                     </View>
 
-                    <Text style={styles.modalTitle}>{selectedArticle.title}</Text>
+                    <Text style={[styles.modalTitle, { color: c.text }]}>{selectedArticle.title}</Text>
 
                     {selectedArticle.content.map((paragraph, i) => (
-                      <Text key={i} style={styles.modalPara}>{paragraph}</Text>
+                      <Text key={i} style={[styles.modalPara, { color: c.textSecondary }]}>{paragraph}</Text>
                     ))}
 
-                    <View style={styles.modalFooter}>
+                    <View style={[styles.modalFooter, { backgroundColor: c.primaryBg }]}>
                       <Ionicons name="heart" size={16} color={COLORS.primary} />
-                      <Text style={styles.modalFooterText}>{t('library.readFooter')}</Text>
+                      <Text style={[styles.modalFooterText, { color: c.textSecondary }]}>{t('library.readFooter')}</Text>
                     </View>
 
                     <View style={{ height: 40 }} />

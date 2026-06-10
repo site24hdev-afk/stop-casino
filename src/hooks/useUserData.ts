@@ -25,7 +25,10 @@ export function useUserData() {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
-        setUserData(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          setUserData(prev => ({ ...prev, ...parsed }));
+        }
       }
     } catch (e) {
       console.error('Erreur chargement données:', e);
@@ -36,17 +39,29 @@ export function useUserData() {
 
   const saveData = useCallback(async (data: Partial<UserData>) => {
     try {
-      const updated = { ...userData, ...data };
+      let updated: UserData = DEFAULT_USER;
+      setUserData(prev => {
+        updated = { ...prev, ...data };
+        return updated;
+      });
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      setUserData(updated);
     } catch (e) {
       console.error('Erreur sauvegarde données:', e);
     }
-  }, [userData]);
+  }, []);
 
   const incrementCravingsOvercome = useCallback(async () => {
-    await saveData({ cravingsOvercome: userData.cravingsOvercome + 1 });
-  }, [userData.cravingsOvercome, saveData]);
+    let updated: UserData = DEFAULT_USER;
+    setUserData(prev => {
+      updated = { ...prev, cravingsOvercome: prev.cravingsOvercome + 1 };
+      return updated;
+    });
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Erreur sauvegarde données:', e);
+    }
+  }, []);
 
   const handleRelapse = useCallback(async () => {
     await saveData({ quitDate: new Date().toISOString() });

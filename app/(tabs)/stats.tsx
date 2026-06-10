@@ -36,7 +36,7 @@ export default function StatsScreen() {
     for (let i = days; i >= 0; i--) {
       const d = daysSinceQuit - i;
       const savings = d * userData.averageDailySpend;
-      const dayLabel = i === 0 ? "Auj." : `J-${i}`;
+      const dayLabel = i === 0 ? t('stats.today') : `${t('stats.dayPrefix')}${i}`;
       data.push({ label: dayLabel, value: savings });
     }
     return data;
@@ -126,7 +126,7 @@ export default function StatsScreen() {
                 <View style={[styles.chartIconWrap, { backgroundColor: COLORS.primaryBg }]}>
                   <Ionicons name="trending-up" size={16} color={COLORS.primary} />
                 </View>
-                <Text style={styles.sectionTitle}>Économies cumulées</Text>
+                <Text style={styles.sectionTitle}>{t('stats.savingsChart')}</Text>
               </View>
               <View style={styles.savingsChart}>
                 {savingsChartData.map((point, i) => (
@@ -163,7 +163,7 @@ export default function StatsScreen() {
                     <Text style={styles.ringPercent}>{successRate}%</Text>
                   </View>
                 </View>
-                <Text style={styles.ringLabel}>Résistance</Text>
+                <Text style={styles.ringLabel}>{t('stats.resistanceRing')}</Text>
               </View>
               {/* Objectif 30 jours */}
               <View style={styles.ringItem}>
@@ -177,7 +177,7 @@ export default function StatsScreen() {
                     <Text style={styles.ringPercent}>{Math.min(Math.round((daysSinceQuit / 30) * 100), 100)}%</Text>
                   </View>
                 </View>
-                <Text style={styles.ringLabel}>Objectif 30j</Text>
+                <Text style={styles.ringLabel}>{t('stats.objective30d')}</Text>
               </View>
               {/* Objectif 365 jours */}
               <View style={styles.ringItem}>
@@ -191,7 +191,7 @@ export default function StatsScreen() {
                     <Text style={styles.ringPercent}>{Math.min(Math.round((daysSinceQuit / 365) * 100), 100)}%</Text>
                   </View>
                 </View>
-                <Text style={styles.ringLabel}>Objectif 1 an</Text>
+                <Text style={styles.ringLabel}>{t('stats.objective1y')}</Text>
               </View>
             </View>
           </View>

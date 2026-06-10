@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { COLORS } from '../constants/theme';
+import { t } from '../i18n';
 
 interface ShareCardProps {
   days: number;
@@ -21,7 +22,7 @@ export default function ShareCard({ days, moneySaved, cravingsOvercome }: ShareC
       <View style={styles.counterWrap}>
         <Text style={styles.counterNumber}>{days}</Text>
         <Text style={styles.counterLabel}>
-          {days <= 1 ? 'jour sans casino' : 'jours sans casino'}
+          {days <= 1 ? t('share.daysWithout') : t('share.daysWithout')}
         </Text>
       </View>
 
@@ -29,24 +30,24 @@ export default function ShareCard({ days, moneySaved, cravingsOvercome }: ShareC
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <Text style={styles.statEmoji}>💰</Text>
-          <Text style={styles.statValue}>{moneySaved.toLocaleString('fr-FR')} €</Text>
-          <Text style={styles.statLabel}>économisés</Text>
+          <Text style={styles.statValue}>{moneySaved.toLocaleString()} €</Text>
+          <Text style={styles.statLabel}>{t('share.saved')}</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
           <Text style={styles.statEmoji}>💪</Text>
           <Text style={styles.statValue}>{cravingsOvercome}</Text>
-          <Text style={styles.statLabel}>envies surmontées</Text>
+          <Text style={styles.statLabel}>{t('share.cravingsBeaten')}</Text>
         </View>
       </View>
 
       {/* Motivational */}
       <View style={styles.motivWrap}>
-        <Text style={styles.motivText}>Chaque jour compte. Je reprends le contrôle.</Text>
+        <Text style={styles.motivText}>{t('share.motivation')}</Text>
       </View>
 
       {/* Footer */}
-      <Text style={styles.footer}>Télécharge Stop Casino — 100% gratuit & privé</Text>
+      <Text style={styles.footer}>{t('share.appPromo')}</Text>
     </View>
   );
 }

@@ -32,22 +32,36 @@ export function useReasons() {
 
   const addReason = useCallback(async (text: string, emoji: string) => {
     const newReason: Reason = {
-      id: Date.now().toString(),
+      id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       text: text.trim(),
       emoji,
       createdAt: new Date().toISOString(),
     };
-    const updated = [...reasons, newReason];
-    setReasons(updated);
-    await AsyncStorage.setItem(REASONS_KEY, JSON.stringify(updated));
+    let updated: Reason[] = [];
+    setReasons(prev => {
+      updated = [...prev, newReason];
+      return updated;
+    });
+    try {
+      await AsyncStorage.setItem(REASONS_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Erreur sauvegarde raison:', e);
+    }
     return newReason;
-  }, [reasons]);
+  }, []);
 
   const removeReason = useCallback(async (id: string) => {
-    const updated = reasons.filter(r => r.id !== id);
-    setReasons(updated);
-    await AsyncStorage.setItem(REASONS_KEY, JSON.stringify(updated));
-  }, [reasons]);
+    let updated: Reason[] = [];
+    setReasons(prev => {
+      updated = prev.filter(r => r.id !== id);
+      return updated;
+    });
+    try {
+      await AsyncStorage.setItem(REASONS_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Erreur suppression raison:', e);
+    }
+  }, []);
 
   return {
     reasons,

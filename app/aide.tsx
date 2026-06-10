@@ -40,10 +40,10 @@ export default function AideScreen() {
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={22} color={COLORS.text} />
+          <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: c.surfaceGlass, borderColor: c.borderLight }]}>
+            <Ionicons name="arrow-back" size={22} color={c.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('aide.title')}</Text>
+          <Text style={[styles.headerTitle, { color: c.text }]}>{t('aide.title')}</Text>
           <View style={{ width: 40 }} />
         </View>
 
@@ -60,9 +60,9 @@ export default function AideScreen() {
                   <Ionicons name="headset" size={32} color="#FFF" />
                 </LinearGradient>
               </View>
-              <Text style={styles.mainTitle}>{t('aide.emergencyName')}</Text>
+              <Text style={[styles.mainTitle, { color: c.text }]}>{t('aide.emergencyName')}</Text>
               <Text style={styles.mainNumber}>{t('aide.emergencyNumber')}</Text>
-              <Text style={styles.mainDesc}>{t('aide.emergencyFullDesc')}</Text>
+              <Text style={[styles.mainDesc, { color: c.textSecondary }]}>{t('aide.emergencyFullDesc')}</Text>
               <LinearGradient colors={GRADIENTS.menuBlue} style={styles.callBadge}>
                 <Ionicons name="call" size={18} color="#FFF" />
                 <Text style={styles.callBadgeText}>{t('aide.callNow')}</Text>
@@ -73,7 +73,7 @@ export default function AideScreen() {
           {/* Trusted Contact */}
           {userData.trustedContactName ? (
             <TouchableOpacity
-              style={styles.contactCard}
+              style={[styles.contactCard, { backgroundColor: c.surfaceGlass, borderColor: c.borderGlass }]}
               onPress={() => handleCall(userData.trustedContactPhone, userData.trustedContactName)}
               activeOpacity={0.7}
             >
@@ -83,58 +83,58 @@ export default function AideScreen() {
                 </LinearGradient>
               </View>
               <View style={styles.contactInfo}>
-                <Text style={styles.contactName}>{userData.trustedContactName}</Text>
-                <Text style={styles.contactLabel}>{t('aide.trustedContact')}</Text>
+                <Text style={[styles.contactName, { color: c.text }]}>{userData.trustedContactName}</Text>
+                <Text style={[styles.contactLabel, { color: c.textMuted }]}>{t('aide.trustedContact')}</Text>
               </View>
-              <View style={styles.contactCallBtn}>
+              <View style={[styles.contactCallBtn, { backgroundColor: c.primaryBg }]}>
                 <Ionicons name="call" size={18} color={COLORS.primary} />
               </View>
             </TouchableOpacity>
           ) : (
-            <View style={styles.contactCard}>
+            <View style={[styles.contactCard, { backgroundColor: c.surfaceGlass, borderColor: c.borderGlass }]}>
               <View style={styles.contactIcon}>
                 <View style={styles.contactIconEmpty}>
                   <Ionicons name="person-add" size={20} color={COLORS.textMuted} />
                 </View>
               </View>
               <View style={styles.contactInfo}>
-                <Text style={[styles.contactName, { color: COLORS.textMuted }]}>{t('aide.noContact')}</Text>
-                <Text style={styles.contactLabel}>{t('aide.noContactSub')}</Text>
+                <Text style={[styles.contactName, { color: c.textMuted }]}>{t('aide.noContact')}</Text>
+                <Text style={[styles.contactLabel, { color: c.textMuted }]}>{t('aide.noContactSub')}</Text>
               </View>
             </View>
           )}
 
           {/* Resources */}
-          <Text style={styles.sectionTitle}>{t('aide.resources')}</Text>
+          <Text style={[styles.sectionTitle, { color: c.text }]}>{t('aide.resources')}</Text>
 
-          <TouchableOpacity style={styles.resourceCard} onPress={() => Linking.openURL(t('aide.resource1Url'))} activeOpacity={0.7}>
+          <TouchableOpacity style={[styles.resourceCard, { backgroundColor: c.surfaceGlass, borderColor: c.borderGlass }]} onPress={() => Linking.openURL(t('aide.resource1Url'))} activeOpacity={0.7}>
             <View style={[styles.resourceIcon, { backgroundColor: COLORS.infoBg }]}>
               <Ionicons name="globe" size={18} color={COLORS.info} />
             </View>
-            <Text style={styles.resourceText}>{t('aide.resource1Name')}</Text>
+            <Text style={[styles.resourceText, { color: c.text }]}>{t('aide.resource1Name')}</Text>
             <Ionicons name="open-outline" size={16} color={COLORS.textMuted} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.resourceCard} onPress={() => Linking.openURL(t('aide.resource2Url'))} activeOpacity={0.7}>
+          <TouchableOpacity style={[styles.resourceCard, { backgroundColor: c.surfaceGlass, borderColor: c.borderGlass }]} onPress={() => Linking.openURL(t('aide.resource2Url'))} activeOpacity={0.7}>
             <View style={[styles.resourceIcon, { backgroundColor: COLORS.infoBg }]}>
               <Ionicons name="globe" size={18} color={COLORS.info} />
             </View>
-            <Text style={styles.resourceText}>{t('aide.resource2Name')}</Text>
+            <Text style={[styles.resourceText, { color: c.text }]}>{t('aide.resource2Name')}</Text>
             <Ionicons name="open-outline" size={16} color={COLORS.textMuted} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.resourceCard} onPress={() => handleCall(t('aide.resource3Number'), t('aide.resource3FullName'))} activeOpacity={0.7}>
+          <TouchableOpacity style={[styles.resourceCard, { backgroundColor: c.surfaceGlass, borderColor: c.borderGlass }]} onPress={() => handleCall(t('aide.resource3Number'), t('aide.resource3FullName'))} activeOpacity={0.7}>
             <View style={[styles.resourceIcon, { backgroundColor: COLORS.dangerBg }]}>
               <Ionicons name="heart" size={18} color={COLORS.danger} />
             </View>
-            <Text style={styles.resourceText}>{t('aide.resource3Name')}</Text>
+            <Text style={[styles.resourceText, { color: c.text }]}>{t('aide.resource3Name')}</Text>
             <Ionicons name="call-outline" size={16} color={COLORS.textMuted} />
           </TouchableOpacity>
 
           {/* Footer message */}
-          <View style={styles.messageCard}>
+          <View style={[styles.messageCard, { backgroundColor: c.primaryBg }]}>
             <Ionicons name="shield-checkmark" size={18} color={COLORS.primary} />
-            <Text style={styles.messageText}>{t('aide.helpMessage')}</Text>
+            <Text style={[styles.messageText, { color: c.textSecondary }]}>{t('aide.helpMessage')}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>

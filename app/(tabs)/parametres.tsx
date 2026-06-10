@@ -58,19 +58,19 @@ export default function ParametresScreen() {
               <Text style={[styles.cardTitle, { color: c.text }]}>{t('settings.languageDesc')}</Text>
               <Text style={[styles.cardValue, { color: c.textSecondary }]}>{currentFlag} {currentLanguageLabel}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
+            <Ionicons name="chevron-forward" size={20} color={c.textMuted} />
           </TouchableOpacity>
 
           {/* Notifications */}
-          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>Notifications</Text>
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>{t('settings.notifications')}</Text>
           <View style={[styles.card, { backgroundColor: c.surfaceGlass }]}>
             <View style={[styles.cardIcon, { backgroundColor: COLORS.dangerBg }]}>
               <Ionicons name="notifications" size={22} color={COLORS.danger} />
             </View>
             <View style={styles.cardContent}>
-              <Text style={[styles.cardTitle, { color: c.text }]}>Rappels quotidiens</Text>
+              <Text style={[styles.cardTitle, { color: c.text }]}>{t('settings.dailyReminders')}</Text>
               <Text style={[styles.cardValue, { color: c.textSecondary }]}>
-                {notifEnabled ? `Chaque jour à ${notifHour}h` : 'Désactivés'}
+                {notifEnabled ? t('settings.dailyAt', { hour: notifHour }) : t('settings.disabled')}
               </Text>
             </View>
             <Switch
@@ -98,7 +98,7 @@ export default function ParametresScreen() {
           )}
 
           {/* Apparence */}
-          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>Apparence</Text>
+          <Text style={[styles.sectionLabel, { color: c.textMuted }]}>{t('settings.appearance')}</Text>
           <TouchableOpacity
             style={[styles.card, { backgroundColor: c.surfaceGlass }]}
             activeOpacity={0.7}
@@ -111,9 +111,9 @@ export default function ParametresScreen() {
               <Ionicons name={isDark ? 'moon' : 'sunny'} size={22} color={c.purple} />
             </View>
             <View style={styles.cardContent}>
-              <Text style={[styles.cardTitle, { color: c.text }]}>Mode sombre</Text>
+              <Text style={[styles.cardTitle, { color: c.text }]}>{t('settings.darkMode')}</Text>
               <Text style={[styles.cardValue, { color: c.textSecondary }]}>
-                {isDark ? 'Activé' : 'Désactivé'}
+                {isDark ? t('settings.enabled') : t('settings.disabled')}
               </Text>
             </View>
             <Switch
@@ -159,21 +159,21 @@ export default function ParametresScreen() {
             </View>
             <View style={styles.cardContent}>
               <Text style={[styles.cardTitle, { color: c.text }]}>{t('sub.mySubscription')}</Text>
-              <Text style={[styles.cardValue, { color: c.textSecondary }]}>Gérer votre offre</Text>
+              <Text style={[styles.cardValue, { color: c.textSecondary }]}>{t('settings.manageOffer')}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
+            <Ionicons name="chevron-forward" size={20} color={c.textMuted} />
           </TouchableOpacity>
         </ScrollView>
 
         {/* Language Modal */}
         <Modal visible={showLangModal} transparent animationType="slide" onRequestClose={() => setShowLangModal(false)}>
-          <View style={styles.modalOverlay}>
+          <View style={[styles.modalOverlay, { backgroundColor: c.overlay }]}>
             <View style={[styles.modalContent, { backgroundColor: isDark ? c.surfaceGlass : '#FFFFFF' }]}>
-              <View style={styles.modalHandle} />
+              <View style={[styles.modalHandle, { backgroundColor: c.surfaceLight }]} />
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>{t('settings.selectLanguage')}</Text>
-                <TouchableOpacity onPress={() => setShowLangModal(false)} style={styles.modalClose}>
-                  <Ionicons name="close" size={22} color={COLORS.text} />
+                <Text style={[styles.modalTitle, { color: c.text }]}>{t('settings.selectLanguage')}</Text>
+                <TouchableOpacity onPress={() => setShowLangModal(false)} style={[styles.modalClose, { backgroundColor: c.surfaceGlass }]}>
+                  <Ionicons name="close" size={22} color={c.text} />
                 </TouchableOpacity>
               </View>
 
@@ -185,7 +185,7 @@ export default function ParametresScreen() {
                     onPress={() => handleLanguageChange(lang.code)}
                   >
                     <Text style={styles.langFlag}>{lang.flag}</Text>
-                    <Text style={[styles.langLabel, currentLang === lang.code && styles.langLabelActive]}>
+                    <Text style={[styles.langLabel, { color: c.text }, currentLang === lang.code && styles.langLabelActive]}>
                       {lang.label}
                     </Text>
                     {currentLang === lang.code && (

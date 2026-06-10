@@ -3,6 +3,7 @@ import { View, Platform, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../src/constants/theme';
 import { useColors, useTheme } from '../../src/context/ThemeContext';
+import { t } from '../../src/i18n';
 
 export default function TabLayout() {
   const c = useColors();
@@ -31,7 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Accueil',
+          title: t('tabs.home'),
           tabBarIcon: ({ color }) => (
             <Ionicons name="home" size={24} color={color} />
           ),
@@ -40,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="journal"
         options={{
-          title: 'Journal',
+          title: t('tabs.journal'),
           tabBarIcon: ({ color }) => (
             <Ionicons name="book" size={24} color={color} />
           ),
@@ -61,7 +62,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stats"
         options={{
-          title: 'Stats',
+          title: t('tabs.stats'),
           tabBarIcon: ({ color }) => (
             <Ionicons name="stats-chart" size={24} color={color} />
           ),
@@ -70,7 +71,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="parametres"
         options={{
-          title: 'Réglages',
+          title: t('tabs.settings'),
           tabBarIcon: ({ color }) => (
             <Ionicons name="settings" size={24} color={color} />
           ),

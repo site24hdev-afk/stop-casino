@@ -12,7 +12,8 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, SHADOWS } from '../src/constants/theme';
-import { useColors } from '../src/context/ThemeContext';
+import { useColors, useTheme } from '../src/context/ThemeContext';
+import { t } from '../src/i18n';
 
 const RESOURCES = [
   {
@@ -110,6 +111,7 @@ const FORUMS = [
 export default function CommunauteScreen() {
   const router = useRouter();
   const c = useColors();
+  const { isDark } = useTheme();
 
   const openURL = (url: string) => {
     Linking.openURL(url).catch(() => {});
@@ -120,30 +122,30 @@ export default function CommunauteScreen() {
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Ionicons name="arrow-back" size={22} color={COLORS.text} />
+          <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: c.surfaceGlass, borderColor: c.borderLight }]}>
+            <Ionicons name="arrow-back" size={22} color={c.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Communauté & Aide</Text>
+          <Text style={[styles.headerTitle, { color: c.text }]}>{t('communaute.title')}</Text>
           <View style={{ width: 40 }} />
         </View>
 
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           {/* Intro */}
-          <View style={styles.introCard}>
+          <View style={[styles.introCard, { backgroundColor: c.surfaceGlass }]}>
             <Text style={styles.introEmoji}>🤝</Text>
-            <Text style={styles.introTitle}>Tu n'es pas seul</Text>
-            <Text style={styles.introText}>
-              Des milliers de personnes traversent la même épreuve. Des ressources gratuites et confidentielles existent pour t'aider.
+            <Text style={[styles.introTitle, { color: c.text }]}>{t('communaute.intro')}</Text>
+            <Text style={[styles.introText, { color: c.textSecondary }]}>
+              {t('communaute.introText')}
             </Text>
           </View>
 
           {/* Lignes d'aide */}
-          <Text style={styles.sectionTitle}>Lignes d'aide</Text>
+          <Text style={[styles.sectionTitle, { color: c.text }]}>{t('communaute.helpLines')}</Text>
           <View style={styles.resourcesList}>
             {RESOURCES.map((r, i) => (
               <TouchableOpacity
                 key={i}
-                style={styles.resourceCard}
+                style={[styles.resourceCard, { backgroundColor: c.surfaceGlass }]}
                 onPress={() => openURL(r.url)}
                 activeOpacity={0.7}
               >
@@ -151,46 +153,46 @@ export default function CommunauteScreen() {
                   <Ionicons name={r.icon as any} size={22} color={r.color} />
                 </View>
                 <View style={styles.resourceContent}>
-                  <Text style={styles.resourceTitle}>{r.title}</Text>
-                  <Text style={styles.resourceDesc}>{r.desc}</Text>
+                  <Text style={[styles.resourceTitle, { color: c.text }]}>{r.title}</Text>
+                  <Text style={[styles.resourceDesc, { color: c.textSecondary }]}>{r.desc}</Text>
                   <Text style={[styles.resourceDetail, { color: r.color }]}>{r.detail}</Text>
                 </View>
-                <Ionicons name="open-outline" size={18} color={COLORS.textMuted} />
+                <Ionicons name="open-outline" size={18} color={c.textMuted} />
               </TouchableOpacity>
             ))}
           </View>
 
           {/* Forums & communautés en ligne */}
-          <Text style={styles.sectionTitle}>Forums & communautés</Text>
+          <Text style={[styles.sectionTitle, { color: c.text }]}>{t('communaute.forums')}</Text>
           <View style={styles.forumsList}>
             {FORUMS.map((f, i) => (
               <TouchableOpacity
                 key={i}
-                style={styles.forumCard}
+                style={[styles.forumCard, { backgroundColor: c.surfaceGlass }]}
                 onPress={() => openURL(f.url)}
                 activeOpacity={0.7}
               >
-                <View style={[styles.forumIcon, { backgroundColor: COLORS.infoBg }]}>
-                  <Ionicons name={f.icon as any} size={20} color={COLORS.info} />
+                <View style={[styles.forumIcon, { backgroundColor: c.infoBg }]}>
+                  <Ionicons name={f.icon as any} size={20} color={c.info} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.forumTitle}>{f.title}</Text>
-                  <Text style={styles.forumDesc}>{f.desc}</Text>
+                  <Text style={[styles.forumTitle, { color: c.text }]}>{f.title}</Text>
+                  <Text style={[styles.forumDesc, { color: c.textMuted }]}>{f.desc}</Text>
                 </View>
-                <Ionicons name="open-outline" size={16} color={COLORS.textMuted} />
+                <Ionicons name="open-outline" size={16} color={c.textMuted} />
               </TouchableOpacity>
             ))}
           </View>
 
           {/* Conseils pratiques */}
-          <Text style={styles.sectionTitle}>Conseils pratiques</Text>
+          <Text style={[styles.sectionTitle, { color: c.text }]}>{t('communaute.tips')}</Text>
           <View style={styles.tipsList}>
             {TIPS.map((tip, i) => (
-              <View key={i} style={styles.tipCard}>
+              <View key={i} style={[styles.tipCard, { backgroundColor: c.surfaceGlass }]}>
                 <Text style={styles.tipEmoji}>{tip.emoji}</Text>
                 <View style={styles.tipContent}>
-                  <Text style={styles.tipTitle}>{tip.title}</Text>
-                  <Text style={styles.tipText}>{tip.text}</Text>
+                  <Text style={[styles.tipTitle, { color: c.text }]}>{tip.title}</Text>
+                  <Text style={[styles.tipText, { color: c.textSecondary }]}>{tip.text}</Text>
                 </View>
               </View>
             ))}
@@ -200,13 +202,13 @@ export default function CommunauteScreen() {
           <View style={styles.urgenceCard}>
             <LinearGradient colors={GRADIENTS.sos} style={styles.urgenceGradient}>
               <Ionicons name="warning" size={28} color="#FFF" />
-              <Text style={styles.urgenceTitle}>En situation d'urgence ?</Text>
+              <Text style={styles.urgenceTitle}>{t('communaute.emergency')}</Text>
               <Text style={styles.urgenceText}>
-                Si tu es en danger ou en détresse, appelle le 3114 (numéro national de prévention du suicide) ou le 15 (SAMU).
+                {t('communaute.emergencyText')}
               </Text>
               <TouchableOpacity style={styles.urgenceBtn} onPress={() => openURL('tel:3114')}>
                 <Ionicons name="call" size={18} color={COLORS.danger} />
-                <Text style={styles.urgenceBtnText}>Appeler le 3114</Text>
+                <Text style={styles.urgenceBtnText}>{t('communaute.call3114')}</Text>
               </TouchableOpacity>
             </LinearGradient>
           </View>

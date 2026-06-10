@@ -137,8 +137,8 @@ export default function HomeScreen() {
     },
     {
       icon: 'people' as const,
-      title: 'Communauté',
-      desc: 'Aide, forums et ressources',
+      title: t('homeExtra.community'),
+      desc: t('homeExtra.communityDesc'),
       gradient: GRADIENTS.menuCyan,
       locked: false,
       onPress: () => router.push('/communaute'),
@@ -204,7 +204,7 @@ export default function HomeScreen() {
               activeOpacity={0.6}
             >
               <Ionicons name="refresh" size={14} color={COLORS.textMuted} />
-              <Text style={styles.relapseBtnText}>J'ai rejoué</Text>
+              <Text style={styles.relapseBtnText}>{t('homeExtra.iRelapsed')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.shareBtn}
@@ -212,7 +212,7 @@ export default function HomeScreen() {
               activeOpacity={0.6}
             >
               <Ionicons name="share-outline" size={14} color={COLORS.primary} />
-              <Text style={styles.shareBtnText}>Partager</Text>
+              <Text style={styles.shareBtnText}>{t('homeExtra.share')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -238,7 +238,7 @@ export default function HomeScreen() {
           {/* ═══ Badges ═══ */}
           <View style={styles.badgesSection}>
             <View style={styles.badgesHeader}>
-              <Text style={[styles.badgesTitle, { color: c.text }]}>Récompenses</Text>
+              <Text style={[styles.badgesTitle, { color: c.text }]}>{t('homeExtra.rewards')}</Text>
               <Text style={styles.badgesCount}>{unlockedCount}/{totalCount}</Text>
             </View>
             <ScrollView
@@ -279,7 +279,7 @@ export default function HomeScreen() {
           {/* ═══ Mes raisons ═══ */}
           <View style={styles.reasonsSection}>
             <View style={styles.reasonsHeader}>
-              <Text style={[styles.reasonsTitle, { color: c.text }]}>Mes raisons d'arrêter</Text>
+              <Text style={[styles.reasonsTitle, { color: c.text }]}>{t('homeExtra.myReasons')}</Text>
               <TouchableOpacity
                 style={styles.reasonsAddBtn}
                 onPress={() => { setReasonText(''); setReasonEmoji('💪'); setShowReasonModal(true); }}
@@ -295,7 +295,7 @@ export default function HomeScreen() {
               >
                 <Ionicons name="heart-outline" size={22} color={COLORS.textMuted} />
                 <Text style={styles.reasonsEmptyText}>
-                  Ajoute tes raisons d'arrêter pour te rappeler pourquoi tu fais ça
+                  {t('homeExtra.addReasonsPlaceholder')}
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -306,11 +306,11 @@ export default function HomeScreen() {
                     style={styles.reasonCard}
                     onLongPress={() => {
                       Alert.alert(
-                        'Supprimer ?',
-                        `Supprimer « ${reason.text} » ?`,
+                        t('homeExtra.deleteTitle'),
+                        `${t('homeExtra.deleteConfirm')}`,
                         [
-                          { text: 'Annuler', style: 'cancel' },
-                          { text: 'Supprimer', style: 'destructive', onPress: () => removeReason(reason.id) },
+                          { text: t('cancel'), style: 'cancel' },
+                          { text: t('homeExtra.deleteTitle'), style: 'destructive', onPress: () => removeReason(reason.id) },
                         ]
                       );
                     }}
@@ -395,20 +395,20 @@ export default function HomeScreen() {
                   <View style={styles.relapseEmojiWrap}>
                     <Text style={styles.relapseEmoji}>🤝</Text>
                   </View>
-                  <Text style={[styles.relapseTitle, { color: c.text }]}>C'est pas grave</Text>
+                  <Text style={[styles.relapseTitle, { color: c.text }]}>{t('homeExtra.notGrave')}</Text>
                   <Text style={[styles.relapseSubtitle, { color: c.textSecondary }]}>
-                    La rechute fait partie du parcours. L'important, c'est que tu sois là, prêt à recommencer.
+                    {t('homeExtra.relapseText')}
                   </Text>
                   <View style={styles.relapseQuoteCard}>
                     <View style={styles.relapseQuoteBar} />
                     <Text style={styles.relapseQuoteText}>« {relapseQuote} »</Text>
                   </View>
                   <TouchableOpacity style={styles.relapseConfirmBtn} onPress={confirmRelapse}>
-                    <Text style={styles.relapseConfirmText}>Repartir de zéro</Text>
+                    <Text style={styles.relapseConfirmText}>{t('homeExtra.resetZero')}</Text>
                     <Ionicons name="refresh" size={18} color="#FFF" />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.relapseCancelBtn} onPress={closeRelapseModal}>
-                    <Text style={styles.relapseCancelText}>Annuler</Text>
+                    <Text style={styles.relapseCancelText}>{t('cancel')}</Text>
                   </TouchableOpacity>
                 </>
               ) : (
@@ -418,10 +418,10 @@ export default function HomeScreen() {
                     <Text style={styles.relapseEmoji}>💪</Text>
                   </View>
                   <Text style={[styles.relapseTitle, { color: COLORS.primary }]}>
-                    C'est reparti !
+                    {t('homeExtra.newStart')}
                   </Text>
                   <Text style={styles.relapseSubtitle}>
-                    Ton compteur est remis à zéro. Chaque nouveau jour compte. Tu es plus fort que tu ne le crois.
+                    {t('homeExtra.newStartText')}
                   </Text>
                   <View style={styles.relapseQuoteCard}>
                     <View style={[styles.relapseQuoteBar, { backgroundColor: COLORS.primary }]} />
@@ -431,7 +431,7 @@ export default function HomeScreen() {
                     style={[styles.relapseConfirmBtn, { backgroundColor: COLORS.primary }]}
                     onPress={closeRelapseModal}
                   >
-                    <Text style={styles.relapseConfirmText}>Continuer</Text>
+                    <Text style={styles.relapseConfirmText}>{t('homeExtra.continue')}</Text>
                     <Ionicons name="arrow-forward" size={18} color="#FFF" />
                   </TouchableOpacity>
                 </>
@@ -448,10 +448,10 @@ export default function HomeScreen() {
           onRequestClose={() => setShowReasonModal(false)}
         >
           <View style={styles.relapseOverlay}>
-            <View style={styles.relapseModal}>
-              <Text style={[styles.relapseTitle, { fontSize: 22 }]}>Nouvelle raison</Text>
+            <View style={[styles.relapseModal, { backgroundColor: isDark ? c.surfaceGlass : '#FFFFFF' }]}>
+              <Text style={[styles.relapseTitle, { fontSize: 22, color: c.text }]}>{t('homeExtra.reasonModalTitle')}</Text>
               <Text style={styles.relapseSubtitle}>
-                Pourquoi tu veux arrêter le casino ?
+                {t('homeExtra.reasonPlaceholder')}
               </Text>
 
               {/* Emoji picker */}
@@ -501,7 +501,7 @@ export default function HomeScreen() {
                 }}
                 disabled={!reasonText.trim()}
               >
-                <Text style={styles.relapseConfirmText}>Ajouter</Text>
+                <Text style={styles.relapseConfirmText}>{t('save')}</Text>
                 <Ionicons name="heart" size={18} color="#FFF" />
               </TouchableOpacity>
 
@@ -509,7 +509,7 @@ export default function HomeScreen() {
                 style={styles.relapseCancelBtn}
                 onPress={() => setShowReasonModal(false)}
               >
-                <Text style={styles.relapseCancelText}>Annuler</Text>
+                <Text style={styles.relapseCancelText}>{t('cancel')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -523,11 +523,11 @@ export default function HomeScreen() {
           onRequestClose={() => { setShowBadgeModal(false); dismissNewBadge(); }}
         >
           <View style={styles.relapseOverlay}>
-            <View style={styles.relapseModal}>
+            <View style={[styles.relapseModal, { backgroundColor: isDark ? c.surfaceGlass : '#FFFFFF' }]}>
               <View style={[styles.relapseEmojiWrap, { backgroundColor: newBadge?.colorBg ?? COLORS.primaryBg }]}>
                 <Text style={{ fontSize: 48 }}>{newBadge?.emoji}</Text>
               </View>
-              <Text style={styles.badgeCelebTitle}>🎉 Nouveau badge !</Text>
+              <Text style={styles.badgeCelebTitle}>🎉 {t('homeExtra.newBadge')}</Text>
               <Text style={[styles.relapseTitle, { color: newBadge?.color ?? COLORS.primary, fontSize: 22 }]}>
                 {newBadge?.title}
               </Text>
@@ -538,7 +538,7 @@ export default function HomeScreen() {
                 style={[styles.relapseConfirmBtn, { backgroundColor: newBadge?.color ?? COLORS.primary }]}
                 onPress={() => { setShowBadgeModal(false); dismissNewBadge(); }}
               >
-                <Text style={styles.relapseConfirmText}>Super !</Text>
+                <Text style={styles.relapseConfirmText}>{t('sub.great')}</Text>
                 <Ionicons name="sparkles" size={18} color="#FFF" />
               </TouchableOpacity>
             </View>

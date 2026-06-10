@@ -171,69 +171,69 @@ export default function JournalScreen() {
 
         {/* Add Modal */}
         <Modal visible={showModal} animationType="slide" transparent>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalOverlay}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[styles.modalOverlay, { backgroundColor: c.overlay }]}>
             <View style={[styles.modalContent, { backgroundColor: isDark ? c.surfaceGlass : '#FFFFFF' }]}>
-              <View style={styles.modalHandle} />
+              <View style={[styles.modalHandle, { backgroundColor: c.surfaceLight }]} />
               <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>{t('journal.newCraving')}</Text>
-                <TouchableOpacity onPress={() => setShowModal(false)} style={styles.modalClose}>
-                  <Ionicons name="close" size={22} color={COLORS.text} />
+                <Text style={[styles.modalTitle, { color: c.text }]}>{t('journal.newCraving')}</Text>
+                <TouchableOpacity onPress={() => setShowModal(false)} style={[styles.modalClose, { backgroundColor: c.surfaceGlass }]}>
+                  <Ionicons name="close" size={22} color={c.text} />
                 </TouchableOpacity>
               </View>
 
               <ScrollView showsVerticalScrollIndicator={false}>
-                <Text style={styles.fieldLabel}>{t('journal.intensity')}</Text>
+                <Text style={[styles.fieldLabel, { color: c.textSecondary }]}>{t('journal.intensity')}</Text>
                 <View style={styles.intensityRow}>
                   {([1, 2, 3, 4, 5] as const).map(i => (
-                    <TouchableOpacity key={i} style={[styles.intensityBtn, intensity === i && styles.intensityActive]} onPress={() => setIntensity(i)}>
-                      <Text style={[styles.intensityText, intensity === i && styles.intensityTextActive]}>{i}</Text>
+                    <TouchableOpacity key={i} style={[styles.intensityBtn, { backgroundColor: c.surface }, intensity === i && styles.intensityActive]} onPress={() => setIntensity(i)}>
+                      <Text style={[styles.intensityText, { color: c.textMuted }, intensity === i && styles.intensityTextActive]}>{i}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
 
-                <Text style={styles.fieldLabel}>{t('journal.whereAreYou')}</Text>
+                <Text style={[styles.fieldLabel, { color: c.textSecondary }]}>{t('journal.whereAreYou')}</Text>
                 <View style={styles.chipRow}>
                   {LOCATION_KEYS.map(key => {
                     const label = t(`journal.locations.${key}`);
                     return (
-                      <TouchableOpacity key={key} style={[styles.chip, location === label && styles.chipActive]} onPress={() => setLocation(label)}>
-                        <Text style={[styles.chipText, location === label && styles.chipTextActive]}>{label}</Text>
+                      <TouchableOpacity key={key} style={[styles.chip, { backgroundColor: c.surface }, location === label && styles.chipActive]} onPress={() => setLocation(label)}>
+                        <Text style={[styles.chipText, { color: c.textSecondary }, location === label && styles.chipTextActive]}>{label}</Text>
                       </TouchableOpacity>
                     );
                   })}
                 </View>
 
-                <Text style={styles.fieldLabel}>{t('journal.whatTriggered')}</Text>
+                <Text style={[styles.fieldLabel, { color: c.textSecondary }]}>{t('journal.whatTriggered')}</Text>
                 <View style={styles.chipRow}>
                   {TRIGGER_KEYS.map(key => {
                     const label = t(`journal.triggers.${key}`);
                     return (
-                      <TouchableOpacity key={key} style={[styles.chip, trigger === label && styles.chipActive]} onPress={() => setTrigger(label)}>
-                        <Text style={[styles.chipText, trigger === label && styles.chipTextActive]}>{label}</Text>
+                      <TouchableOpacity key={key} style={[styles.chip, { backgroundColor: c.surface }, trigger === label && styles.chipActive]} onPress={() => setTrigger(label)}>
+                        <Text style={[styles.chipText, { color: c.textSecondary }, trigger === label && styles.chipTextActive]}>{label}</Text>
                       </TouchableOpacity>
                     );
                   })}
                 </View>
 
-                <Text style={styles.fieldLabel}>{t('journal.whatDidYouDo')}</Text>
+                <Text style={[styles.fieldLabel, { color: c.textSecondary }]}>{t('journal.whatDidYouDo')}</Text>
                 <TextInput
-                  style={styles.textArea}
+                  style={[styles.textArea, { backgroundColor: c.surface, color: c.text }]}
                   value={action}
                   onChangeText={setAction}
                   placeholder={t('journal.whatDidYouDoPlaceholder')}
-                  placeholderTextColor={COLORS.textMuted}
+                  placeholderTextColor={c.textMuted}
                   multiline
                 />
 
-                <Text style={styles.fieldLabel}>{t('journal.didYouResist')}</Text>
+                <Text style={[styles.fieldLabel, { color: c.textSecondary }]}>{t('journal.didYouResist')}</Text>
                 <View style={styles.toggleRow}>
-                  <TouchableOpacity style={[styles.toggleBtn, overcame && styles.toggleActive]} onPress={() => setOvercame(true)}>
-                    <Ionicons name="checkmark-circle" size={20} color={overcame ? '#FFF' : COLORS.textMuted} />
-                    <Text style={[styles.toggleText, overcame && styles.toggleTextActive]}>{t('yes')}</Text>
+                  <TouchableOpacity style={[styles.toggleBtn, { backgroundColor: c.surface }, overcame && styles.toggleActive]} onPress={() => setOvercame(true)}>
+                    <Ionicons name="checkmark-circle" size={20} color={overcame ? '#FFF' : c.textMuted} />
+                    <Text style={[styles.toggleText, { color: c.textMuted }, overcame && styles.toggleTextActive]}>{t('yes')}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={[styles.toggleBtn, !overcame && styles.toggleFail]} onPress={() => setOvercame(false)}>
-                    <Ionicons name="close-circle" size={20} color={!overcame ? '#FFF' : COLORS.textMuted} />
-                    <Text style={[styles.toggleText, !overcame && styles.toggleTextActive]}>{t('no')}</Text>
+                  <TouchableOpacity style={[styles.toggleBtn, { backgroundColor: c.surface }, !overcame && styles.toggleFail]} onPress={() => setOvercame(false)}>
+                    <Ionicons name="close-circle" size={20} color={!overcame ? '#FFF' : c.textMuted} />
+                    <Text style={[styles.toggleText, { color: c.textMuted }, !overcame && styles.toggleTextActive]}>{t('no')}</Text>
                   </TouchableOpacity>
                 </View>
 
