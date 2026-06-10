@@ -16,7 +16,7 @@ import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/con
 import { ARTICLES, CATEGORIES, Article } from '../src/constants/library';
 import { useSubscription } from '../src/hooks/useSubscription';
 import { useColors, useTheme } from '../src/context/ThemeContext';
-import { t } from '../src/i18n';
+import i18n, { t } from '../src/i18n';
 
 export default function BibliothequeScreen() {
   const router = useRouter();
@@ -95,7 +95,7 @@ export default function BibliothequeScreen() {
                 <View style={styles.articleBody}>
                   <View style={styles.articleMeta}>
                     <Text style={[styles.articleCat, { color: isLocked ? COLORS.textMuted : getCategoryColor(article.category) }]}>
-                      {article.categoryLabel}
+                      {t(`articles.a${article.id}.category`) || article.categoryLabel}
                     </Text>
                     {isLocked ? (
                       <View style={styles.lockBadge}>
@@ -104,12 +104,12 @@ export default function BibliothequeScreen() {
                       </View>
                     ) : (
                       <Text style={styles.articleTime}>
-                        <Ionicons name="time-outline" size={12} color={COLORS.textMuted} /> {article.readTime}
+                        <Ionicons name="time-outline" size={12} color={COLORS.textMuted} /> {t(`articles.a${article.id}.readTime`) || article.readTime}
                       </Text>
                     )}
                   </View>
-                  <Text style={[styles.articleTitle, { color: c.text }, isLocked && { color: COLORS.textMuted }]}>{article.title}</Text>
-                  <Text style={[styles.articlePreview, { color: c.textSecondary }]} numberOfLines={2}>{article.content[0]}</Text>
+                  <Text style={[styles.articleTitle, { color: c.text }, isLocked && { color: COLORS.textMuted }]}>{t(`articles.a${article.id}.title`) || article.title}</Text>
+                  <Text style={[styles.articlePreview, { color: c.textSecondary }]} numberOfLines={2}>{((i18n.t(`articles.a${article.id}.content`) as unknown as string[]) || article.content)[0]}</Text>
                 </View>
               </TouchableOpacity>
             );
@@ -141,13 +141,13 @@ export default function BibliothequeScreen() {
                     <View style={[styles.modalCatBadge, { backgroundColor: `${getCategoryColor(selectedArticle.category)}15` }]}>
                       <Ionicons name={selectedArticle.icon as any} size={16} color={getCategoryColor(selectedArticle.category)} />
                       <Text style={[styles.modalCatText, { color: getCategoryColor(selectedArticle.category) }]}>
-                        {selectedArticle.categoryLabel} · {selectedArticle.readTime}
+                        {t(`articles.a${selectedArticle.id}.category`) || selectedArticle.categoryLabel} · {t(`articles.a${selectedArticle.id}.readTime`) || selectedArticle.readTime}
                       </Text>
                     </View>
 
-                    <Text style={[styles.modalTitle, { color: c.text }]}>{selectedArticle.title}</Text>
+                    <Text style={[styles.modalTitle, { color: c.text }]}>{t(`articles.a${selectedArticle.id}.title`) || selectedArticle.title}</Text>
 
-                    {selectedArticle.content.map((paragraph, i) => (
+                    {((i18n.t(`articles.a${selectedArticle.id}.content`) as unknown as string[]) || selectedArticle.content).map((paragraph: string, i: number) => (
                       <Text key={i} style={[styles.modalPara, { color: c.textSecondary }]}>{paragraph}</Text>
                     ))}
 

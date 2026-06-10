@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../constants/theme';
 import { IMAGES } from '../constants/images';
-import { t } from '../i18n';
+import i18n, { t } from '../i18n';
 import { UserData } from '../types';
 
 const { width, height } = Dimensions.get('window');
@@ -27,11 +27,11 @@ interface Props {
 
 // Options rapides pour la date d'arrêt
 const DATE_OPTIONS = [
-  { key: 'today', label: "Aujourd'hui", icon: 'sunny' as const, days: 0 },
-  { key: 'yesterday', label: 'Hier', icon: 'time' as const, days: 1 },
-  { key: '3days', label: 'Il y a 3 jours', icon: 'calendar' as const, days: 3 },
-  { key: '1week', label: 'Il y a 1 semaine', icon: 'calendar-outline' as const, days: 7 },
-  { key: '1month', label: 'Il y a 1 mois', icon: 'calendar-clear' as const, days: 30 },
+  { key: 'today', labelKey: 'onboardingExtra.today', icon: 'sunny' as const, days: 0 },
+  { key: 'yesterday', labelKey: 'onboardingExtra.yesterday', icon: 'time' as const, days: 1 },
+  { key: '3days', labelKey: 'onboardingExtra.threeDaysAgo', icon: 'calendar' as const, days: 3 },
+  { key: '1week', labelKey: 'onboardingExtra.oneWeekAgo', icon: 'calendar-outline' as const, days: 7 },
+  { key: '1month', labelKey: 'onboardingExtra.oneMonthAgo', icon: 'calendar-clear' as const, days: 30 },
 ];
 
 export default function Onboarding({ onComplete }: Props) {
@@ -63,7 +63,8 @@ export default function Onboarding({ onComplete }: Props) {
   };
 
   const formatDate = (d: Date) => {
-    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const locale = i18n.locale || 'fr';
+    return d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
   const handleFinish = () => {
@@ -180,9 +181,9 @@ export default function Onboarding({ onComplete }: Props) {
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.dateArea} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Quand as-tu arrêté ?</Text>
+        <Text style={styles.title}>{t('onboardingExtra.dateTitle')}</Text>
         <Text style={styles.description}>
-          Choisis la date à laquelle tu as décidé d'arrêter le casino. Ton compteur démarrera à partir de ce jour.
+          {t('onboardingExtra.dateDesc')}
         </Text>
 
         {/* Quick options */}
@@ -208,7 +209,7 @@ export default function Onboarding({ onComplete }: Props) {
                   dateOption === opt.key && styles.dateOptionTextActive,
                 ]}
               >
-                {opt.label}
+                {t(opt.labelKey)}
               </Text>
               {dateOption === opt.key && (
                 <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
@@ -236,7 +237,7 @@ export default function Onboarding({ onComplete }: Props) {
                 dateOption === 'custom' && styles.dateOptionTextActive,
               ]}
             >
-              Choisir une date
+              {t('onboardingExtra.chooseDate')}
             </Text>
             {dateOption === 'custom' && (
               <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
@@ -278,7 +279,7 @@ export default function Onboarding({ onComplete }: Props) {
               setDateOption('custom');
             }}
           >
-            <Text style={styles.nextText}>Valider</Text>
+            <Text style={styles.nextText}>{t('onboardingExtra.validate')}</Text>
             <Ionicons name="checkmark" size={20} color="#FFF" />
           </TouchableOpacity>
         )}

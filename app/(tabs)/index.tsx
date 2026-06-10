@@ -28,19 +28,6 @@ import i18n, { t } from '../../src/i18n';
 import Onboarding from '../../src/components/Onboarding';
 import ShareCard from '../../src/components/ShareCard';
 
-// Citations encourageantes pour la rechute
-const RELAPSE_QUOTES = [
-  "Tomber, c'est humain. Se relever, c'est héroïque.",
-  "Chaque jour est une nouvelle chance de recommencer.",
-  "Le courage, ce n'est pas de ne jamais tomber, c'est de se relever à chaque fois.",
-  "Tu n'as pas perdu tout ton progrès. Tu as gagné de l'expérience.",
-  "La rechute fait partie du chemin. L'abandon, jamais.",
-  "Un faux pas ne définit pas ton parcours. Continue d'avancer.",
-  "Les plus grandes victoires viennent après les plus dures batailles.",
-  "Pardonne-toi. Puis recommence, plus fort qu'avant.",
-  "Ce qui compte, ce n'est pas combien de fois tu tombes, mais combien de fois tu te relèves.",
-  "Aujourd'hui est le premier jour du reste de ta vie sans casino.",
-];
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -77,8 +64,9 @@ export default function HomeScreen() {
   }, [newBadge]);
 
   const openRelapseModal = () => {
-    const idx = Math.floor(Math.random() * RELAPSE_QUOTES.length);
-    setRelapseQuote(RELAPSE_QUOTES[idx]);
+    const quotes = i18n.t('relapseQuotes') as unknown as string[];
+    const idx = Math.floor(Math.random() * quotes.length);
+    setRelapseQuote(quotes[idx]);
     setRelapseConfirmed(false);
     setShowRelapseModal(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -263,7 +251,7 @@ export default function HomeScreen() {
                     style={[styles.badgeLabel, !badge.unlocked && { color: COLORS.textMuted }]}
                     numberOfLines={1}
                   >
-                    {badge.title}
+                    {t(`badges.${badge.id}`) || badge.title}
                   </Text>
                 </View>
               ))}
@@ -529,10 +517,10 @@ export default function HomeScreen() {
               </View>
               <Text style={styles.badgeCelebTitle}>🎉 {t('homeExtra.newBadge')}</Text>
               <Text style={[styles.relapseTitle, { color: newBadge?.color ?? COLORS.primary, fontSize: 22 }]}>
-                {newBadge?.title}
+                {newBadge ? (t(`badges.${newBadge.id}`) || newBadge.title) : ''}
               </Text>
               <Text style={styles.relapseSubtitle}>
-                {newBadge?.description}
+                {newBadge ? (t(`badges.${newBadge.id}_desc`) || newBadge.description) : ''}
               </Text>
               <TouchableOpacity
                 style={[styles.relapseConfirmBtn, { backgroundColor: newBadge?.color ?? COLORS.primary }]}

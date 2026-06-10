@@ -8,6 +8,7 @@ import {
   Easing,
 } from 'react-native';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../constants/theme';
+import { t } from '../i18n';
 
 type BetType = 'rouge' | 'noir' | 'pair' | 'impair' | 'number';
 
@@ -96,7 +97,7 @@ export default function RouletteGame() {
                   {result}
                 </Text>
                 <Text style={styles.wheelLabel}>
-                  {result === 0 ? 'Zéro' : RED_NUMBERS.includes(result) ? 'Rouge' : 'Noir'}
+                  {result === 0 ? t('roulette.zero') : RED_NUMBERS.includes(result) ? t('roulette.red') : t('roulette.black')}
                 </Text>
               </>
             ) : (
@@ -113,17 +114,17 @@ export default function RouletteGame() {
         <View style={[styles.resultCard, won ? styles.winCard : styles.loseCard]}>
           <Text style={styles.resultText}>
             {won
-              ? 'Tu as gagné cette fois !'
+              ? t('roulette.youWin')
               : result === 0
-                ? 'Le zéro ! Tout le monde perd. L\'avantage de la maison.'
-                : 'Perdu. Le casino gagne encore.'}
+                ? t('roulette.zeroLose')
+                : t('roulette.youLose')}
           </Text>
           {total >= 5 && (
             <Text style={styles.statsHint}>
-              En {total} tours : {winRate}% de victoires.
+              {t('roulette.statsLine', { total, winRate })}
               {bet?.type !== 'number'
-                ? ` Théoriquement ~48.6% (à cause du 0).`
-                : ` Théoriquement ~2.7% sur un numéro.`}
+                ? ` ${t('roulette.theoretic48')}`
+                : ` ${t('roulette.theoretic2')}`}
             </Text>
           )}
         </View>
@@ -131,7 +132,7 @@ export default function RouletteGame() {
 
       {/* Paris */}
       <View style={styles.betSection}>
-        <Text style={styles.betLabel}>Choisis ta mise :</Text>
+        <Text style={styles.betLabel}>{t('roulette.chooseBet')}</Text>
 
         <View style={styles.betRow}>
           <TouchableOpacity
@@ -140,9 +141,9 @@ export default function RouletteGame() {
               styles.redBet,
               bet?.type === 'rouge' && styles.betActive,
             ]}
-            onPress={() => setBet({ type: 'rouge', label: 'Rouge' })}
+            onPress={() => setBet({ type: 'rouge', label: t('roulette.red') })}
           >
-            <Text style={styles.betText}>Rouge</Text>
+            <Text style={styles.betText}>{t('roulette.red')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -150,9 +151,9 @@ export default function RouletteGame() {
               styles.blackBet,
               bet?.type === 'noir' && styles.betActive,
             ]}
-            onPress={() => setBet({ type: 'noir', label: 'Noir' })}
+            onPress={() => setBet({ type: 'noir', label: t('roulette.black') })}
           >
-            <Text style={styles.betText}>Noir</Text>
+            <Text style={styles.betText}>{t('roulette.black')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -163,9 +164,9 @@ export default function RouletteGame() {
               styles.evenBet,
               bet?.type === 'pair' && styles.betActive,
             ]}
-            onPress={() => setBet({ type: 'pair', label: 'Pair' })}
+            onPress={() => setBet({ type: 'pair', label: t('roulette.even') })}
           >
-            <Text style={styles.betText}>Pair</Text>
+            <Text style={styles.betText}>{t('roulette.even')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -173,9 +174,9 @@ export default function RouletteGame() {
               styles.oddBet,
               bet?.type === 'impair' && styles.betActive,
             ]}
-            onPress={() => setBet({ type: 'impair', label: 'Impair' })}
+            onPress={() => setBet({ type: 'impair', label: t('roulette.odd') })}
           >
-            <Text style={styles.betText}>Impair</Text>
+            <Text style={styles.betText}>{t('roulette.odd')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -204,14 +205,14 @@ export default function RouletteGame() {
         disabled={!bet || spinning}
       >
         <Text style={styles.spinText}>
-          {spinning ? 'La bille tourne...' : bet ? `Lancer (${bet.label})` : 'Choisis une mise'}
+          {spinning ? t('roulette.spinning') : bet ? `${t('roulette.spin')} (${bet.label})` : t('roulette.chooseBet')}
         </Text>
       </TouchableOpacity>
 
       {/* Stats session */}
       <View style={styles.sessionStats}>
         <Text style={styles.sessionText}>
-          V: {stats.wins} | D: {stats.losses}
+          {t('blackjack.w')}: {stats.wins} | {t('blackjack.l')}: {stats.losses}
         </Text>
       </View>
     </View>

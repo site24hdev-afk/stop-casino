@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../constants/theme';
+import { t } from '../i18n';
 
 type Card = { suit: string; value: string; numValue: number };
 type GameState = 'betting' | 'playing' | 'dealer' | 'result';
@@ -148,7 +149,7 @@ export default function BlackjackGame() {
 
     if (handValue(newHand) > 21) {
       setGameState('result');
-      setResult('Tu as dépassé 21. Le casino gagne.');
+      setResult(t('blackjack.bust'));
       setStats(prev => ({ ...prev, losses: prev.losses + 1 }));
     }
   };
@@ -174,19 +175,19 @@ export default function BlackjackGame() {
     const dv = handValue(newDealerHand);
 
     if (pv > 21) {
-      setResult('Tu as dépassé 21. Le casino gagne.');
+      setResult(t('blackjack.bust'));
       setStats(prev => ({ ...prev, losses: prev.losses + 1 }));
     } else if (dv > 21) {
-      setResult('Le croupier dépasse 21. Tu gagnes cette fois !');
+      setResult(t('blackjack.dealerBust'));
       setStats(prev => ({ ...prev, wins: prev.wins + 1 }));
     } else if (pv > dv) {
-      setResult('Tu as le meilleur score. Tu gagnes cette fois !');
+      setResult(t('blackjack.playerWins'));
       setStats(prev => ({ ...prev, wins: prev.wins + 1 }));
     } else if (dv > pv) {
-      setResult('Le casino gagne. Comme d\'habitude...');
+      setResult(t('blackjack.casinoWins'));
       setStats(prev => ({ ...prev, losses: prev.losses + 1 }));
     } else {
-      setResult('Égalité. Au casino, personne ne gagne.');
+      setResult(t('blackjack.tie'));
       setStats(prev => ({ ...prev, ties: prev.ties + 1 }));
     }
   };
@@ -199,7 +200,7 @@ export default function BlackjackGame() {
       {/* Dealer */}
       <View style={styles.section}>
         <Text style={styles.label}>
-          Croupier {gameState === 'result' ? `(${handValue(dealerHand)})` : ''}
+          {t('blackjack.dealer')} {gameState === 'result' ? `(${handValue(dealerHand)})` : ''}
         </Text>
         <View style={styles.hand}>
           {dealerHand.map((card, i) => (
@@ -218,8 +219,8 @@ export default function BlackjackGame() {
           <Text style={styles.resultText}>{result}</Text>
           {total >= 5 && (
             <Text style={styles.statsText}>
-              En {total} parties : {winRate}% de victoires.
-              {winRate < 50 ? ' Le casino gagne sur la durée.' : ''}
+              {t('blackjack.statsLine', { total, winRate })}
+              {winRate < 50 ? ` ${t('blackjack.casinoAlwaysWins')}` : ''}
             </Text>
           )}
         </View>
@@ -228,7 +229,7 @@ export default function BlackjackGame() {
       {/* Player */}
       <View style={styles.section}>
         <Text style={styles.label}>
-          Toi ({handValue(playerHand)})
+          {t('blackjack.you')} ({handValue(playerHand)})
         </Text>
         <View style={styles.hand}>
           {playerHand.map((card, i) => (
@@ -241,24 +242,24 @@ export default function BlackjackGame() {
       <View style={styles.actions}>
         {gameState === 'betting' && (
           <TouchableOpacity style={styles.dealButton} onPress={startGame}>
-            <Text style={styles.dealText}>Distribuer</Text>
+            <Text style={styles.dealText}>{t('blackjack.deal')}</Text>
           </TouchableOpacity>
         )}
 
         {gameState === 'playing' && (
           <View style={styles.playActions}>
             <TouchableOpacity style={styles.hitButton} onPress={hit}>
-              <Text style={styles.actionText}>Carte</Text>
+              <Text style={styles.actionText}>{t('blackjack.hit')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.standButton} onPress={stand}>
-              <Text style={styles.actionText}>Rester</Text>
+              <Text style={styles.actionText}>{t('blackjack.stand')}</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {gameState === 'result' && (
           <TouchableOpacity style={styles.dealButton} onPress={startGame}>
-            <Text style={styles.dealText}>Rejouer</Text>
+            <Text style={styles.dealText}>{t('blackjack.playAgain')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -266,7 +267,7 @@ export default function BlackjackGame() {
       {/* Stats session */}
       <View style={styles.sessionStats}>
         <Text style={styles.sessionText}>
-          V: {stats.wins} | D: {stats.losses} | É: {stats.ties}
+          {t('blackjack.w')}: {stats.wins} | {t('blackjack.l')}: {stats.losses} | {t('blackjack.t')}: {stats.ties}
         </Text>
       </View>
     </View>
