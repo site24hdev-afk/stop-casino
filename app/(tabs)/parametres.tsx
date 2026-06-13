@@ -12,7 +12,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+let Haptics: any = null;
+try { Haptics = require('expo-haptics'); } catch (e) {}
 import { COLORS, SPACING, FONT_SIZE, SHADOWS } from '../../src/constants/theme';
 import { useNotifications } from '../../src/hooks/useNotifications';
 import { useTheme, useColors } from '../../src/context/ThemeContext';
@@ -34,7 +35,7 @@ export default function ParametresScreen() {
   const handleLanguageChange = async (langCode: string) => {
     await setLanguage(langCode);
     setCurrentLang(langCode);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setShowLangModal(false);
     Alert.alert(t('settings.languageChanged'), t('settings.restartHint'));
   };
@@ -77,7 +78,7 @@ export default function ParametresScreen() {
               value={notifEnabled}
               onValueChange={async (val) => {
                 const success = await toggleNotifications(val);
-                if (success) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                if (success) Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }}
               trackColor={{ false: COLORS.surfaceLight, true: COLORS.primary }}
               thumbColor="#FFF"
@@ -89,7 +90,7 @@ export default function ParametresScreen() {
                 <TouchableOpacity
                   key={h}
                   style={[styles.hourBtn, notifHour === h && styles.hourBtnActive]}
-                  onPress={() => { changeHour(h); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+                  onPress={() => { changeHour(h); Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
                 >
                   <Text style={[styles.hourText, notifHour === h && styles.hourTextActive]}>{h}h</Text>
                 </TouchableOpacity>
@@ -104,7 +105,7 @@ export default function ParametresScreen() {
             activeOpacity={0.7}
             onPress={() => {
               toggleTheme();
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
           >
             <View style={[styles.cardIcon, { backgroundColor: isDark ? 'rgba(139,92,246,0.12)' : c.purpleBg }]}>
@@ -120,7 +121,7 @@ export default function ParametresScreen() {
               value={isDark}
               onValueChange={() => {
                 toggleTheme();
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }}
               trackColor={{ false: c.surfaceLight, true: c.purple }}
               thumbColor="#FFF"

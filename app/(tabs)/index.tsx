@@ -15,8 +15,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import ViewShot from 'react-native-view-shot';
+let Haptics: any = null;
+try { Haptics = require('expo-haptics'); } catch (e) {}
+let ViewShot: any = View;
+try { ViewShot = require('react-native-view-shot').default; } catch (e) {}
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
 import { useUserData } from '../../src/hooks/useUserData';
 import { useSubscription } from '../../src/hooks/useSubscription';
@@ -66,7 +68,7 @@ export default function HomeScreen() {
   useEffect(() => {
     if (newBadge) {
       setShowBadgeModal(true);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Haptics?.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   }, [newBadge]);
 
@@ -76,13 +78,13 @@ export default function HomeScreen() {
     setRelapseQuote(quotes[idx]);
     setRelapseConfirmed(false);
     setShowRelapseModal(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   const confirmRelapse = async () => {
     await handleRelapse();
     setRelapseConfirmed(true);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics?.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   const closeRelapseModal = () => {
@@ -203,7 +205,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.shareBtn}
-              onPress={() => { shareProgress(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
+              onPress={() => { shareProgress(); Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Light); }}
               activeOpacity={0.6}
             >
               <Ionicons name="share-outline" size={14} color={COLORS.primary} />
@@ -491,7 +493,7 @@ export default function HomeScreen() {
                 onPress={async () => {
                   if (!reasonText.trim()) return;
                   await addReason(reasonText, reasonEmoji);
-                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  Haptics?.notificationAsync(Haptics.NotificationFeedbackType.Success);
                   setShowReasonModal(false);
                 }}
                 disabled={!reasonText.trim()}

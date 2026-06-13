@@ -19,7 +19,8 @@ import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '.
 import { useCravingLog } from '../../src/hooks/useCravingLog';
 import { useSubscription } from '../../src/hooks/useSubscription';
 import { useColors, useTheme } from '../../src/context/ThemeContext';
-import * as Haptics from 'expo-haptics';
+let Haptics: any = null;
+try { Haptics = require('expo-haptics'); } catch (e) {}
 import i18n, { t } from '../../src/i18n';
 
 const TRIGGER_KEYS = ['boredom', 'stress', 'sadness', 'money', 'ads', 'friends', 'alcohol', 'other'] as const;
@@ -57,7 +58,7 @@ export default function JournalScreen() {
       actionTaken: action || 'Non précisé',
       overcame,
     });
-    Haptics.notificationAsync(overcame ? Haptics.NotificationFeedbackType.Success : Haptics.NotificationFeedbackType.Warning);
+    Haptics?.notificationAsync(overcame ? Haptics.NotificationFeedbackType.Success : Haptics.NotificationFeedbackType.Warning);
     setShowModal(false);
     resetForm();
   };

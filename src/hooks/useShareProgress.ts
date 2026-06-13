@@ -1,7 +1,9 @@
 import { useCallback, useRef } from 'react';
-import { Alert } from 'react-native';
-import ViewShot from 'react-native-view-shot';
+import { Alert, View } from 'react-native';
 import { t } from '../i18n';
+
+let ViewShot: any = View;
+try { ViewShot = require('react-native-view-shot').default; } catch (e) {}
 
 let Sharing: typeof import('expo-sharing') | null = null;
 try {

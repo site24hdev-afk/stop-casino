@@ -7,7 +7,8 @@ import {
   Animated,
   Alert,
 } from 'react-native';
-import * as Haptics from 'expo-haptics';
+let Haptics: any = null;
+try { Haptics = require('expo-haptics'); } catch (e) {}
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -50,7 +51,7 @@ export default function SOSScreen() {
       setTimer(prev => {
         if (prev <= 1) {
           clearInterval(interval);
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          Haptics?.notificationAsync(Haptics.NotificationFeedbackType.Success);
           return 0;
         }
         return prev - 1;
@@ -93,7 +94,7 @@ export default function SOSScreen() {
 
   const handleOvercome = async () => {
     await incrementCravingsOvercome();
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics?.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setCompleted(true);
   };
 
