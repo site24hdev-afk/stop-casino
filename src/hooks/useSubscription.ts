@@ -328,7 +328,7 @@ export function useSubscription() {
   };
 
   const tier = subscription.isActive ? subscription.tier : 'free';
-  const limits = TIER_LIMITS[tier];
+  const limits = TIER_LIMITS[tier] || TIER_LIMITS.free;
 
   const isPaid = tier !== 'free';
   const isEssentiel = tier === 'essentiel' || tier === 'pro' || tier === 'premium' || tier === 'elite';
