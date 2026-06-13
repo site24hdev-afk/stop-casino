@@ -843,6 +843,26 @@ export default {
     },
   },
 
+  // === HISTORY ===
+  history: {
+    title: 'History',
+    subtitle: 'Your abstinence periods',
+    currentStreak: 'Current streak',
+    since: 'since',
+    streakNumber: 'Period',
+    duration: 'Duration',
+    savings: 'Saved',
+    from: 'From',
+    to: 'to',
+    daysSuffix: 'd',
+    bestStreak: 'Best streak',
+    totalSaved: 'Total saved',
+    totalDays: 'Total days',
+    noHistory: 'No history yet',
+    noHistoryText: 'Your history will appear here after your first relapse. We hope to never fill it!',
+    streaks: 'periods',
+  },
+
   // === LEGAL ===
   legal: {
     title: 'Legal',

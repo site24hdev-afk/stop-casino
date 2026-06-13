@@ -859,6 +859,25 @@ export default {
     },
   },
 
+  history: {
+    title: 'السجل',
+    subtitle: 'فترات امتناعك',
+    currentStreak: 'السلسلة الحالية',
+    since: 'منذ',
+    streakNumber: 'الفترة',
+    duration: 'المدة',
+    savings: 'تم توفيره',
+    from: 'من',
+    to: 'إلى',
+    daysSuffix: 'ي',
+    bestStreak: 'أفضل رقم قياسي',
+    totalSaved: 'إجمالي التوفير',
+    totalDays: 'إجمالي الأيام',
+    noHistory: 'لا يوجد سجل بعد',
+    noHistoryText: 'سيظهر سجلك هنا بعد أول انتكاسة. نأمل ألا نملأه أبداً!',
+    streaks: 'فترات',
+  },
+
   legal: {
     title: 'قانوني',
     privacyTab: 'الخصوصية',

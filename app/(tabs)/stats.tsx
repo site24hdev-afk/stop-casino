@@ -119,6 +119,22 @@ export default function StatsScreen() {
             </View>
           </View>
 
+          {/* Bouton Historique */}
+          <TouchableOpacity
+            style={[styles.historyBtn, { backgroundColor: c.surfaceGlass }]}
+            onPress={() => router.push('/historique')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.historyIcon, { backgroundColor: 'rgba(139,92,246,0.08)' }]}>
+              <Ionicons name="time" size={18} color="#8B5CF6" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.historyBtnTitle, { color: c.text }]}>{t('history.title')}</Text>
+              <Text style={[styles.historyBtnSub, { color: c.textMuted }]}>{t('history.subtitle')}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={c.textMuted} />
+          </TouchableOpacity>
+
           {/* Graphique économies */}
           {daysSinceQuit > 0 && (
             <View style={[styles.chartCard, { backgroundColor: c.surfaceGlass }]}>
@@ -440,4 +456,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg, paddingVertical: 10, borderRadius: BORDER_RADIUS.full, marginTop: SPACING.sm,
   },
   lockedBtnText: { fontSize: FONT_SIZE.sm, fontWeight: '700', color: '#FFF' },
+
+  historyBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    borderRadius: 16, padding: 14, marginBottom: SPACING.md, ...SHADOWS.sm,
+  },
+  historyIcon: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  historyBtnTitle: { fontSize: FONT_SIZE.md, fontWeight: '700' },
+  historyBtnSub: { fontSize: FONT_SIZE.xs, marginTop: 2 },
 });

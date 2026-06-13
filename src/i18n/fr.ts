@@ -858,6 +858,25 @@ export default {
   },
 
   // === PAGES LÉGALES ===
+  history: {
+    title: 'Historique',
+    subtitle: 'Tes périodes d\'abstinence',
+    currentStreak: 'Période en cours',
+    since: 'depuis le',
+    streakNumber: 'Période',
+    duration: 'Durée',
+    savings: 'Économisé',
+    from: 'Du',
+    to: 'au',
+    daysSuffix: 'j',
+    bestStreak: 'Meilleur record',
+    totalSaved: 'Total économisé',
+    totalDays: 'Total jours',
+    noHistory: 'Pas encore d\'historique',
+    noHistoryText: 'Ton historique apparaîtra ici après ta première rechute. On espère ne jamais le remplir !',
+    streaks: 'périodes',
+  },
+
   legal: {
     title: 'Mentions légales',
     privacyTab: 'Confidentialité',

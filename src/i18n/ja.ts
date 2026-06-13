@@ -877,6 +877,25 @@ export default {
     },
   },
 
+  history: {
+    title: '履歴',
+    subtitle: 'あなたの禁ギャンブル期間',
+    currentStreak: '現在の連続記録',
+    since: '開始日',
+    streakNumber: '期間',
+    duration: '期間',
+    savings: '節約額',
+    from: '開始',
+    to: 'まで',
+    daysSuffix: '日',
+    bestStreak: '最高記録',
+    totalSaved: '合計節約額',
+    totalDays: '合計日数',
+    noHistory: 'まだ履歴がありません',
+    noHistoryText: '最初のリラプス後にここに履歴が表示されます。埋まらないことを願っています！',
+    streaks: '期間',
+  },
+
   legal: {
     title: '法的情報',
     privacyTab: 'プライバシー',

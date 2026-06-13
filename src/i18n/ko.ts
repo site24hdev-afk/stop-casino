@@ -867,6 +867,25 @@ export default {
     },
   },
 
+  history: {
+    title: '기록',
+    subtitle: '금도박 기간',
+    currentStreak: '현재 연속',
+    since: '시작일',
+    streakNumber: '기간',
+    duration: '기간',
+    savings: '절약액',
+    from: '시작',
+    to: '까지',
+    daysSuffix: '일',
+    bestStreak: '최고 기록',
+    totalSaved: '총 절약액',
+    totalDays: '총 일수',
+    noHistory: '아직 기록이 없습니다',
+    noHistoryText: '첫 번째 재발 후 여기에 기록이 표시됩니다. 영원히 비어있기를 바랍니다!',
+    streaks: '기간',
+  },
+
   legal: {
     title: '법적 정보',
     privacyTab: '개인정보',

@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserData } from '../types';
+import { UserData, RelapseHistoryEntry } from '../types';
 
 const STORAGE_KEY = '@stop_casino_user';
+const HISTORY_KEY = '@stop_casino_relapse_history';
 
 const DEFAULT_USER: UserData = {
   quitDate: '',
@@ -15,19 +17,25 @@ const DEFAULT_USER: UserData = {
 
 export function useUserData() {
   const [userData, setUserData] = useState<UserData>(DEFAULT_USER);
+  const [relapseHistory, setRelapseHistory] = useState<RelapseHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
+      const [stored, historyStored] = await Promise.all([
+        AsyncStorage.getItem(STORAGE_KEY),
+        AsyncStorage.getItem(HISTORY_KEY),
+      ]);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && typeof parsed === 'object') {
           setUserData(prev => ({ ...prev, ...parsed }));
+        }
+      }
+      if (historyStored) {
+        const parsedHistory = JSON.parse(historyStored);
+        if (Array.isArray(parsedHistory)) {
+          setRelapseHistory(parsedHistory);
         }
       }
     } catch (e) {
@@ -35,7 +43,17 @@ export function useUserData() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [loadData])
+  );
 
   const saveData = useCallback(async (data: Partial<UserData>) => {
     try {
@@ -64,10 +82,34 @@ export function useUserData() {
   }, []);
 
   const handleRelapse = useCallback(async () => {
-    await saveData({ quitDate: new Date().toISOString() });
-  }, [saveData]);
+    const now = new Date().toISOString();
 
-  // Calculs dérivés
+    if (userData.quitDate) {
+      const startDate = userData.quitDate;
+      const days = Math.max(0, Math.floor((Date.now() - new Date(startDate).getTime()) / 86400000));
+      const moneySaved = days * userData.averageDailySpend;
+
+      if (days > 0) {
+        const entry: RelapseHistoryEntry = {
+          id: Date.now().toString(),
+          startDate,
+          endDate: now,
+          days,
+          moneySaved,
+        };
+        const updated = [entry, ...relapseHistory];
+        setRelapseHistory(updated);
+        try {
+          await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+        } catch (e) {
+          console.error('Erreur sauvegarde historique:', e);
+        }
+      }
+    }
+
+    await saveData({ quitDate: now });
+  }, [saveData, userData.quitDate, userData.averageDailySpend, relapseHistory]);
+
   const daysSinceQuit = userData.quitDate
     ? Math.max(0, Math.floor((Date.now() - new Date(userData.quitDate).getTime()) / 86400000))
     : 0;
@@ -82,5 +124,6 @@ export function useUserData() {
     handleRelapse,
     daysSinceQuit,
     moneySaved,
+    relapseHistory,
   };
 }

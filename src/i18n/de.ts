@@ -813,6 +813,26 @@ export default {
     },
   },
 
+  // === HISTORY ===
+  history: {
+    title: 'Verlauf',
+    subtitle: 'Deine Abstinenzperioden',
+    currentStreak: 'Aktuelle Serie',
+    since: 'seit',
+    streakNumber: 'Periode',
+    duration: 'Dauer',
+    savings: 'Gespart',
+    from: 'Vom',
+    to: 'bis',
+    daysSuffix: 'T',
+    bestStreak: 'Bester Rekord',
+    totalSaved: 'Gesamt gespart',
+    totalDays: 'Gesamt Tage',
+    noHistory: 'Noch kein Verlauf',
+    noHistoryText: 'Dein Verlauf erscheint hier nach deinem ersten Rückfall. Wir hoffen, ihn nie füllen zu müssen!',
+    streaks: 'Perioden',
+  },
+
   legal: {
     title: 'Rechtliches',
     privacyTab: 'Datenschutz',

@@ -13,6 +13,14 @@ export interface UserData {
   onboarded: boolean;
 }
 
+export interface RelapseHistoryEntry {
+  id: string;
+  startDate: string;
+  endDate: string;
+  days: number;
+  moneySaved: number;
+}
+
 export interface CravingEntry {
   id: string;
   date: string;

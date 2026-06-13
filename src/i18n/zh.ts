@@ -860,6 +860,25 @@ export default {
     },
   },
 
+  history: {
+    title: '历史记录',
+    subtitle: '你的戒赌周期',
+    currentStreak: '当前连续',
+    since: '自从',
+    streakNumber: '周期',
+    duration: '持续时间',
+    savings: '已节省',
+    from: '从',
+    to: '到',
+    daysSuffix: '天',
+    bestStreak: '最佳记录',
+    totalSaved: '总节省',
+    totalDays: '总天数',
+    noHistory: '暂无记录',
+    noHistoryText: '你的历史记录将在首次复赌后显示。希望永远不需要填满它！',
+    streaks: '周期',
+  },
+
   legal: {
     title: '法律信息',
     privacyTab: '隐私政策',

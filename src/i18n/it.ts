@@ -876,6 +876,25 @@ export default {
     },
   },
 
+  history: {
+    title: 'Cronologia',
+    subtitle: 'I tuoi periodi di astinenza',
+    currentStreak: 'Serie attuale',
+    since: 'dal',
+    streakNumber: 'Periodo',
+    duration: 'Durata',
+    savings: 'Risparmiato',
+    from: 'Dal',
+    to: 'al',
+    daysSuffix: 'g',
+    bestStreak: 'Miglior record',
+    totalSaved: 'Totale risparmiato',
+    totalDays: 'Totale giorni',
+    noHistory: 'Nessuna cronologia',
+    noHistoryText: 'La tua cronologia apparirà qui dopo la prima ricaduta. Speriamo di non doverla mai riempire!',
+    streaks: 'periodi',
+  },
+
   // === LEGAL ===
   legal: {
     title: 'Note legali',

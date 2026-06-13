@@ -862,6 +862,26 @@ export default {
     },
   },
 
+  // === HISTORY ===
+  history: {
+    title: 'Historial',
+    subtitle: 'Tus periodos de abstinencia',
+    currentStreak: 'Racha actual',
+    since: 'desde el',
+    streakNumber: 'Periodo',
+    duration: 'Duración',
+    savings: 'Ahorrado',
+    from: 'Del',
+    to: 'al',
+    daysSuffix: 'd',
+    bestStreak: 'Mejor racha',
+    totalSaved: 'Total ahorrado',
+    totalDays: 'Total días',
+    noHistory: 'Sin historial aún',
+    noHistoryText: 'Tu historial aparecerá aquí después de tu primera recaída. ¡Esperamos no llenarlo nunca!',
+    streaks: 'periodos',
+  },
+
   legal: {
     title: 'Legal',
     privacyTab: 'Privacidad',
