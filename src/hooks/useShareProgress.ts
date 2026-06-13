@@ -1,8 +1,14 @@
 import { useCallback, useRef } from 'react';
-import { Alert, Platform } from 'react-native';
-import * as Sharing from 'expo-sharing';
+import { Alert } from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import { t } from '../i18n';
+
+let Sharing: typeof import('expo-sharing') | null = null;
+try {
+  Sharing = require('expo-sharing');
+} catch (e) {
+  // Native module not available (simulator/web)
+}
 
 export function useShareProgress() {
   const shareCardRef = useRef<typeof ViewShot extends React.ComponentClass<any> ? InstanceType<typeof ViewShot> : any>(null);
@@ -11,6 +17,11 @@ export function useShareProgress() {
     try {
       if (!shareCardRef.current?.capture) {
         Alert.alert(t('error'), t('share.errorCapture'));
+        return;
+      }
+
+      if (!Sharing) {
+        Alert.alert(t('error'), t('share.unavailable'));
         return;
       }
 

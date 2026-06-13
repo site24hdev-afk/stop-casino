@@ -2,12 +2,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
-import Purchases, {
-  PurchasesOffering,
-  PurchasesPackage,
-  CustomerInfo,
-  LOG_LEVEL,
-} from 'react-native-purchases';
+let Purchases: any = null;
+let LOG_LEVEL: any = {};
+try {
+  const rc = require('react-native-purchases');
+  Purchases = rc.default;
+  LOG_LEVEL = rc.LOG_LEVEL;
+} catch (e) {
+  // Native module not available (simulator/web)
+}
+type PurchasesOffering = any;
+type PurchasesPackage = any;
+type CustomerInfo = any;
 import {
   REVENUECAT_API_KEY,
   ENTITLEMENT_IDS,
@@ -120,9 +126,9 @@ export const TIER_LIMITS = {
 let rcInitialized = false;
 
 async function initRevenueCat() {
-  if (rcInitialized || !isRevenueCatConfigured()) return;
+  if (rcInitialized || !isRevenueCatConfigured() || !Purchases) return;
   try {
-    if (__DEV__) Purchases.setLogLevel(LOG_LEVEL.DEBUG);
+    if (__DEV__ && Purchases.setLogLevel) Purchases.setLogLevel(LOG_LEVEL.DEBUG);
     Purchases.configure({ apiKey: REVENUECAT_API_KEY });
     rcInitialized = true;
   } catch (e) {
