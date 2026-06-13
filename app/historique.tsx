@@ -37,7 +37,7 @@ export default function HistoriqueScreen() {
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/stats')} style={styles.backBtn}>
               <Ionicons name="arrow-back" size={24} color={c.text} />
             </TouchableOpacity>
             <View>
