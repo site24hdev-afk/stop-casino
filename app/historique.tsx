@@ -46,33 +46,35 @@ export default function HistoriqueScreen() {
             </View>
           </View>
 
-          {/* Summary cards */}
-          <View style={styles.summaryRow}>
-            <View style={[styles.summaryCard, { backgroundColor: c.surfaceGlass }]}>
-              <View style={[styles.summaryIcon, { backgroundColor: COLORS.primaryBg }]}>
-                <Ionicons name="trophy" size={18} color={COLORS.primary} />
+          {/* Summary cards — only show when there's actual history */}
+          {relapseHistory.length > 0 && (
+            <View style={styles.summaryRow}>
+              <View style={[styles.summaryCard, { backgroundColor: c.surfaceGlass }]}>
+                <View style={[styles.summaryIcon, { backgroundColor: COLORS.primaryBg }]}>
+                  <Ionicons name="trophy" size={18} color={COLORS.primary} />
+                </View>
+                <Text style={[styles.summaryValue, { color: COLORS.primary }]}>{bestStreak}{t('history.daysSuffix')}</Text>
+                <Text style={[styles.summaryLabel, { color: c.textMuted }]}>{t('history.bestStreak')}</Text>
               </View>
-              <Text style={[styles.summaryValue, { color: COLORS.primary }]}>{bestStreak}{t('history.daysSuffix')}</Text>
-              <Text style={[styles.summaryLabel, { color: c.textMuted }]}>{t('history.bestStreak')}</Text>
-            </View>
-            <View style={[styles.summaryCard, { backgroundColor: c.surfaceGlass }]}>
-              <View style={[styles.summaryIcon, { backgroundColor: 'rgba(59,130,246,0.08)' }]}>
-                <Ionicons name="calendar" size={18} color="#3B82F6" />
+              <View style={[styles.summaryCard, { backgroundColor: c.surfaceGlass }]}>
+                <View style={[styles.summaryIcon, { backgroundColor: 'rgba(59,130,246,0.08)' }]}>
+                  <Ionicons name="calendar" size={18} color="#3B82F6" />
+                </View>
+                <Text style={[styles.summaryValue, { color: '#3B82F6' }]}>{totalDays}{t('history.daysSuffix')}</Text>
+                <Text style={[styles.summaryLabel, { color: c.textMuted }]}>{t('history.totalDays')}</Text>
               </View>
-              <Text style={[styles.summaryValue, { color: '#3B82F6' }]}>{totalDays}{t('history.daysSuffix')}</Text>
-              <Text style={[styles.summaryLabel, { color: c.textMuted }]}>{t('history.totalDays')}</Text>
-            </View>
-            <View style={[styles.summaryCard, { backgroundColor: c.surfaceGlass }]}>
-              <View style={[styles.summaryIcon, { backgroundColor: 'rgba(245,158,11,0.08)' }]}>
-                <Ionicons name="cash" size={18} color="#F59E0B" />
+              <View style={[styles.summaryCard, { backgroundColor: c.surfaceGlass }]}>
+                <View style={[styles.summaryIcon, { backgroundColor: 'rgba(245,158,11,0.08)' }]}>
+                  <Ionicons name="cash" size={18} color="#F59E0B" />
+                </View>
+                <Text style={[styles.summaryValue, { color: '#F59E0B' }]}>{totalSaved.toLocaleString('fr-FR')}€</Text>
+                <Text style={[styles.summaryLabel, { color: c.textMuted }]}>{t('history.totalSaved')}</Text>
               </View>
-              <Text style={[styles.summaryValue, { color: '#F59E0B' }]}>{totalSaved.toLocaleString('fr-FR')}€</Text>
-              <Text style={[styles.summaryLabel, { color: c.textMuted }]}>{t('history.totalSaved')}</Text>
             </View>
-          </View>
+          )}
 
           {/* Current streak */}
-          {daysSinceQuit > 0 && (
+          {daysSinceQuit > 0 && relapseHistory.length > 0 && (
             <View style={[styles.currentCard, { backgroundColor: c.surfaceGlass }]}>
               <View style={styles.timelineDot}>
                 <View style={[styles.dotInner, { backgroundColor: COLORS.primary }]} />
