@@ -12,7 +12,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+let LinearGradient: any = 'View'; try { LinearGradient = require('expo-linear-gradient').LinearGradient; } catch (e) { LinearGradient = require('react-native').View; }
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 let Haptics: any = null;

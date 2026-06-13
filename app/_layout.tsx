@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+let StatusBar: any = () => null;
+try { StatusBar = require('expo-status-bar').StatusBar; } catch (e) {}
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { COLORS } from '../src/constants/theme';
 import { loadSavedLanguage } from '../src/i18n';

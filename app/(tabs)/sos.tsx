@@ -12,7 +12,7 @@ try { Haptics = require('expo-haptics'); } catch (e) {}
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+let LinearGradient: any = 'View'; try { LinearGradient = require('expo-linear-gradient').LinearGradient; } catch (e) { LinearGradient = require('react-native').View; }
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS, SHADOWS } from '../../src/constants/theme';
 import { SOS_STEPS } from '../../src/constants/messages';
 import { useUserData } from '../../src/hooks/useUserData';

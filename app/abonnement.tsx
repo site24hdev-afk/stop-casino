@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+let LinearGradient: any = 'View'; try { LinearGradient = require('expo-linear-gradient').LinearGradient; } catch (e) { LinearGradient = require('react-native').View; }
 type PurchasesPackage = any;
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { useColors, useTheme } from '../src/context/ThemeContext';

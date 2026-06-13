@@ -10,9 +10,12 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import { Image } from 'expo-image';
+let Image: any;
+try { Image = require('expo-image').Image; } catch (e) { Image = require('react-native').Image; }
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+let DateTimePicker: any = null;
+try { DateTimePicker = require('@react-native-community/datetimepicker').default; } catch (e) {}
+type DateTimePickerEvent = any;
 import { COLORS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../constants/theme';
 import { IMAGES } from '../constants/images';
 import i18n, { t } from '../i18n';

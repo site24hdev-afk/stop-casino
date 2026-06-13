@@ -8,10 +8,11 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Image } from 'expo-image';
+let Image: any;
+try { Image = require('expo-image').Image; } catch (e) { Image = require('react-native').Image; }
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+let LinearGradient: any = 'View'; try { LinearGradient = require('expo-linear-gradient').LinearGradient; } catch (e) { LinearGradient = require('react-native').View; }
 import { COLORS, GRADIENTS, SPACING, FONT_SIZE, BORDER_RADIUS } from '../src/constants/theme';
 import { ARTICLES, CATEGORIES, Article } from '../src/constants/library';
 import { useSubscription } from '../src/hooks/useSubscription';
