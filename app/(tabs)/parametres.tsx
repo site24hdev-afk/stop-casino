@@ -141,7 +141,7 @@ export default function ParametresScreen() {
 
           {/* Privacy */}
           <Text style={[styles.sectionLabel, { color: c.textMuted }]}>{t('settings.dataPrivacy')}</Text>
-          <View style={[styles.card, { backgroundColor: c.surfaceGlass }]}>
+          <TouchableOpacity style={[styles.card, { backgroundColor: c.surfaceGlass }]} onPress={() => router.push('/legal')} activeOpacity={0.7}>
             <View style={[styles.cardIcon, { backgroundColor: c.warningBg }]}>
               <Ionicons name="lock-closed" size={22} color={c.warning} />
             </View>
@@ -149,7 +149,8 @@ export default function ParametresScreen() {
               <Text style={[styles.cardTitle, { color: c.text }]}>{t('settings.dataPrivacy')}</Text>
               <Text style={[styles.cardValue, { color: c.textSecondary }]}>{t('settings.dataLocal')}</Text>
             </View>
-          </View>
+            <Ionicons name="chevron-forward" size={20} color={c.textMuted} />
+          </TouchableOpacity>
 
           {/* Subscription */}
           <Text style={[styles.sectionLabel, { color: c.textMuted }]}>{t('sub.mySubscription')}</Text>

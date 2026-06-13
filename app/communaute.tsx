@@ -18,36 +18,36 @@ import { t } from '../src/i18n';
 const RESOURCES = [
   {
     icon: 'call',
-    title: 'Joueurs Info Service',
-    desc: 'Ligne d\'écoute gratuite et anonyme',
-    detail: '09 74 75 13 13 — 7j/7 de 8h à 2h',
+    titleKey: 'communaute.joueurs',
+    descKey: 'communaute.joueursDesc',
+    detailKey: 'communaute.joueursDetail',
     color: COLORS.danger,
     bg: COLORS.dangerBg,
     url: 'tel:0974751313',
   },
   {
     icon: 'chatbubbles',
-    title: 'Chat en ligne',
-    desc: 'Parler à un conseiller par chat',
-    detail: 'www.joueurs-info-service.fr',
+    titleKey: 'communaute.chatOnline',
+    descKey: 'communaute.chatDesc',
+    detailKey: 'communaute.chatDetail',
     color: COLORS.info,
     bg: COLORS.infoBg,
     url: 'https://www.joueurs-info-service.fr',
   },
   {
     icon: 'people',
-    title: 'Joueurs Anonymes France',
-    desc: 'Groupes de parole et réunions',
-    detail: 'Trouvez un groupe près de chez vous',
+    titleKey: 'communaute.joueursAnonymes',
+    descKey: 'communaute.jaDesc',
+    detailKey: 'communaute.jaDetail',
     color: COLORS.primary,
     bg: COLORS.primaryBg,
     url: 'https://www.joueursanonymes.org',
   },
   {
     icon: 'medical',
-    title: 'SOS Joueurs',
-    desc: 'Association d\'aide aux joueurs',
-    detail: '09 69 39 55 12',
+    titleKey: 'communaute.sosJoueurs',
+    descKey: 'communaute.sosDesc',
+    detailKey: 'communaute.sosDetail',
     color: COLORS.purple,
     bg: COLORS.purpleBg,
     url: 'tel:0969395512',
@@ -55,55 +55,31 @@ const RESOURCES = [
 ];
 
 const TIPS = [
-  {
-    emoji: '🗣️',
-    title: 'Parle à quelqu\'un',
-    text: 'Briser le silence est le premier pas. Confie-toi à un proche, un ami, ou appelle une ligne d\'écoute.',
-  },
-  {
-    emoji: '📝',
-    title: 'Tiens un journal',
-    text: 'Note tes envies, tes déclencheurs et tes victoires. L\'écrit aide à prendre du recul.',
-  },
-  {
-    emoji: '🏃',
-    title: 'Remplace l\'habitude',
-    text: 'Sport, marche, cuisine, lecture… Trouve une activité qui t\'occupe quand l\'envie monte.',
-  },
-  {
-    emoji: '💰',
-    title: 'Bloque l\'accès à l\'argent',
-    text: 'Limite tes moyens de paiement. Confie ta carte à un proche si besoin.',
-  },
-  {
-    emoji: '🚫',
-    title: 'Auto-exclusion',
-    text: 'Inscris-toi sur la liste des interdits de jeu. C\'est gratuit, confidentiel et réversible après 3 ans.',
-  },
-  {
-    emoji: '🧘',
-    title: 'Gère le stress autrement',
-    text: 'Méditation, respiration, yoga… Le casino n\'est jamais la solution au stress.',
-  },
+  { emoji: '🗣️', titleKey: 'communaute.tipTalk', textKey: 'communaute.tipTalkText' },
+  { emoji: '📝', titleKey: 'communaute.tipJournal', textKey: 'communaute.tipJournalText' },
+  { emoji: '🏃', titleKey: 'communaute.tipReplace', textKey: 'communaute.tipReplaceText' },
+  { emoji: '💰', titleKey: 'communaute.tipMoney', textKey: 'communaute.tipMoneyText' },
+  { emoji: '🚫', titleKey: 'communaute.tipExclude', textKey: 'communaute.tipExcludeText' },
+  { emoji: '🧘', titleKey: 'communaute.tipStress', textKey: 'communaute.tipStressText' },
 ];
 
 const FORUMS = [
   {
     icon: 'globe',
-    title: 'Forum Joueurs Info Service',
-    desc: 'Espace de discussion entre joueurs et proches',
+    titleKey: 'communaute.forumJIS',
+    descKey: 'communaute.forumJISDesc',
     url: 'https://www.joueurs-info-service.fr/Aide-en-ligne/Forum',
   },
   {
     icon: 'logo-reddit',
-    title: 'r/problemgambling',
-    desc: 'Communauté anglophone (100k+ membres)',
+    titleKey: 'communaute.reddit',
+    descKey: 'communaute.redditDesc',
     url: 'https://www.reddit.com/r/problemgambling/',
   },
   {
     icon: 'logo-facebook',
-    title: 'Groupes Facebook',
-    desc: 'Groupes francophones d\'entraide',
+    titleKey: 'communaute.facebook',
+    descKey: 'communaute.facebookDesc',
     url: 'https://www.facebook.com/search/groups/?q=addiction%20jeux',
   },
 ];
@@ -153,9 +129,9 @@ export default function CommunauteScreen() {
                   <Ionicons name={r.icon as any} size={22} color={r.color} />
                 </View>
                 <View style={styles.resourceContent}>
-                  <Text style={[styles.resourceTitle, { color: c.text }]}>{r.title}</Text>
-                  <Text style={[styles.resourceDesc, { color: c.textSecondary }]}>{r.desc}</Text>
-                  <Text style={[styles.resourceDetail, { color: r.color }]}>{r.detail}</Text>
+                  <Text style={[styles.resourceTitle, { color: c.text }]}>{t(r.titleKey)}</Text>
+                  <Text style={[styles.resourceDesc, { color: c.textSecondary }]}>{t(r.descKey)}</Text>
+                  <Text style={[styles.resourceDetail, { color: r.color }]}>{t(r.detailKey)}</Text>
                 </View>
                 <Ionicons name="open-outline" size={18} color={c.textMuted} />
               </TouchableOpacity>
@@ -176,8 +152,8 @@ export default function CommunauteScreen() {
                   <Ionicons name={f.icon as any} size={20} color={c.info} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.forumTitle, { color: c.text }]}>{f.title}</Text>
-                  <Text style={[styles.forumDesc, { color: c.textMuted }]}>{f.desc}</Text>
+                  <Text style={[styles.forumTitle, { color: c.text }]}>{t(f.titleKey)}</Text>
+                  <Text style={[styles.forumDesc, { color: c.textMuted }]}>{t(f.descKey)}</Text>
                 </View>
                 <Ionicons name="open-outline" size={16} color={c.textMuted} />
               </TouchableOpacity>
@@ -191,8 +167,8 @@ export default function CommunauteScreen() {
               <View key={i} style={[styles.tipCard, { backgroundColor: c.surfaceGlass }]}>
                 <Text style={styles.tipEmoji}>{tip.emoji}</Text>
                 <View style={styles.tipContent}>
-                  <Text style={[styles.tipTitle, { color: c.text }]}>{tip.title}</Text>
-                  <Text style={[styles.tipText, { color: c.textSecondary }]}>{tip.text}</Text>
+                  <Text style={[styles.tipTitle, { color: c.text }]}>{t(tip.titleKey)}</Text>
+                  <Text style={[styles.tipText, { color: c.textSecondary }]}>{t(tip.textKey)}</Text>
                 </View>
               </View>
             ))}
